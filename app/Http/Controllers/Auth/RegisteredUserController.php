@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'referral_code' => ['nullable', 'string', 'max:6', 'regex:/^[\pL\pN\s\-]+$/u'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
         ]);
 
         //Check the referral Code is entered
@@ -57,7 +57,6 @@ class RegisteredUserController extends Controller
                         $referral_bonus = $ref_bonus->bonus;
                     }
                 }
-
             } else {
                 // The refcode does not exist in the database
                 return response()->json([
@@ -98,9 +97,11 @@ class RegisteredUserController extends Controller
 
             Bonus::where('user_id', $referral_id)
                 ->update(
-                    ['balance' => $bonus_balance,
+                    [
+                        'balance' => $bonus_balance,
                         'deposit' => $deposit_balance,
-                    ]);
+                    ]
+                );
         }
 
         //Update notification history
@@ -114,6 +115,5 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return response()->json(['status' => 200, 'redirect_url' => url('kyc')]);
-
     }
 }

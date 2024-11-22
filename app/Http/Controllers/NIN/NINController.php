@@ -9,17 +9,12 @@ use App\Models\Transaction;
 use App\Models\Verification;
 use App\Models\Wallet;
 use App\Repositories\NIN_PDF_Repository;
-use App\Traits\ActiveUsers;
-use App\Traits\KycVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class NINController extends Controller
 {
-    use ActiveUsers;
-    use KycVerify;
-
     protected $loginUserId;
 
     // Constructor to initialize the property
@@ -31,84 +26,50 @@ class NINController extends Controller
     //Show NIN Page
     public function show(Request $request)
     {
+        $loginUserId = $this->loginUserId; // Cache the user ID for easier readability
 
-        //Check if user is Disabled
-        if ($this->is_active() != 1) {
-            Auth::logout();
+        // Fetch unread notifications (limit to 3 and sort by ID descending)
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
 
-            return view('error');
-        }
+        // Count unread notifications
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-        //Check if user is Pending, Rejected, or Verified KYC
-        $status = $this->is_verified();
+        // Fetch all required service fees in one query
+        $serviceCodes = ['113', '114', '115', '116'];
+        $services = Services::whereIn('service_code', $serviceCodes)->get()->keyBy('service_code');
 
-        if ($status == 'Pending') {
-            return redirect()->route('verification.kyc');
+        // Extract specific service fees
+        $ServiceFee = $services->get('113');
+        $regular_nin_fee = $services->get('114');
+        $standard_nin_fee = $services->get('115');
+        $premium_nin_fee = $services->get('116');
 
-        } elseif ($status == 'Submitted') {
-            return view('kyc-status')->with(compact('status'));
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
 
-        } elseif ($status == 'Rejected') {
-            return view('kyc-status')->with(compact('status'));
-        } else {
+        // Determine the view to return
+        $viewName = $request->route()->named('nin-phone') ? 'nin-phone' : 'nin-verify';
 
-            //Notification Data
-            $notifications = Notification::all()->where('user_id', $this->loginUserId)
-                ->sortByDesc('id')
-                ->where('status', 'unread')
-                ->take(3);
-
-            //Notification Count
-            $notifycount = 0;
-            $notifycount = Notification::all()
-                ->where('user_id', $this->loginUserId)
-                ->where('status', 'unread')
-                ->count();
-
-            //NIN Verification Services Fee
-            $ServiceFee = 0;
-            $ServiceFee = Services::where('service_code', '113')->first();
-
-            //NIN Regular Services Fee
-            $regular_nin_fee = 0;
-            $regular_nin_fee = Services::where('service_code', '114')->first();
-
-            //NIN Standard Services Fee
-            $standard_nin_fee = 0;
-            $standard_nin_fee = Services::where('service_code', '115')->first();
-
-            //NIN Premium Services Fee
-            $premium_nin_fee = 0;
-            $premium_nin_fee = Services::where('service_code', '116')->first();
-
-            if ($request->route()->named('nin-phone')) {
-
-                return view('nin-phone')
-                    ->with(compact('notifications'))
-                    ->with(compact('ServiceFee'))
-                    ->with(compact('regular_nin_fee'))
-                    ->with(compact('standard_nin_fee'))
-                    ->with(compact('premium_nin_fee'))
-                    ->with(compact('notifycount'));
-
-            } else {
-
-                return view('nin-verify')
-                    ->with(compact('notifications'))
-                    ->with(compact('ServiceFee'))
-                    ->with(compact('regular_nin_fee'))
-                    ->with(compact('standard_nin_fee'))
-                    ->with(compact('premium_nin_fee'))
-                    ->with(compact('notifycount'));
-            }
-
-        }
+        return view($viewName, compact(
+            'notifications',
+            'notifyCount',
+            'ServiceFee',
+            'regular_nin_fee',
+            'standard_nin_fee',
+            'premium_nin_fee',
+            'notificationsEnabled'
+        ));
     }
 
     public function retrieveNIN(Request $request)
     {
-
-        $request->validate(['nin' => 'required|numeric|digits:11']);
+        $request->validate(['nin' => 'required|numeric|digits:11'],);
 
         //NIN Services Fee
         $ServiceFee = 0;
@@ -137,7 +98,7 @@ class NINController extends Controller
                 }
 
                 $referenceNumber = Str::upper(Str::random(10));
-                $endpoint = env('ENDPOINT').$endpoint_part;
+                $endpoint = env('ENDPOINT') . $endpoint_part;
                 $postdata = [
                     'value' => $request->input('nin'), //NIN Mondatory
                     'ref' => $referenceNumber,
@@ -153,7 +114,7 @@ class NINController extends Controller
                     CURLOPT_HTTPHEADER,
                     [
                         'Content-Type: application/json',
-                        'Authorization: '.env('ACCESS_TOKEN').'',
+                        'Authorization: ' . env('ACCESS_TOKEN') . '',
                     ]
                 );
                 $response = curl_exec($ch);
@@ -179,7 +140,7 @@ class NINController extends Controller
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -190,7 +151,7 @@ class NINController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'NIN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                         'amount' => $ServiceFee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -198,7 +159,6 @@ class NINController extends Controller
 
                     //Return Json response
                     return json_encode(['status' => $data['success'], 'data' => $data]);
-
                 } else {
 
                     $referenceno = '';
@@ -209,7 +169,7 @@ class NINController extends Controller
                     for ($i = 0; $i < 12; $i++) {
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -220,7 +180,7 @@ class NINController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'NIN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format(
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
                             $ServiceFee,
                             2
                         ),
@@ -231,17 +191,15 @@ class NINController extends Controller
 
                     return response()->json([
                         'status' => 'Not Found',
-                        'errors' => ['Succesfully Verified with '.$data['data']['reason']],
+                        'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
                     ], 422);
                 }
-
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'Request failed',
                     'errors' => ['An error occurred while making the API request'],
                 ], 422);
             }
-
         }
     }
 
@@ -277,7 +235,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -288,7 +246,7 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Regular NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -300,7 +258,6 @@ class NINController extends Controller
 
             return $response;
         }
-
     }
 
     public function standardSlip($nin_no)
@@ -336,7 +293,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -347,7 +304,7 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Standard NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -359,7 +316,6 @@ class NINController extends Controller
 
             return $response;
         }
-
     }
 
     public function premiumSlip($nin_no)
@@ -394,7 +350,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -405,7 +361,7 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Premium NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -417,7 +373,6 @@ class NINController extends Controller
 
             return $response;
         }
-
     }
 
     private function formatAndDecodeJson($jsonString)
@@ -437,7 +392,7 @@ class NINController extends Controller
         $formattedString = str_replace('\"', '"', $formattedString);
 
         // Trim leading and trailing whitespace
-        $formattedString = trim($formattedString).'}';
+        $formattedString = trim($formattedString) . '}';
 
         //return $formattedString;
 
@@ -445,7 +400,6 @@ class NINController extends Controller
         $jsonData = json_decode($formattedString, true);
 
         return $jsonData;
-
     }
 
     private function processResponseData($data)

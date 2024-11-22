@@ -29,7 +29,7 @@ class NIN_PDF_Repository
                 'photo' => str_replace('data:image/jpg;base64,', '', $verifiedRecord->photo),
             ];
 
-            $names = $verifiedRecord->first_name.' '.$verifiedRecord->last_name;
+            $names = $verifiedRecord->first_name . ' ' . $verifiedRecord->last_name;
             // Initialize TCPDF
             $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
             $pdf->setPrintHeader(false);
@@ -51,7 +51,7 @@ class NIN_PDF_Repository
             // Decode and add the photo
             $photo = $ninData['photo'];
             $imgdata = base64_decode($photo);
-            $pdf->Image('@'.$imgdata, 166.8, 69.3, 25, 31, '', '', '', false, 300, '', false, false, 0);
+            $pdf->Image('@' . $imgdata, 166.8, 69.3, 25, 31, '', '', '', false, 300, '', false, false, 0);
 
             // Add text fields using 'helvetica' font
             $pdf->SetFont('helvetica', '', 9);
@@ -76,23 +76,20 @@ class NIN_PDF_Repository
             $pdf->Text(116, 97, $ninData['state']);
 
             // Output the PDF
-            $filename = 'Regular NIN Slip - '.$nin_no.'.pdf';
+            $filename = 'Regular NIN Slip - ' . $nin_no . '.pdf';
             $pdfContent = $pdf->Output($filename, 'S');
 
             return response($pdfContent)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename='.$filename)
+                ->header('Content-Disposition', 'attachment; filename=' . $filename)
                 ->header('Content-Length', strlen($pdfContent));
-
         } else {
 
             return response()->json([
                 'message' => 'Error',
                 'errors' => ['Not Found' => 'Verification record not found !'],
             ], 422);
-
         }
-
     }
 
     public function standardPDF($nin_no)
@@ -117,7 +114,7 @@ class NIN_PDF_Repository
                 'photo' => str_replace('data:image/jpg;base64,', '', $verifiedRecord->photo),
             ];
 
-            $names = $verifiedRecord->first_name.' '.$verifiedRecord->last_name;
+            $names = $verifiedRecord->first_name . ' ' . $verifiedRecord->last_name;
 
             // Generate PDF
             $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
@@ -146,18 +143,18 @@ class NIN_PDF_Repository
                 'fgcolor' => [0, 0, 0],
                 'bgcolor' => [255, 255, 255],
             ];
-            $datas = '{NIN: '.$ninData['nin'].', NAME:'.$ninData['fName'].' '.$ninData['mName'].' '.$ninData['sName'].', DOB: '.$ninData['dob'].', Status:Verified}';
+            $datas = '{NIN: ' . $ninData['nin'] . ', NAME:' . $ninData['fName'] . ' ' . $ninData['mName'] . ' ' . $ninData['sName'] . ', DOB: ' . $ninData['dob'] . ', Status:Verified}';
             $pdf->write2DBarcode($datas, 'QRCODE,H', 131.2, 64.7, 14.2, 13.5, $style, 'H');
             $pdf->Image(public_path('assets/card_and_Slip/pin.jpg'), 135.8, 69.5, 4.5, 4.5, '', '', '', false, 300, '', false, false, 0);
 
             // Decode the base64 image
             $photo = base64_decode($ninData['photo']);
-            $pdf->Image('@'.$photo, 72, 62, 18, 23, '', '', '', false, 300, '', false, false, 0);
+            $pdf->Image('@' . $photo, 72, 62, 18, 23, '', '', '', false, 300, '', false, false, 0);
 
             // Add text fields
             $pdf->SetFont('helvetica', '', 8);
             $pdf->Text(91.5, 65, $ninData['sName']);
-            $pdf->Text(91.5, 72, $ninData['fName'].', '.$ninData['mName']);
+            $pdf->Text(91.5, 72, $ninData['fName'] . ', ' . $ninData['mName']);
             $newD = strtotime($ninData['dob']);
             $cdate = date('d M Y', $newD);
             $pdf->Text(91.5, 78.7, $cdate);
@@ -167,7 +164,7 @@ class NIN_PDF_Repository
 
             // Add NIN
             $nin = $ninData['nin'];
-            $newNin = substr($nin, 0, 4).' '.substr($nin, 4, 3).' '.substr($nin, 7);
+            $newNin = substr($nin, 0, 4) . ' ' . substr($nin, 4, 3) . ' ' . substr($nin, 7);
             $pdf->SetFont('helvetica', '', 21);
             $pdf->Text(81, 89, $newNin);
 
@@ -180,20 +177,18 @@ class NIN_PDF_Repository
             $pdf->StopTransform();
 
             // Output PDF
-            $filename = 'Standard NIN Slip - '.$nin_no.'.pdf';
+            $filename = 'Standard NIN Slip - ' . $nin_no . '.pdf';
             $pdfContent = $pdf->Output($filename, 'S');
 
             return response($pdfContent, 200)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename='.$filename);
-
+                ->header('Content-Disposition', 'attachment; filename=' . $filename);
         } else {
             return response()->json([
                 'message' => 'Error',
                 'errors' => ['Not Found' => 'Verification record not found!'],
             ], 422);
         }
-
     }
 
     public function premiumPDF($nin_no)
@@ -219,7 +214,7 @@ class NIN_PDF_Repository
                 'photo' => str_replace('data:image/jpg;base64,', '', $verifiedRecord->photo),
             ];
 
-            $names = $verifiedRecord->first_name.' '.$verifiedRecord->last_name;
+            $names = $verifiedRecord->first_name . ' ' . $verifiedRecord->last_name;
 
             // Initialize TCPDF
             $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
@@ -248,20 +243,20 @@ class NIN_PDF_Repository
                 'fgcolor' => [0, 0, 0],
                 'bgcolor' => [255, 255, 255],
             ];
-            $datas = '{NIN: '.$ninData['nin'].', NAME: '.$ninData['fName'].' '.$ninData['mName'].' '.$ninData['sName'].', DOB: '.$ninData['dob'].', Status:Verified}';
+            $datas = '{NIN: ' . $ninData['nin'] . ', NAME: ' . $ninData['fName'] . ' ' . $ninData['mName'] . ' ' . $ninData['sName'] . ', DOB: ' . $ninData['dob'] . ', Status:Verified}';
             $pdf->write2DBarcode($datas, 'QRCODE,H', 128, 53, 20, 20, $style, 'H');
 
             // Add image from base64
             $photo = $ninData['photo'];
             $imgdata = base64_decode($photo);
-            $pdf->Image('@'.$imgdata, 71.5, 62, 20, 25, 'JPG', '', '', false, 300, '', false, false, 0);
+            $pdf->Image('@' . $imgdata, 71.5, 62, 20, 25, 'JPG', '', '', false, 300, '', false, false, 0);
 
             // Add text
             $sur = $ninData['sName'];
             $pdf->SetFont('helvetica', '', 9);
             $pdf->Text(93.3, 66.5, $sur);
 
-            $othername = $ninData['fName'].', '.$ninData['mName'];
+            $othername = $ninData['fName'] . ', ' . $ninData['mName'];
             $pdf->SetFont('helvetica', '', 9);
             $pdf->Text(93.3, 73.5, $othername);
 
@@ -282,7 +277,7 @@ class NIN_PDF_Repository
             // Format NIN
             $nin = $ninData['nin'];
             $pdf->setTextColor(0, 0, 0);
-            $newNin = substr($nin, 0, 4).' '.substr($nin, 4, 3).' '.substr($nin, 7);
+            $newNin = substr($nin, 0, 4) . ' ' . substr($nin, 4, 3) . ' ' . substr($nin, 7);
             $pdf->SetFont('helvetica', '', 21);
             $pdf->Text(81, 91, $newNin);
 
@@ -314,12 +309,12 @@ class NIN_PDF_Repository
 
             // Save and download PDF
 
-            $filename = 'Premium NIN Slip - '.$nin_no.'.pdf';
+            $filename = 'Premium NIN Slip - ' . $nin_no . '.pdf';
             $pdfContent = $pdf->Output($filename, 'S');
 
             return response($pdfContent, 200)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
                 ->header('Content-Length', strlen($pdfContent));
         } else {
             return response()->json([
@@ -327,6 +322,5 @@ class NIN_PDF_Repository
                 'errors' => ['Not Found' => 'Verification record not found!'],
             ], 422);
         }
-
     }
 }

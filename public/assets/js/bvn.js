@@ -41,18 +41,12 @@ $("#verifyBVN").on("click", function (event) {
          <tbody>
             <tr>
                <th scope="row" rowspan="9">
-                  <img class="rounded" src="data:image/;base64, ${
-                      result.data.data.base64Image
-                  }" alt="User Image" style="width: 250px; height: 250px;">
+                  <img class="rounded" src="data:image/;base64, ${result.data.data.image}" alt="User Image" style="width: 250px; height: 250px;">
                </th>
             </tr>
             <tr>
                <th scope="row" style="text-align:right; border: none ! important;">BVN</th>
-               <td style="text-align:left" ><span id="bvnno" >${
-                   result.data.data.number
-                       ? result.data.data.number
-                       : result.data.data.bvn
-               }</span>
+               <td style="text-align:left" ><span id="bvnno" >${result.data.data.idNumber}</span>
                </td>
             </tr>
             <tr>
@@ -72,7 +66,7 @@ $("#verifyBVN").on("click", function (event) {
             </tr>
             <tr>
                <th scope="row" style="text-align:right; border: none ! important;">Phone No</th>
-               <td  style="text-align:left">${result.data.data.phoneNumber1}
+               <td  style="text-align:left">${result.data.data.mobile}
                </td>
             </tr>
             <tr>
@@ -80,18 +74,7 @@ $("#verifyBVN").on("click", function (event) {
                <td  style="text-align:left">${result.data.data.gender}
                </td>
             </tr>
-            <tr>
-               <th scope="row" style="text-align:right; border: none ! important;">Email Address</th>
-               <td  style="text-align:left">${result.data.data.email}
-               </td>
-            </tr>
-            <tr>
-               <th scope="row" style="text-align:right;">Address</th>
-               <td  style="text-align:left">${
-                   result.data.data.residentialAddress
-               }
-               </td>
-            </tr>
+
          </tbody>
       </table>
    </div>

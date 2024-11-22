@@ -8,83 +8,65 @@ use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\Verification;
 use App\Models\Wallet;
-use App\Traits\ActiveUsers;
-use App\Traits\KycVerify;
-use GuzzleHttp\Exception\RequestException;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BVNController extends Controller
 {
-    use ActiveUsers;
-    use KycVerify;
 
-    //Show BVN Page
+    protected $loginUserId;
+
+    // Constructor to initialize the property
+    public function __construct()
+    {
+        $this->loginUserId = Auth::id();
+    }
+    // Show BVN Page
     public function show(Request $request)
     {
-        //Login User Id
-        $loginUserId = Auth::id();
 
-        //Check if user is Disabled
-        if ($this->is_active() != 1) {
-            Auth::logout();
+        // Fetch unread notifications (limit to 3, sorted by ID descending)
+        $notifications = Notification::where('user_id', $this->loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
 
-            return view('error');
-        }
+        // Count unread notifications
+        $notifyCount = Notification::where('user_id', $this->loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-        //Check if user is Pending, Rejected, or Verified KYC
-        $status = $this->is_verified();
+        // Fetch BVN service fees
+        $serviceCodes = ['101', '102', '103'];
+        $services = Services::whereIn('service_code', $serviceCodes)
+            ->get()
+            ->keyBy('service_code');
 
-        if ($status == 'Pending') {
-            return redirect()->route('verification.kyc');
+        $BVNFee = $services->get('101');
+        $bvn_standard_fee = $services->get('102');
+        $bvn_premium_fee = $services->get('103');
 
-        } elseif ($status == 'Submitted') {
-            return view('kyc-status')->with(compact('status'));
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
 
-        } elseif ($status == 'Rejected') {
-            return view('kyc-status')->with(compact('status'));
-        } else {
-
-            //Notification Data
-            $notifications = Notification::all()->where('user_id', $loginUserId)
-                ->sortByDesc('id')
-                ->where('status', 'unread')
-                ->take(3);
-
-            //Notification Count
-            $notifycount = 0;
-            $notifycount = Notification::all()
-                ->where('user_id', $loginUserId)
-                ->where('status', 'unread')
-                ->count();
-
-            //BVN Verification Services Fee
-            $BVNFee = 0;
-            $BVNFee = Services::where('service_code', '101')->first();
-
-            //BVN Standard Services Fee
-            $bvn_standard_fee = 0;
-            $bvn_standard_fee = Services::where('service_code', '102')->first();
-
-            //BVN Premium Services Fee
-            $bvn_premium_fee = 0;
-            $bvn_premium_fee = Services::where('service_code', '103')->first();
-
-            return view('bvn-verify')
-                ->with(compact('notifications'))
-                ->with(compact('BVNFee'))
-                ->with(compact('bvn_premium_fee'))
-                ->with(compact('bvn_standard_fee'))
-                ->with(compact('notifycount'));
-        }
+        // Return the view with all necessary data
+        return view('bvn-verify', compact(
+            'notifications',
+            'notifyCount',
+            'BVNFee',
+            'bvn_standard_fee',
+            'bvn_premium_fee',
+            'notificationsEnabled'
+        ));
     }
+
 
     public function retrieveBVN(Request $request)
     {
 
         $request->validate(['bvn' => 'required|numeric|digits:11']);
-
-        $loginUserId = Auth::id();
 
         //BVN Services Fee
         $BVNFee = 0;
@@ -92,7 +74,7 @@ class BVNController extends Controller
         $BVNFee = $BVNFee->amount;
 
         //Check if wallet is funded
-        $wallet = Wallet::where('user_id', $loginUserId)->first();
+        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
         $wallet_balance = $wallet->balance;
         $balance = 0;
 
@@ -105,50 +87,70 @@ class BVNController extends Controller
 
             try {
 
-                $client = new \GuzzleHttp\Client;
+                $referenceNumber = random_int(1000000000, 9999999999);
+                $postdata = [
+                    'value' => $request->input('bvn'),
+                    'ref' => $referenceNumber,
+                ];
 
-                $response = $client->request('POST', 'https://api.prembly.com/identitypass/verification/bvn', [
-                    'form_params' => [
-                        'number' => $request->bvn,
-                    ],
-                    'headers' => [
-                        'accept' => 'application/json',
-                        'app-id' => env('appId'),
-                        'content-type' => 'application/x-www-form-urlencoded',
-                        'x-api-key' => env('xApiKey'),
-                    ],
-                ]);
+                $endpoint_part = '/bvn2/verify';
+                $endpoint = env('ENDPOINT') . $endpoint_part;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $endpoint);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postdata));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt(
+                    $ch,
+                    CURLOPT_HTTPHEADER,
+                    [
+                        'Content-Type: application/json',
+                        'Authorization: ' . env('ACCESS_TOKEN') . '',
+                    ]
+                );
+                $response = curl_exec($ch);
+                curl_close($ch);
 
-                $data = json_decode($response->getBody()->getContents(), true);
+                $data = $this->formatAndDecodeJson($response);
 
-                if ($data['status'] == true) {
+                if ($data['success'] == true && $data['data']['status'] == 'found') {
 
-                    //Update DB with Verification Details
-                    $user = Verification::create(
-                        [
-                            'idno' => $data['data']['bvn'] ? $data['data']['bvn'] : $data['data']['number'],
-                            'type' => 'BVN',
-                            'nin' => $data['data']['nin'],
-                            'first_name' => $data['data']['firstName'],
-                            'middle_name' => $data['data']['middleName'],
-                            'last_name' => $data['data']['lastName'],
-                            'phoneno' => $data['data']['phoneNumber1'],
-                            'email' => $data['data']['email'],
-                            'dob' => $data['data']['dateOfBirth'],
-                            'gender' => $data['data']['gender'],
-                            'enrollment_branch' => $data['data']['enrollmentBranch'],
-                            'enrollment_bank' => $data['data']['enrollmentBank'],
-                            'registration_date' => $data['data']['registrationDate'],
-                            'address' => $data['data']['residentialAddress'],
-                            'photo' => $data['data']['base64Image'],
-                        ]
-                    );
+                    $this->processResponseData($data);
 
                     $balance = $wallet->balance - $BVNFee;
 
-                    $affected = Wallet::where('user_id', $loginUserId)
+                    $affected = Wallet::where('user_id', $this->loginUserId)
                         ->update(['balance' => $balance]);
 
+                    $referenceno = '';
+                    srand((float) microtime() * 1000000);
+                    $gen = '123456123456789071234567890890';
+                    $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
+                    $ddesc = '';
+                    for ($i = 0; $i < 12; $i++) {
+                        $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+                    }
+
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+                    $payer_email = auth()->user()->email;
+                    $payer_phone = auth()->user()->phone_number;
+
+                    Transaction::create([
+                        'user_id' => $this->loginUserId,
+                        'payer_name' => $payer_name,
+                        'payer_email' => $payer_email,
+                        'payer_phone' => $payer_phone,
+                        'referenceId' => $referenceno,
+                        'service_type' => 'BVN Verification',
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
+                        'amount' => $BVNFee,
+                        'gateway' => 'Wallet',
+                        'status' => 'Approved',
+                    ]);
+
+                    //Return Json response
+                    return json_encode(['status' => $data['success'], 'data' => $data]);
+                } else {
                     $referenceno = '';
                     srand((float) microtime() * 1000000);
                     $gen = '123456123456789071234567890890';
@@ -157,62 +159,49 @@ class BVNController extends Controller
                     for ($i = 0; $i < 12; $i++) {
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
-
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
                     Transaction::create([
-                        'user_id' => $loginUserId,
+                        'user_id' => $this->loginUserId,
                         'payer_name' => $payer_name,
                         'payer_email' => $payer_email,
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
-                        'service_type' => 'BVN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                        'service_type' => 'NIN Verification',
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
+                            $BVNFee,
+                            2
+                        ),
                         'amount' => $BVNFee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
                     ]);
 
-                    //Return Json response
-                    return json_encode(['status' => $data['status'], 'data' => $data]);
-
-                } elseif ($data['status'] == false) {
-                    $errMsg = '';
-                    if (isset($data['message'])) {
-                        $errMsg = $data['message'];
-                    }
-
                     return response()->json([
-                        'status' => 'Request failed',
-                        'errors' => ['Request failed please try again later. '.$errMsg],
+                        'status' => 'Not Found',
+                        'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
                     ], 422);
-
                 }
-
-            } catch (RequestException $e) {
+            } catch (\Exception $e) {
                 return response()->json([
                     'status' => 'Request failed',
-                    'errors' => ['Request failed cannot connect to server, please try again later. '],
+                    'errors' => ['An error occurred while making the API request'],
                 ], 422);
             }
-
         }
-
     }
 
     public function premiumBVN($bvnno)
     {
-        $loginUserId = Auth::id();
-
         //BVN Services Fee
         $BVNFee = 0;
         $BVNFee = Services::where('service_code', '103')->first();
         $BVNFee = $BVNFee->amount;
 
         //Check if wallet is funded
-        $wallet = Wallet::where('user_id', $loginUserId)->first();
+        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
         $wallet_balance = $wallet->balance;
         $balance = 0;
 
@@ -224,7 +213,7 @@ class BVNController extends Controller
         } else {
             $balance = $wallet->balance - $BVNFee;
 
-            $affected = Wallet::where('user_id', $loginUserId)
+            $affected = Wallet::where('user_id', $this->loginUserId)
                 ->update(['balance' => $balance]);
 
             $referenceno = '';
@@ -236,18 +225,18 @@ class BVNController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
             $user = Transaction::create([
-                'user_id' => $loginUserId,
+                'user_id' => $this->loginUserId,
                 'payer_name' => $payer_name,
                 'payer_email' => $payer_email,
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Premium BVN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
                 'amount' => $BVNFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -263,31 +252,25 @@ class BVNController extends Controller
                 $view = view('PremiumBVN', compact('veridiedRecord'))->render();
 
                 return response()->json(['view' => $view]);
-
             } else {
 
                 return response()->json([
                     'message' => 'Error',
                     'errors' => ['Not Found' => 'Verification record not found !'],
                 ], 422);
-
             }
-
         }
-
     }
 
     public function standardBVN($bvnno)
     {
-        $loginUserId = Auth::id();
-
         //BVN Services Fee
         $BVNFee = 0;
         $BVNFee = Services::where('service_code', '102')->first();
         $BVNFee = $BVNFee->amount;
 
         //Check if wallet is funded
-        $wallet = Wallet::where('user_id', $loginUserId)->first();
+        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
         $wallet_balance = $wallet->balance;
         $balance = 0;
 
@@ -299,7 +282,7 @@ class BVNController extends Controller
         } else {
             $balance = $wallet->balance - $BVNFee;
 
-            $affected = Wallet::where('user_id', $loginUserId)
+            $affected = Wallet::where('user_id', $this->loginUserId)
                 ->update(['balance' => $balance]);
 
             $referenceno = '';
@@ -311,18 +294,18 @@ class BVNController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
             $user = Transaction::create([
-                'user_id' => $loginUserId,
+                'user_id' => $this->loginUserId,
                 'payer_name' => $payer_name,
                 'payer_email' => $payer_email,
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Standard BVN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
                 'amount' => $BVNFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -338,16 +321,79 @@ class BVNController extends Controller
                 $view = view('freeBVN', compact('veridiedRecord'))->render();
 
                 return response()->json(['view' => $view]);
-
             } else {
 
                 return response()->json([
                     'message' => 'Error',
                     'errors' => ['Not Found' => 'Verification record not found !'],
                 ], 422);
-
             }
+        }
+    }
+    private function processResponseData($data)
+    {
 
+        // //Update DB with Verification Details
+        $user = Verification::create(
+            [
+                'idno' => $data['data']['idNumber'],
+                'type' => 'BVN',
+                'nin' => $data['data']['nin'],
+                'first_name' => $data['data']['firstName'],
+                'middle_name' => $data['data']['middleName'],
+                'last_name' => $data['data']['lastName'],
+                'phoneno' => $data['data']['mobile'],
+                // 'email' => $data['data']['email'],
+                'dob' => $data['data']['dateOfBirth'],
+                'gender' => $data['data']['gender'],
+                'enrollment_branch' => $data['data']['enrollmentBranch'],
+                'enrollment_bank' => $data['data']['enrollmentInstitution'],
+                // 'registration_date' => '',
+                // 'address' =>'',
+                'photo' => $data['data']['image'],
+            ]
+        );
+    }
+
+    private function formatAndDecodeJson($jsonString)
+    {
+        $replaceString = '||||statusCode||||200||||data||||message||||0';
+        $replaceString2 = '[]}||||35||||';
+
+        //Replace Json
+        $cleanedString = str_replace($replaceString, '', $jsonString);
+        $cleanedString = str_replace($replaceString2, '', $cleanedString);
+
+        // Remove newline characters and excessive whitespace
+        $formattedString = preg_replace('/\s+/', ' ', $cleanedString);
+
+        // Fix potential issues with escaped quotes
+        $formattedString = str_replace('\"', '"', $formattedString);
+
+        // Trim leading and trailing whitespace
+        $formattedString = trim($formattedString) . '}';
+
+        //return $formattedString;
+
+        // Decode the JSON string
+        $jsonData = json_decode($formattedString, true);
+
+        return $jsonData;
+    }
+
+    public function formatDate($date)
+    {
+        // Check if date is already in the format 'Y-m-d'
+        if (Carbon::hasFormat($date, 'Y-m-d')) {
+            return $date;
+        }
+
+        // Check and convert if date is in 'd-M-Y' format
+        try {
+            return Carbon::createFromFormat('d-M-Y', $date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            // Handle invalid date format if necessary
+            return null;
         }
     }
 }
