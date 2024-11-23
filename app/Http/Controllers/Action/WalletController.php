@@ -84,8 +84,6 @@ class WalletController extends Controller
             $user_count = User::where('refferral_id', $this->loginUserId)
                 ->where('claim_id', 0)->count();
 
-
-
             User::where('id', $user_id)->update(['claim_id' => 1]);
 
             $bonus = Bonus::where('user_id', $this->loginUserId)->first();

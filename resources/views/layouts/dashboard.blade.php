@@ -56,9 +56,10 @@
     <!-- Sticky JS -->
     <script src="{{ asset('assets/js/sticky.js') }}"></script>
     <!-- Custom JS -->
+    @yield('page-js')
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/logout.js') }}"></script>
-    @yield('page-js')
+
 </body>
 
 </html>

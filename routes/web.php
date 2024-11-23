@@ -110,7 +110,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
+        $url = env('API_URL')."{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -190,4 +190,4 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

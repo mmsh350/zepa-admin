@@ -113,9 +113,9 @@
                 </li>
                 <!-- End::slide -->
                 <!-- Start::slide -->
-                <li class="slide has-sub @if ($menu == 'Utility') open @endif">
+                <li class="slide has-sub {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data')|| request()->is('tv') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item @if ($title == 'Airtime') active @endif">
+                        class="side-menu__item {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data')|| request()->is('tv') ? 'active' : '' }}">
                         <i class="bx bx-task side-menu__icon"></i>
                         <span class="side-menu__label">Utilities</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -123,22 +123,22 @@
                     <ul class="slide-menu child1">
                         <li class="slide">
                             <a href="{{ route('airtime') }}"
-                                class="side-menu__item @if ($title == 'airtime') active @endif">Airtime</a>
+                                class="side-menu__item {{ request()->is('airtime') ? 'active' : '' }}">Airtime</a>
                         </li>
                         <li class="slide">
 
-                        <li class="slide has-sub @if ($title == 'data' || $title == 'sme') open @endif">
-                            <a href="javascript:void(0);" class="side-menu__item"> Data Top-up<i
+                        <li class="slide has-sub {{ request()->is('data') || request()->is('sme-data') ? 'open' : '' }} ">
+                            <a href="javascript:void(0);" class="side-menu__item {{ request()->is('data') || request()->is('sme-data') ? 'active' : '' }}  "> Data Top-up<i
                                     class="fe fe-chevron-right side-menu__angle"></i></a>
                             <ul class="slide-menu child2">
                                 <li class="slide">
                                     <a href="{{ route('data') }}"
-                                        class="side-menu__item @if ($title == 'data') active @endif">Data
+                                        class="side-menu__item {{ request()->is('data') ? 'active' : '' }}">Data
                                         Bundle</a>
                                 </li>
                                 <li class="slide">
                                     <a href="{{ route('sme-data') }}"
-                                        class="side-menu__item @if ($title == 'sme') active @endif">SME
+                                        class="side-menu__item {{ request()->is('sme-data') ? 'active' : '' }}">SME
                                         Data Bundle</a>
                                 </li>
                             </ul>
@@ -146,7 +146,7 @@
 
                         <li class="slide">
                             <a href="{{ route('tv') }}"
-                                class="side-menu__item @if ($title == 'tv') active @endif">TV
+                                class="side-menu__item {{ request()->is('tv') }}">TV
                                 Subscriptions
                             </a>
                         </li>
