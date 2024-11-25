@@ -22,6 +22,7 @@
                 <p>Dear {{ $mail_data['name'] }},</p>
                 <p>We are pleased to inform you that your KYC application has been successfully verified! You can now
                     proceed to access the portal by clicking the button below:</p>
+                <p><a href="https://zepasolutions.com/" class="btn-primary">Access Portal</a></p>
             @endif
         </div>
 
