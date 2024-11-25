@@ -158,7 +158,7 @@
                     </ul>
                 </li>
                 <li class="slide">
-                    <a href="{{ route('education') }}"
+                    <a href="#" onclick="return confirm('Comming Soon !');"
                         class="side-menu__item
                         {{ request()->is('education') ? 'active' : '' }}">
                         <i class="bx bx-user-pin side-menu__icon"></i>
@@ -166,10 +166,12 @@
                     </a>
                 </li>
                 <!-- Start::slide -->
-                @if (Auth::user()->role == 'agent')
-                    <li class="slide has-sub @if ($menu == 'agency') open @endif">
+
+                    <li class="slide has-sub {{ request()->is('bvn-mod')
+                            || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment')? 'open' : '' }}">
                         <a href="javascript:void(0);"
-                            class="side-menu__item @if ($menu == 'agency') active @endif">
+                            class="side-menu__item  {{ request()->is('bvn-mod')
+                            || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment')? 'open' : '' }}">
                             <i class="bx bx-user-plus side-menu__icon"></i>
                             <span class="side-menu__label">Agent Services </span>
                             <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -177,35 +179,51 @@
                         <ul class="slide-menu child1">
                             <li class="slide">
                                 <a href="{{ route('bvn-modification') }}"
-                                    class="side-menu__item  @if ($title == 'bvn-mod') active @endif">BVN
+                                    class="side-menu__item {{ request()->is('bvn-mod') ? 'active' : '' }}">BVN
                                     Modification </a>
                             </li>
                             <li class="slide">
                                 <a href="{{ route('crm') }}"
-                                    class="side-menu__item @if ($title == 'crm') active @endif">CRM</a>
+                                    class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">CRM</a>
                             </li>
                             <li class="slide">
                                 <a href="{{ route('account-upgrade') }}"
-                                    class="side-menu__item @if ($title == 'upgrade') active @endif">Account
+                                    class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
                                     Upgrade
                                 </a>
                             </li>
                             <li class="slide">
                                 <a href="{{ route('crm2') }}"
-                                    class="side-menu__item @if ($title == 'crm2') active @endif">Find BVN
+                                    class="side-menu__item {{ request()->is('crm2') ? 'active' : '' }}">Find BVN
                                     using Phone and DOB
                                 </a>
                             </li>
                             <li class="slide">
                                 <a href="{{ route('bvn-enrollment') }}"
-                                    class="side-menu__item @if ($title == 'enrollment') active @endif"">BVN
+                                    class="side-menu__item {{ request()->is('bvn-enrollment') ? 'active' : '' }}">BVN
                                     Enrollement Agency Request
                                 </a>
                             </li>
                         </ul>
                     </li>
-                @endif
 
+                <li class="slide has-sub {{ request()->is('verification.kyc') ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="side-menu__item {{ request()->is('verification.kyc') ? 'active' : '' }}">
+                        <i class="bx bx-user side-menu__icon"></i>
+                        <span class="side-menu__label">User Management </span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide">
+                            <a href="{{ route('verification.kyc') }}"
+                                class="side-menu__item {{ request()->is('verification.kyc') ? 'active' : '' }}">KYC Verification</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" onclick="return confirm('Comming Soon')" class="side-menu__item ">Manage Users
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="slide">
                     <a href="{{ route('transactions') }}"
                         class="side-menu__item  {{ request()->is('transactions') ? 'active' : '' }}">

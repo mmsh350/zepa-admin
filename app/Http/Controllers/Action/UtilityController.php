@@ -48,7 +48,8 @@ class UtilityController extends Controller
         return view('buy-airtime', compact('notifications', 'notifyCount', 'priceList', 'notificationsEnabled'));
 
     }
-   //Buy Airtime
+
+    //Buy Airtime
     public function buyAirtime(Request $request)
     {
 
@@ -213,7 +214,8 @@ class UtilityController extends Controller
             'priceList6',
         ));
     }
-  //show SME Data View
+
+    //show SME Data View
     public function sme_data(Request $request)
     {
         // Fetch unread notifications for the user
@@ -233,34 +235,33 @@ class UtilityController extends Controller
         return view('buy-sme-data', compact('notifications', 'notifyCount', 'notificationsEnabled'));
     }
 
-     //Show Airtime Page
+    //Show Airtime Page
     public function pin(Request $request)
     {
 
+        //Notification Data
+        $notifications = Notification::all()->where('user_id', $this->loginUserId)
+            ->sortByDesc('id')
+            ->where('status', 'unread')
+            ->take(3);
 
-            //Notification Data
-            $notifications = Notification::all()->where('user_id', $this->loginUserId)
-                ->sortByDesc('id')
-                ->where('status', 'unread')
-                ->take(3);
+        //Notification Count
+        $notifycount = 0;
+        $notifycount = Notification::all()
+            ->where('user_id', $this->loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-            //Notification Count
-            $notifycount = 0;
-            $notifycount = Notification::all()
-                ->where('user_id', $this->loginUserId)
-                ->where('status', 'unread')
-                ->count();
+        $pin = Pin::where('user_id', $this->loginUserId)
+            ->orderBy('id', 'desc')
+            ->paginate(5);
 
-            $pin = Pin::where('user_id', $this->loginUserId)
-                ->orderBy('id', 'desc')
-                ->paginate(5);
-
-            return view('buy-educational-pin')
-                ->with(compact(
-                    'pin',
-                    'notifications',
-                    'notifycount'
-                ));
+        return view('buy-educational-pin')
+            ->with(compact(
+                'pin',
+                'notifications',
+                'notifycount'
+            ));
 
     }
 
@@ -693,31 +694,29 @@ class UtilityController extends Controller
     public function showTV(Request $request)
     {
 
+        //Notification Data
+        $notifications = Notification::all()->where('user_id', $this->loginUserId)
+            ->sortByDesc('id')
+            ->where('status', 'unread')
+            ->take(3);
 
+        //Notification Count
+        $notifycount = 0;
+        $notifycount = Notification::all()
+            ->where('user_id', $this->loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-            //Notification Data
-            $notifications = Notification::all()->where('user_id', $this->loginUserId)
-                ->sortByDesc('id')
-                ->where('status', 'unread')
-                ->take(3);
+        $pin = Pin::where('user_id', $this->loginUserId)
+            ->orderBy('id', 'desc')
+            ->paginate(5);
 
-            //Notification Count
-            $notifycount = 0;
-            $notifycount = Notification::all()
-                ->where('user_id', $this->loginUserId)
-                ->where('status', 'unread')
-                ->count();
-
-            $pin = Pin::where('user_id', $this->loginUserId)
-                ->orderBy('id', 'desc')
-                ->paginate(5);
-
-            return view('tv-subscription')
-                ->with(compact(
-                    'pin',
-                    'notifications',
-                    'notifycount'
-                ));
+        return view('tv-subscription')
+            ->with(compact(
+                'pin',
+                'notifications',
+                'notifycount'
+            ));
 
     }
 
