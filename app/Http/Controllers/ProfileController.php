@@ -389,7 +389,7 @@ class ProfileController extends Controller
             'referenceId' => $referenceno,
             'service_type' => 'Upgrade Refund',
             'service_description' => 'Wallet credited with Upgrade Fee of ₦' . number_format($balance, 2),
-            'amount' => $balance,
+            'amount' => $amount,
             'gateway' => 'Wallet',
             'status' => 'Approved',
         ]);
