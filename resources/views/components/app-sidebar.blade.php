@@ -113,9 +113,10 @@
                 </li>
                 <!-- End::slide -->
                 <!-- Start::slide -->
-                <li class="slide has-sub {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data')|| request()->is('tv') ? 'open' : '' }}">
+                <li
+                    class="slide has-sub {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data') || request()->is('tv') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data')|| request()->is('tv') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('airtime') || request()->is('data') || request()->is('sme-data') || request()->is('tv') ? 'active' : '' }}">
                         <i class="bx bx-task side-menu__icon"></i>
                         <span class="side-menu__label">Utilities</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -127,9 +128,11 @@
                         </li>
                         <li class="slide">
 
-                        <li class="slide has-sub {{ request()->is('data') || request()->is('sme-data') ? 'open' : '' }} ">
-                            <a href="javascript:void(0);" class="side-menu__item {{ request()->is('data') || request()->is('sme-data') ? 'active' : '' }}  "> Data Top-up<i
-                                    class="fe fe-chevron-right side-menu__angle"></i></a>
+                        <li
+                            class="slide has-sub {{ request()->is('data') || request()->is('sme-data') ? 'open' : '' }} ">
+                            <a href="javascript:void(0);"
+                                class="side-menu__item {{ request()->is('data') || request()->is('sme-data') ? 'active' : '' }}  ">
+                                Data Top-up<i class="fe fe-chevron-right side-menu__angle"></i></a>
                             <ul class="slide-menu child2">
                                 <li class="slide">
                                     <a href="{{ route('data') }}"
@@ -145,7 +148,7 @@
                         </li>
 
                         <li class="slide">
-                            <a href="{{ route('tv') }}"
+                            <a href="#" onclick="return confirm('Comming soon!');"
                                 class="side-menu__item {{ request()->is('tv') }}">TV
                                 Subscriptions
                             </a>
@@ -167,48 +170,60 @@
                 </li>
                 <!-- Start::slide -->
 
-                    <li class="slide has-sub {{ request()->is('bvn-mod')
-                            || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment')? 'open' : '' }}">
-                        <a href="javascript:void(0);"
-                            class="side-menu__item  {{ request()->is('bvn-mod')
-                            || request()->is('crm') || request()->is('account-upgrade') || request()->is('crm2') || request()->is('bvn-enrollment')? 'open' : '' }}">
-                            <i class="bx bx-user-plus side-menu__icon"></i>
-                            <span class="side-menu__label">Agent Services </span>
-                            <i class="fe fe-chevron-right side-menu__angle"></i>
-                        </a>
-                        <ul class="slide-menu child1">
-                            <li class="slide">
-                                <a href="{{ route('bvn-modification') }}"
-                                    class="side-menu__item {{ request()->is('bvn-mod') ? 'active' : '' }}">BVN
-                                    Modification </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('crm') }}"
-                                    class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">CRM</a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('account-upgrade') }}"
-                                    class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
-                                    Upgrade
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('crm2') }}"
-                                    class="side-menu__item {{ request()->is('crm2') ? 'active' : '' }}">Find BVN
-                                    using Phone and DOB
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('bvn-enrollment') }}"
-                                    class="side-menu__item {{ request()->is('bvn-enrollment') ? 'active' : '' }}">BVN
-                                    Enrollement Agency Request
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                <li
+                    class="slide has-sub {{ request()->is('bvn-mod') ||
+                    request()->is('crm') ||
+                    request()->is('account-upgrade') ||
+                    request()->is('crm2') ||
+                    request()->is('bvn-enrollment')
+                        ? 'open'
+                        : '' }}">
+                    <a href="javascript:void(0);"
+                        class="side-menu__item  {{ request()->is('bvn-mod') ||
+                        request()->is('crm') ||
+                        request()->is('account-upgrade') ||
+                        request()->is('crm2') ||
+                        request()->is('bvn-enrollment')
+                            ? 'open'
+                            : '' }}">
+                        <i class="bx bx-briefcase side-menu__icon"></i>
+                        <span class="side-menu__label">Agent Services </span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide">
+                            <a href="{{ route('bvn-modification') }}"
+                                class="side-menu__item {{ request()->is('bvn-mod') ? 'active' : '' }}">BVN
+                                Modification </a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('crm') }}"
+                                class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">CRM</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('account-upgrade') }}"
+                                class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
+                                Upgrade
+                            </a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('crm2') }}"
+                                class="side-menu__item {{ request()->is('crm2') ? 'active' : '' }}">Find BVN
+                                using Phone and DOB
+                            </a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('bvn-enrollment') }}"
+                                class="side-menu__item {{ request()->is('bvn-enrollment') ? 'active' : '' }}">BVN
+                                Enrollement Agency Request
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
-                <li class="slide has-sub {{ request()->is('verification.kyc') ? 'open' : '' }}">
-                    <a href="javascript:void(0);" class="side-menu__item {{ request()->is('verification.kyc') ? 'active' : '' }}">
+                <li class="slide has-sub {{ request()->is('kyc') || request()->is('upgrade-list') ? 'open' : '' }}">
+                    <a href="javascript:void(0);"
+                        class="side-menu__item {{ request()->is('verification.kyc') || request()->is('upgrade-list') ? 'active' : '' }}">
                         <i class="bx bx-user side-menu__icon"></i>
                         <span class="side-menu__label">User Management </span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -216,10 +231,17 @@
                     <ul class="slide-menu child1">
                         <li class="slide">
                             <a href="{{ route('verification.kyc') }}"
-                                class="side-menu__item {{ request()->is('verification.kyc') ? 'active' : '' }}">KYC Verification</a>
+                                class="side-menu__item {{ request()->is('kyc') ? 'active' : '' }}">KYC
+                                Verification</a>
                         </li>
                         <li class="slide">
-                            <a href="#" onclick="return confirm('Comming Soon')" class="side-menu__item ">Manage Users
+                            <a href="{{ route('upgrade-list') }}"
+                                class="side-menu__item {{ request()->is('upgrade-list') ? 'active' : '' }}">Account
+                                Upgrade</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" onclick="return confirm('Comming Soon')"
+                                class="side-menu__item ">Manage Users
                             </a>
                         </li>
                     </ul>

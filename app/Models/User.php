@@ -61,4 +61,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function scopeExcludeAdmin($query)
+    {
+        return $query->where('id', '!=', 1); // Exclude the user with id = 1
+    }
+
+    public function upgrades()
+    {
+        return $this->hasMany(Upgrade::class, 'user_id');
+    }
 }

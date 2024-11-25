@@ -12,64 +12,45 @@ use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    use ActiveUsers;
-    use KycVerify;
 
     public function show(Request $request)
     {
-        //Login User Id
+        // Logged-in User ID
         $loginUserId = Auth::id();
 
-        //Check if user is Disabled
-        if ($this->is_active() != 1) {
-            Auth::logout();
+        // Notifications: Fetch unread notifications (limit to 3)
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderBy('id', 'desc')
+            ->take(3)
+            ->get();
 
-            return view('error');
-        }
+        // Notification Count: Count unread notifications
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-        //Check KYC status
-        $status = $this->is_verified();
+        // Filters from the request
+        $statusFilter = $request->input('status');
+        $referenceFilter = $request->input('reference');
+        $serviceTypeFilter = $request->input('service_type');
 
-        if ($status == 'Pending') {
-            return redirect()->route('verification.kyc');
-        } elseif ($status == 'Submitted' || $status == 'Rejected') {
-            return view('kyc-status')->with(compact('status'));
-        } else {
-            //Notification Data
-            $notifications = Notification::where('user_id', $loginUserId)
-                ->orderBy('id', 'desc')
-                ->where('status', 'unread')
-                ->take(3)
-                ->get();
+        // Transactions: Apply filters and paginate
+        $transactions = Transaction::query()
+            ->when($statusFilter, fn($query) => $query->where('status', $statusFilter))
+            ->when($referenceFilter, fn($query) => $query->where('referenceId', 'like', "%$referenceFilter%"))
+            ->when($serviceTypeFilter, fn($query) => $query->where('service_type', 'like', "%$serviceTypeFilter%"))
+            ->orderBy('id', 'desc')
+            ->paginate(10);
 
-            //Notification Count
-            $notifycount = Notification::where('user_id', $loginUserId)
-                ->where('status', 'unread')
-                ->count();
+        // Check if notifications are enabled for the user
+        $notificationsEnabled = Auth::user()->notification ?? false;
 
-            // Get filter values from the request
-            $statusFilter = $request->input('status');
-            $referenceFilter = $request->input('reference');
-            $serviceTypeFilter = $request->input('service_type');
-
-            // Get all transactions and apply filters
-            $transactions = Transaction::where('user_id', $loginUserId)
-                ->when($statusFilter, function ($query, $statusFilter) {
-                    return $query->where('status', $statusFilter);
-                })
-                ->when($referenceFilter, function ($query, $referenceFilter) {
-                    return $query->where('referenceId', 'like', "%$referenceFilter%");
-                })
-                ->when($serviceTypeFilter, function ($query, $serviceTypeFilter) {
-                    return $query->where('service_type', 'like', "%$serviceTypeFilter%");
-                })
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-
-            return view('transaction')
-                ->with(compact('transactions', 'notifications', 'notifycount'));
-        }
+        // Pass data to the view
+        return view('transaction', compact('transactions', 'notifications', 'notifyCount', 'notificationsEnabled'));
     }
+
+
 
     public function reciept(Request $request)
     {
@@ -78,13 +59,7 @@ class TransactionController extends Controller
 
         // Retrieve the transaction based on the referenceId
         $transaction = Transaction::where('referenceId', $request->referenceId)
-            ->where('user_id', $loginUserId)
             ->first();
-
-        if (! $transaction) {
-            // Handle case when the transaction is not found
-            abort(404);
-        }
 
         return view('receipt', ['transaction' => $transaction]);
     }

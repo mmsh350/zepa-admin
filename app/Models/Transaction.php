@@ -29,4 +29,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function upgrade()
+    {
+        return $this->hasOne(Upgrade::class, 'tnx_id');
+    }
 }

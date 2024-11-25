@@ -17,4 +17,14 @@ class Upgrade extends Model
         'user_name',
         'refno',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'tnx_id');
+    }
 }

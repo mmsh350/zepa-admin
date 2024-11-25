@@ -13,18 +13,10 @@ use App\Http\Controllers\Action\WalletController;
 use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\NIN\NINController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
-});
-
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
 });
 
 Route::post('/monnify/webhook', [MonnifyWebhookController::class, 'handleWebhook']);
@@ -110,7 +102,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL')."{$phoneNumber}&text={$message}";
+        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -141,7 +133,8 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/upgrade', [ProfileController::class, 'upgrade'])->name('upgrade');
+
+    // Route::post('/upgrade', [ProfileController::class, 'upgrade'])->name('upgrade');
 
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
     Route::post('/buy-airtime', [UtilityController::class, 'buyAirtime'])->name('buyairtime');
@@ -152,7 +145,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/fetch-data-bundles-price', [UtilityController::class, 'fetchBundlePrice']);
 
     //Account Upgrade Routes
-    Route::post('/upgrade', [ProfileController::class, 'upgrade'])->name('upgrade');
+    Route::get('/upgrade-list', [ProfileController::class, 'upgradeList'])->name('upgrade-list');
+    Route::post('/upgrade', [ProfileController::class, 'approveUpgrade'])->name('upgrade');
+    Route::post('/rejectUpgrade', [ProfileController::class, 'rejectUpgrade'])->name('rejectUpgrade');
+
 
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
     Route::post('/buy-airtime', [UtilityController::class, 'buyAirtime'])->name('buyairtime');
@@ -190,4 +186,4 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

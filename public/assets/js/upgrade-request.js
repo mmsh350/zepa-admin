@@ -66,7 +66,7 @@ $(document).ready(function () {
             $.ajax({
                 //create an ajax request to get session data
                 type: "POST",
-                url: "approveKYC", //expect json File to be returned
+                url: "upgrade", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
                     setTimeout(function () {
@@ -87,7 +87,7 @@ $(document).ready(function () {
             $.ajax({
                 //create an ajax request to get session data
                 type: "POST",
-                url: "rejectKYC", //expect json File to be returned
+                url: "rejectUpgrade", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
                     setTimeout(function () {
@@ -98,5 +98,4 @@ $(document).ready(function () {
             });
         });
     });
-
 });

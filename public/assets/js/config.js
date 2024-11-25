@@ -9,12 +9,11 @@ window.addEventListener("load", function () {
 });
 
 $("#read").click(function (evt) {
-    var _token = $("#_token").val();
     $.ajax({
         //create an ajax request to get session data
         type: "POST",
         url: "read",
-        data: { _token: _token }, //expect json File to be returned
+        // data: { _token: _token }, //expect json File to be returned
         success: function (response) {
             $("#done").show();
             $("#read").hide();
