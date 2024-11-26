@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Action;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bonus;
 use App\Models\News;
 use App\Models\Notification;
+use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Virtual_Accounts;
 use App\Models\Wallet;
 use App\Repositories\VirtualAccountRepository;
 use App\Repositories\WalletRepository;
@@ -37,6 +40,9 @@ class DashboardController extends Controller
         // Return Wallet Balance
         $walletBalance = Wallet::getTotalWalletBalance();
 
+        // Return Wallet Balance
+        $bonusBalance = Bonus::getTotalBonusBalance();
+
         // Get Transactions
         $transactions = Transaction::latest()->paginate(10);
 
@@ -44,6 +50,21 @@ class DashboardController extends Controller
 
         // Get Total User Count
         $userCount = User::count();
+
+        // Get Admin Count
+        $adminCount = User::where('role', 'admin')->count();
+
+        // Get Agent Count
+        $agentCount = User::where('role', 'agent')->count();
+
+        // Get General User Count
+        $generalUserCount = User::where('role', 'user')->count();
+
+        //Get Virtual Accounts
+        $virtualAccountCount = Virtual_Accounts::count();
+
+        //Get Virtual Accounts
+        $servicesCount = Services::count();
 
         // Fetch News
         $newsItems = News::all();
@@ -58,8 +79,14 @@ class DashboardController extends Controller
             'transactionCount',
             'userCount',
             'walletBalance',
+            'bonusBalance',
             'notifications',
             'notifyCount',
+            'adminCount',
+            'agentCount',
+            'generalUserCount',
+            'virtualAccountCount',
+            'servicesCount',
             'notificationsEnabled'
         ));
     }

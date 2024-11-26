@@ -46,11 +46,109 @@
                                                      <div
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
-                                                             <p class="text-muted mb-0">Wallet Balance</p>
+
                                                              <h4 class="fw-semibold mt-1">
                                                                  &#x20A6;{{ number_format($walletBalance), 2 }}</h4>
+                                                             <p class="text-muted mb-0">Wallet Balance</p>
                                                          </div>
-                                                         {{-- <div id="crm-total-customers"><a href="{{route('p2p')}}">P2P</a></div> --}}
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
+                                                         <i class="ti ti-wallet fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 &#x20A6;{{ number_format($bonusBalance), 2 }}</h4>
+                                                             <p class="text-muted mb-0">Bonus Balance</p>
+                                                         </div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="col-xxl-1 col-lg-1 col-md-1">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-info-transparent">
+                                                         <i class="ti ti-users fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+
+                                                             <h4 class="fw-semibold mt-1">{{ $generalUserCount }}</h4>
+                                                             <p class="text-muted mb-0">Users</p>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="col-xxl-1 col-lg-1 col-md-1">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-info-transparent">
+                                                         <i class="ti ti-users fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+
+                                                             <h4 class="fw-semibold mt-1">{{ $agentCount }}</h4>
+                                                             <p class="text-muted mb-0">Agents</p>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="col-xxl-2 col-lg-2 col-md-2">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
+                                                         <i class="ti ti-wallet fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ $virtualAccountCount }}</h4>
+                                                             <p class="text-muted mb-0">Virtual Accounts</p>
+                                                         </div>
+
                                                      </div>
                                                  </div>
                                              </div>
@@ -62,18 +160,19 @@
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-info-transparent">
-                                                         <i class="ti ti-user fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
+                                                         <i class="ti ti-wallet fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
                                                      <div
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
-                                                             <p class="text-muted mb-0">Users</p>
-                                                             <h4 class="fw-semibold mt-1">{{ $userCount }}</h4>
+
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ $servicesCount }}</h4>
+                                                             <p class="text-muted mb-0">Services</p>
                                                          </div>
-                                                         {{-- <div id="crm-total-deals"><a href="{{route('claim')}}">Claim</a></div> --}}
                                                      </div>
                                                  </div>
                                              </div>
@@ -93,10 +192,111 @@
                                                      <div
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ number_format($transactionCount) }}</h4>
                                                              <p class="text-muted mb-0">Transactions</p>
-                                                             <h4 class="fw-semibold mt-1">{{ $transactionCount }}</h4>
                                                          </div>
-                                                         <div id="crm-total-deals"></div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
+                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ number_format($transactionCount) }}</h4>
+                                                             <p class="text-muted mb-0">Identity</p>
+                                                         </div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
+                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ number_format($transactionCount) }}</h4>
+                                                             <p class="text-muted mb-0">Utility</p>
+                                                         </div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
+                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ number_format($transactionCount) }}</h4>
+                                                             <p class="text-muted mb-0">Agency</p>
+                                                         </div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
+                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 {{ number_format($transactionCount) }}</h4>
+                                                             <p class="text-muted mb-0">Upgardes</p>
+                                                         </div>
+
                                                      </div>
                                                  </div>
                                              </div>
@@ -123,7 +323,8 @@
                                                      $serialNumber = ($currentPage - 1) * $perPage + 1; // Starting serial number for current page
                                                  @endphp
                                                  <div class="table-responsive">
-                                                     <table class="table text-nowrap" style="background:#fafafc !important">
+                                                     <table class="table text-nowrap"
+                                                         style="background:#fafafc !important">
                                                          <thead>
                                                              <tr class="table-primary">
                                                                  <th width="5%" scope="col">ID</th>

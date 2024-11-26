@@ -16,4 +16,9 @@ class Bonus extends Model
         'balance',
         'deposite',
     ];
+
+    public static function getTotalBonusBalance()
+    {
+        return self::sum('balance');
+    }
 }
