@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccountUpgradeNotification;
 use App\Mail\OtpMail;
 use App\Mail\PinUpdatedNotification;
 use App\Models\Notification;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redirect;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class ProfileController extends Controller
 {
@@ -28,9 +30,7 @@ class ProfileController extends Controller
     {
         $this->loginUserId = Auth::id();
     }
-    /**
-     * Display the user's profile form.
-     */
+
     public function edit(Request $request)
     {
         // Get the logged-in user ID
@@ -294,18 +294,28 @@ class ProfileController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Upgrade approved successfully!',
-            ], 200);
+            //send a mail notification
+            $email = $request->email;
+            $accountName = User::where('id', $upgradeId)->value('first_name', 'email');
+
+            //Send Mail Notification to admin and user
+            $mail_data = [
+                'type' => 'Approved',
+                'name' => ucwords(strtolower($accountName)),
+            ];
+
+
+            try {
+                //Send Mail in response to kyc submitted
+                $send = Mail::to($email)->queue(new AccountUpgradeNotification($mail_data));
+            } catch (TransportExceptionInterface $e) {
+            }
+
+
+            return response()->json(['status' => 200]);
         } catch (\Exception $e) {
 
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while approving the upgrade: ' . $e->getMessage(),
-            ], 500);
         }
     }
 
@@ -343,18 +353,28 @@ class ProfileController extends Controller
             // Commit the transaction
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Upgrade rejected successfully!',
-            ], 200);
-        } catch (\Exception $e) {
-            // Rollback transaction in case of an error
-            DB::rollBack();
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while rejecting the upgrade: ' . $e->getMessage(),
-            ], 500);
+            //send a mail notification
+            $email = $request->email;
+            $accountName = User::where('id', $upgradeId)->value('first_name', 'email');
+
+            //Send Mail Notification to admin and user
+            $mail_data = [
+                'type' => 'Rejected',
+                'name' => ucwords(strtolower($accountName)),
+            ];
+
+
+            try {
+                //Send Mail in response to kyc submitted
+                $send = Mail::to($email)->queue(new AccountUpgradeNotification($mail_data));
+            } catch (TransportExceptionInterface $e) {
+            }
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
         }
     }
 

@@ -69,11 +69,27 @@ $(document).ready(function () {
                 url: "approveKYC", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
+
+                    if (response.status === 200) {
+                        // Update the div with a success message
+                        $('#response').html(`
+                            <div class="alert alert-success mb-3" role="alert">
+                                KYC approved successfully!
+                            </div>
+                        `);
+                    }
+
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);
                 },
-                error: function (data) { },
+                error: function (data) {
+                    $('#response').html(`
+            <div class="alert alert-danger mb-4" role="alert">
+                An error occurred while approving KYC. Please try again.
+            </div>
+        `);
+                },
             });
         });
 
@@ -90,11 +106,28 @@ $(document).ready(function () {
                 url: "rejectKYC", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
+
+                    if (response.status === 200) {
+                        // Update the div with a success message
+                        $('#response').html(`
+                            <div class="alert alert-success mb-3" role="alert">
+                                KYC Rejected successfully!
+                            </div>
+                        `);
+                    }
+
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);
+
                 },
-                error: function (data) { },
+                error: function (data) {
+                    $('#response').html(`
+                        <div class="alert alert-danger mb-4" role="alert">
+                            An error occurred while Rejecting KYC. Please try again.
+                        </div>
+                    `);
+                },
             });
         });
     });

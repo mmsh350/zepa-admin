@@ -60,7 +60,6 @@ class kycController extends Controller
             })->excludeAdmin()
             ->paginate(10, ['*'], 'table1_page');
 
-
         // Paginate verified and rejected users
         $verifiedUsers = User::where('kyc_status', 'Verified')->paginate(10, ['*'], 'table2_page');
         $rejectedUsers = User::where('kyc_status', 'Rejected')->paginate(10, ['*'], 'table3_page');
@@ -120,8 +119,8 @@ class kycController extends Controller
                 'name' => ucwords(strtolower($kycname)),
             ];
             try {
-                //Send Mail to User and Admin
-                $send = Mail::to($email)->send(new kyc_notify_mail($mail_data));
+                //Send Mail in response to kyc submitted
+                $send = Mail::to($email)->queue(new kyc_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
             }
         }
@@ -152,8 +151,8 @@ class kycController extends Controller
             ];
 
             try {
-                // Send Mail to User and Admin
-                Mail::to($email)->send(new kyc_notify_mail($mail_data));
+                //Send Mail in response to kyc submitted
+                Mail::to($email)->queue(new kyc_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
                 // Log the error for debugging
                 Log::error('Mail sending failed: ' . $e->getMessage());

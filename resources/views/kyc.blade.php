@@ -361,6 +361,7 @@
                                                                     </center>
                                                                 </div>
                                                                 <div class="col-md-10">
+                                                                    <div id="response"></div>
                                                                     <div class="table-responsive theme-scrollbar">
                                                                         <table border="1" class="table">
                                                                             <thead style="background-color:#2b3751;">

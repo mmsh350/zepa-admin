@@ -3,12 +3,13 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class kyc_notify_mail extends Mailable
+class AccountUpgradeNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +29,7 @@ class kyc_notify_mail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'KYC Notification',
+            subject: 'Account Upgrade Notification',
         );
     }
 
@@ -38,7 +39,7 @@ class kyc_notify_mail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.kyc_notify_mail',
+            markdown: 'mail.account_upgrade_notification',
         );
     }
 

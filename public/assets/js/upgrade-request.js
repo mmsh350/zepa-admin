@@ -69,11 +69,24 @@ $(document).ready(function () {
                 url: "upgrade", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
+                    if (response.status === 200) {
+                        $('#response').html(`
+                            <div class="alert alert-success mb-3" role="alert">
+                                Account Upgraded Successfully!
+                            </div>
+                        `);
+                    }
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);
                 },
-                error: function (data) { },
+                error: function (data) {
+                    $('#response').html(`
+                        <div class="alert alert-danger mb-4" role="alert">
+                            An error occurred while Upgrading Account. Please try again.
+                        </div>
+                    `);
+                },
             });
         });
 
@@ -90,11 +103,27 @@ $(document).ready(function () {
                 url: "rejectUpgrade", //expect json File to be returned
                 data: { userid: userid, email: email },
                 success: function (response) {
+
+
+                    if (response.status === 200) {
+                        $('#response').html(`
+                            <div class="alert alert-success mb-3" role="alert">
+                                Account Upgrade Rejected!
+                            </div>
+                        `);
+                    }
+
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);
                 },
-                error: function (data) { },
+                error: function (data) {
+                    $('#response').html(`
+                        <div class="alert alert-danger mb-4" role="alert">
+                            An error occurred while upgrading Account. Please try again.
+                        </div>
+                    `);
+                },
             });
         });
     });
