@@ -20,7 +20,7 @@
                      <span class="fs-semibold text-muted">Centralize your workflow and track all your activities, from start
                          to finish.</span>
                  </div>
-                 <div class="alert alert-outline-light d-flex align-items-center shadow-lg" role="alert">
+                 <div class="alert alert-outline-light d-flex align-items-center shadow-lg mt-2" role="alert">
                      <div>
                          <small class="fw-semibold mb-0 fs-15 ">Referral Code : {{ Auth::user()->referral_code }}</small>
                      </div>
@@ -64,8 +64,8 @@
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
-                                                         <i class="ti ti-wallet fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
+                                                         <i class="ti ti-gift fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -84,7 +84,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-1 col-lg-1 col-md-1">
+                                 <div class="col-xxl-2 col-lg-2 col-md-2">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -107,7 +107,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-1 col-lg-1 col-md-1">
+                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -130,13 +130,13 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-2 col-lg-2 col-md-2">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
-                                                         <i class="ti ti-wallet fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-success-transparent">
+                                                         <i class="ti ti-archive fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -155,13 +155,13 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
                                                      <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
-                                                         <i class="ti ti-wallet fs-16"></i>
+                                                         <i class="ti ti-tag fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -179,13 +179,13 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
+                                                         <i class="ti ti-receipt fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -204,13 +204,13 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-dark-transparent">
+                                                         <i class="ri-fingerprint-line fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -229,13 +229,13 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     <span class="avatar avatar-md avatar-rounded bg-secondary-transparent">
+                                                         <i class="ri-task-line fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -254,13 +254,14 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                     <span
+                                                         class="avatar avatar-md avatar-rounded bg-secondary-transparent">
+                                                         <i class="ri-briefcase-line fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -279,13 +280,13 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
                                                      <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-exchange-funds-line fs-16"></i>
+                                                         <i class="ri-refresh-line fs-16"></i>
                                                      </span>
                                                  </div>
                                                  <div class="flex-fill ms-3">
@@ -382,6 +383,7 @@
                          </div>
                      </div>
                  </div>
+
              </div>
          </div>
      </div>
