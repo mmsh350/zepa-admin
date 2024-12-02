@@ -175,7 +175,7 @@
                     request()->is('crm') ||
                     request()->is('account-upgrade') ||
                     request()->is('crm2') ||
-                    request()->is('bvn-enrollment')
+                    request()->is('bvn-enrollment')||request()->is('view-request*')
                         ? 'open'
                         : '' }}">
                     <a href="javascript:void(0);"
@@ -183,8 +183,8 @@
                         request()->is('crm') ||
                         request()->is('account-upgrade') ||
                         request()->is('crm2') ||
-                        request()->is('bvn-enrollment')
-                            ? 'open'
+                        request()->is('bvn-enrollment')||request()->is('view-request*')
+                            ? 'active'
                             : '' }}">
                         <i class="bx bx-briefcase side-menu__icon"></i>
                         <span class="side-menu__label">Agent Services </span>
@@ -198,7 +198,14 @@
                         </li>
                         <li class="slide">
                             <a href="{{ route('crm') }}"
-                                class="side-menu__item {{ request()->is('crm') ? 'active' : '' }}">CRM</a>
+                                class="side-menu__item {{ request()->is('crm') || request()->is('view-request*') ? 'active' : '' }}">CRM</a>
+                        </li>
+
+                          <li class="slide">
+                            <a href="{{ route('crm2') }}"
+                                class="side-menu__item {{ request()->is('crm2') || request()->is('view-request*') ? 'active' : '' }}">Find BVN
+                                using Phone and DOB
+                            </a>
                         </li>
                         <li class="slide">
                             <a href="{{ route('account-upgrade') }}"
@@ -206,16 +213,11 @@
                                 Upgrade
                             </a>
                         </li>
-                        <li class="slide">
-                            <a href="{{ route('crm2') }}"
-                                class="side-menu__item {{ request()->is('crm2') ? 'active' : '' }}">Find BVN
-                                using Phone and DOB
-                            </a>
-                        </li>
+
                         <li class="slide">
                             <a href="{{ route('bvn-enrollment') }}"
-                                class="side-menu__item {{ request()->is('bvn-enrollment') ? 'active' : '' }}">BVN
-                                Enrollement Agency Request
+                                class="side-menu__item {{ request()->is('bvn-enrollment') || request()->is('view-request*')? 'active' : '' }}">BVN
+                                Enrollement
                             </a>
                         </li>
                     </ul>

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class CRM_REQUEST2 extends Model
 {
     use HasFactory;
-    use HasFactory;
 
     protected $table = 'crm_requests2';
 
@@ -19,4 +18,16 @@ class CRM_REQUEST2 extends Model
         'phoneno',
         'dob',
     ];
+
+    // Define the relationship with User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Define the inverse relationship
+    public function transactions()
+    {
+        return $this->belongsTo(Transaction::class, 'tnx_id');
+    }
 }

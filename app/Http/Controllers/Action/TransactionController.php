@@ -5,14 +5,11 @@ namespace App\Http\Controllers\Action;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Models\Transaction;
-use App\Traits\ActiveUsers;
-use App\Traits\KycVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-
     public function show(Request $request)
     {
         // Logged-in User ID
@@ -37,9 +34,9 @@ class TransactionController extends Controller
 
         // Transactions: Apply filters and paginate
         $transactions = Transaction::query()
-            ->when($statusFilter, fn($query) => $query->where('status', $statusFilter))
-            ->when($referenceFilter, fn($query) => $query->where('referenceId', 'like', "%$referenceFilter%"))
-            ->when($serviceTypeFilter, fn($query) => $query->where('service_type', 'like', "%$serviceTypeFilter%"))
+            ->when($statusFilter, fn ($query) => $query->where('status', $statusFilter))
+            ->when($referenceFilter, fn ($query) => $query->where('referenceId', 'like', "%$referenceFilter%"))
+            ->when($serviceTypeFilter, fn ($query) => $query->where('service_type', 'like', "%$serviceTypeFilter%"))
             ->orderBy('id', 'desc')
             ->paginate(10);
 
@@ -49,8 +46,6 @@ class TransactionController extends Controller
         // Pass data to the view
         return view('transaction', compact('transactions', 'notifications', 'notifyCount', 'notificationsEnabled'));
     }
-
-
 
     public function reciept(Request $request)
     {

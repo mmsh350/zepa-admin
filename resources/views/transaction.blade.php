@@ -1,14 +1,11 @@
 @extends('layouts.dashboard')
-@section('title', 'KYC Verification')
+@section('title', 'Transactions')
 @section('content')
     <!------App Header ----->
     @include('components.app-header')
     <!-- Start::app-sidebar -->
 
     @include('components.app-sidebar')
-
-
-
 
     <!-- Start::app-content -->
     <div class="main-content app-content">

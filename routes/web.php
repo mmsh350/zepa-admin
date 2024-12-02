@@ -60,7 +60,8 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     //Agency Services
     Route::get('crm', [AgencyController::class, 'showCRM'])->name('crm');
-    Route::post('crm-request', [AgencyController::class, 'crmRequest'])->name('crmRequest');
+    Route::post('/requests/{id}/{type}/update-status', [AgencyController::class, 'updateRequestStatus'])->name('update-request-status');
+    Route::get('/view-request/{id}/{type}/edit', [AgencyController::class, 'showRequests'])->name('view-request');
 
     Route::get('crm2', [AgencyController::class, 'showCRM2'])->name('crm2');
     Route::post('crm-request2', [AgencyController::class, 'crmRequest2'])->name('crmRequest2');
@@ -102,7 +103,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
+        $url = env('API_URL')."{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -133,7 +134,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     // Route::post('/upgrade', [ProfileController::class, 'upgrade'])->name('upgrade');
 
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
@@ -148,7 +148,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/upgrade-list', [ProfileController::class, 'upgradeList'])->name('upgrade-list');
     Route::post('/upgrade', [ProfileController::class, 'approveUpgrade'])->name('upgrade');
     Route::post('/rejectUpgrade', [ProfileController::class, 'rejectUpgrade'])->name('rejectUpgrade');
-
 
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
     Route::post('/buy-airtime', [UtilityController::class, 'buyAirtime'])->name('buyairtime');
@@ -186,4 +185,4 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

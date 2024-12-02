@@ -5,19 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CRM_REQUEST extends Model
+class BVNEnrollment extends Model
 {
     use HasFactory;
 
-    protected $table = 'crm_requests';
-
-    protected $fillable = [
-        'user_id',
-        'tnx_id',
-        'refno',
-        'bms_ticket_no',
-        'ticket_no',
-    ];
+    protected $table = 'bvn_enrollments';
 
     // Define the relationship with User
     public function user()

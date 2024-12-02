@@ -14,7 +14,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class kycController extends Controller
 {
-
     protected $loginUserId;
 
     public function __construct()
@@ -49,13 +48,13 @@ class kycController extends Controller
             // Filter by email, name, or phone number if searchTerm is provided
             ->when($searchTerm, function ($query, $searchTerm) {
                 return $query->where(function ($query) use ($searchTerm) {
-                    $query->where('email', 'like', '%' . $searchTerm . '%')
+                    $query->where('email', 'like', '%'.$searchTerm.'%')
                         // Filter by name (first, middle, or last name)
-                        ->orWhere('first_name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('middle_name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('first_name', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('middle_name', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('last_name', 'like', '%'.$searchTerm.'%')
                         // Filter by phone number
-                        ->orWhere('phone_number', 'like', '%' . $searchTerm . '%');
+                        ->orWhere('phone_number', 'like', '%'.$searchTerm.'%');
                 });
             })->excludeAdmin()
             ->paginate(10, ['*'], 'table1_page');
@@ -80,7 +79,6 @@ class kycController extends Controller
             'notifyCount'
         ));
     }
-
 
     public function kycedUsers(Request $request)
     {
@@ -155,7 +153,7 @@ class kycController extends Controller
                 Mail::to($email)->queue(new kyc_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
                 // Log the error for debugging
-                Log::error('Mail sending failed: ' . $e->getMessage());
+                Log::error('Mail sending failed: '.$e->getMessage());
             }
         }
 

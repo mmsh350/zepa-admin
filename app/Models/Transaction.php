@@ -34,4 +34,19 @@ class Transaction extends Model
     {
         return $this->hasOne(Upgrade::class, 'tnx_id');
     }
+
+    public function crmRequests()
+    {
+        return $this->hasOne(CRM_REQUEST::class, 'tnx_id');
+    }
+
+    public function crmRequests2()
+    {
+        return $this->hasOne(CRM_REQUEST2::class, 'tnx_id');
+    }
+
+    public function bvnEnrollments()
+    {
+        return $this->hasOne(BVNEnrollment::class, 'tnx_id');
+    }
 }

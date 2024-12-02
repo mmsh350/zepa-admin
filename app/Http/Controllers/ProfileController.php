@@ -6,7 +6,6 @@ use App\Mail\AccountUpgradeNotification;
 use App\Mail\OtpMail;
 use App\Mail\PinUpdatedNotification;
 use App\Models\Notification;
-use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\Upgrade;
 use App\Models\User;
@@ -23,7 +22,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class ProfileController extends Controller
 {
-
     protected $loginUserId;
 
     public function __construct()
@@ -50,7 +48,6 @@ class ProfileController extends Controller
 
         // Check if the user has notifications enabled
         $notificationsEnabled = Auth::user()->notification;
-
 
         // Return the view with compact data
         return view('profile.edit', compact(
@@ -132,13 +129,13 @@ class ProfileController extends Controller
         }
 
         // Rate limiting for OTP requests
-        $key = 'otp-request-' . auth()->id();
+        $key = 'otp-request-'.auth()->id();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
 
             $seconds = RateLimiter::availableIn($key);
 
-            return response()->json(['error' => 'Too many OTP requests. Please try again in ' . ceil($seconds / 60) .
+            return response()->json(['error' => 'Too many OTP requests. Please try again in '.ceil($seconds / 60).
                 ' minutes.'], 429);
         }
 
@@ -232,19 +229,18 @@ class ProfileController extends Controller
             ->when($searchTerm, function ($query, $searchTerm) {
                 return $query->where(function ($query) use ($searchTerm) {
                     // Filter by reference number, status, phone number, or user_name directly from the Upgrade table
-                    $query->where('refno', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('status', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('user_name', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('created_at', 'like', '%' . $searchTerm . '%')
+                    $query->where('refno', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('status', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('user_name', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('created_at', 'like', '%'.$searchTerm.'%')
                         ->orWhereHas('user', function ($query) use ($searchTerm) {
-                            $query->where('phone_number', 'like', '%' . $searchTerm . '%');
+                            $query->where('phone_number', 'like', '%'.$searchTerm.'%');
                         });
                 });
             })
             // Order records by status (Pending first) before paginating
             ->orderByRaw("FIELD(status, 'Pending') DESC")
             ->paginate(10, ['*'], 'table1_page');
-
 
         // Check if the user has notifications enabled
         $notificationsEnabled = Auth::user()->notification;
@@ -271,7 +267,7 @@ class ProfileController extends Controller
             $upgrade = Upgrade::where('user_id', $upgradeId)->first();
 
             // If upgrade is not found, return an error
-            if (!$upgrade) {
+            if (! $upgrade) {
                 abort(404, 'Upgrade record not found');
             }
 
@@ -291,7 +287,6 @@ class ProfileController extends Controller
                 $upgrade->user->save();
             }
 
-
             DB::commit();
 
             //send a mail notification
@@ -304,13 +299,11 @@ class ProfileController extends Controller
                 'name' => ucwords(strtolower($accountName)),
             ];
 
-
             try {
                 //Send Mail in response to kyc submitted
                 $send = Mail::to($email)->queue(new AccountUpgradeNotification($mail_data));
             } catch (TransportExceptionInterface $e) {
             }
-
 
             return response()->json(['status' => 200]);
         } catch (\Exception $e) {
@@ -333,7 +326,7 @@ class ProfileController extends Controller
             $upgrade = Upgrade::where('user_id', $upgradeId)->first();
 
             // If upgrade is not found, return an error
-            if (!$upgrade) {
+            if (! $upgrade) {
                 abort(404, 'Upgrade record not found');
             }
 
@@ -353,7 +346,6 @@ class ProfileController extends Controller
             // Commit the transaction
             DB::commit();
 
-
             //send a mail notification
             $email = $request->email;
             $accountName = User::where('id', $upgradeId)->value('first_name', 'email');
@@ -363,7 +355,6 @@ class ProfileController extends Controller
                 'type' => 'Rejected',
                 'name' => ucwords(strtolower($accountName)),
             ];
-
 
             try {
                 //Send Mail in response to kyc submitted
@@ -397,7 +388,7 @@ class ProfileController extends Controller
             $referenceno .= substr($data, (rand() % (strlen($data))), 1);
         }
 
-        $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+        $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
         $payer_email = auth()->user()->email;
         $payer_phone = auth()->user()->phone_number;
 
@@ -408,7 +399,7 @@ class ProfileController extends Controller
             'payer_phone' => $payer_phone,
             'referenceId' => $referenceno,
             'service_type' => 'Upgrade Refund',
-            'service_description' => 'Wallet credited with Upgrade Fee of ₦' . number_format($balance, 2),
+            'service_description' => 'Wallet credited with Upgrade Fee of ₦'.number_format($amount, 2),
             'amount' => $amount,
             'gateway' => 'Wallet',
             'status' => 'Approved',

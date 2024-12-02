@@ -218,7 +218,7 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                 {{ number_format($transactionCount) }}</h4>
+                                                                 0 </h4>
                                                              <p class="text-muted mb-0">Identity</p>
                                                          </div>
 
@@ -243,7 +243,7 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                 {{ number_format($transactionCount) }}</h4>
+                                                                0 </h4>
                                                              <p class="text-muted mb-0">Utility</p>
                                                          </div>
 
@@ -269,7 +269,7 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                 {{ number_format($transactionCount) }}</h4>
+                                                                0 </h4>
                                                              <p class="text-muted mb-0">Agency</p>
                                                          </div>
 
@@ -294,88 +294,13 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                 {{ number_format($transactionCount) }}</h4>
+                                                                0 </h4>
                                                              <p class="text-muted mb-0">Upgardes</p>
                                                          </div>
 
                                                      </div>
                                                  </div>
                                              </div>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-
-                         <div class="col-xl-12">
-                             <div class="row">
-                                 <div class="col-xl-12">
-                                     <div class="card custom-card ">
-                                         <div class="card-header justify-content-between">
-                                             <div class="card-title">
-                                                 Recent Transactions
-                                             </div>
-                                         </div>
-                                         <div class="card-body" style="background:#fafafc;">
-                                             @if (!$transactions->isEmpty())
-                                                 @php
-                                                     $currentPage = $transactions->currentPage(); // Current page number
-                                                     $perPage = $transactions->perPage(); // Number of items per page
-                                                     $serialNumber = ($currentPage - 1) * $perPage + 1; // Starting serial number for current page
-                                                 @endphp
-                                                 <div class="table-responsive">
-                                                     <table class="table text-nowrap"
-                                                         style="background:#fafafc !important">
-                                                         <thead>
-                                                             <tr class="table-primary">
-                                                                 <th width="5%" scope="col">ID</th>
-                                                                 <th scope="col">Date</th>
-                                                                 <th scope="col">Type</th>
-                                                                 <th scope="col">Status</th>
-                                                                 <th scope="col">Description</th>
-                                                                 <th scope="col">Meta Data</th>
-                                                             </tr>
-                                                         </thead>
-                                                         <tbody>
-                                                             @php $i = 1; @endphp
-                                                             @foreach ($transactions as $data)
-                                                                 <tr>
-                                                                     <th scope="row">{{ $serialNumber++ }}</th>
-                                                                     <td>{{ date('F j, Y', strtotime($data->created_at)) }}
-                                                                     </td>
-                                                                     <td>{{ $data->service_type }}</td>
-                                                                     <td>
-                                                                         @if ($data->status == 'Approved')
-                                                                             <span
-                                                                                 class="badge bg-outline-success">{{ $data->status }}</span>
-                                                                         @elseif ($data->status == 'Rejected')
-                                                                             <span
-                                                                                 class="badge bg-outline-danger">{{ $data->status }}</span>
-                                                                         @elseif ($data->status == 'Pending')
-                                                                             <span
-                                                                                 class="badge bg-outline-warning">{{ $data->status }}</span>
-                                                                         @endif
-                                                                     </td>
-                                                                     <td>{{ $data->service_description }}</td>
-                                                                     <td>{{ $data->payer_name }}
-                                                                         ({{ $data->payer_phone }})
-                                                                     </td>
-                                                                 </tr>
-                                                                 @php $i++ @endphp
-                                                             @endforeach
-                                                         </tbody>
-                                                     </table>
-                                                     <!-- Pagination Links -->
-                                                     <div class="d-flex justify-content-center">
-                                                         {{ $transactions->links('vendor.pagination.bootstrap-4') }}
-                                                     </div>
-                                                 </div>
-                                             @else
-                                                 <center><img width="65%"
-                                                         src="{{ asset('assets/images/no-transaction.gif') }}"
-                                                         alt=""></center>
-                                                 <p class="text-center fw-semibold  fs-15"> No Available Transaction </p>
-                                             @endif
                                          </div>
                                      </div>
                                  </div>

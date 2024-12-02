@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    // Show Dashboard
     public function show(Request $request)
     {
         // Login User Id
@@ -42,9 +41,6 @@ class DashboardController extends Controller
 
         // Return Wallet Balance
         $bonusBalance = Bonus::getTotalBonusBalance();
-
-        // Get Transactions
-        $transactions = Transaction::latest()->paginate(10);
 
         $transactionCount = Transaction::count();
 
@@ -75,7 +71,6 @@ class DashboardController extends Controller
         // Return View with Data
         return view('dashboard', compact(
             'newsItems',
-            'transactions',
             'transactionCount',
             'userCount',
             'walletBalance',
