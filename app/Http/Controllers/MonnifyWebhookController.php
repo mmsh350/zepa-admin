@@ -36,6 +36,7 @@ class MonnifyWebhookController extends Controller
 
             if ($payload['eventData']['paymentStatus'] == 'PAID') {
                 $transactionReference = $payload['eventData']['transactionReference'];
+                //to be updated
                 $amountPaid = $payload['eventData']['amountPaid'];
 
                 $accountNumber = $payload['eventData']['destinationAccountInformation']['accountNumber'];
@@ -54,7 +55,7 @@ class MonnifyWebhookController extends Controller
                         'payer_name' => $accountName,
                         'referenceId' => $transactionReference,
                         'service_type' => 'Wallet Topup',
-                        'service_description' => 'Your wallet have been credited with ₦'.number_format($amountPaid, 2),
+                        'service_description' => 'Your wallet have been credited with ₦' . number_format($amountPaid, 2),
                         'amount' => $amountPaid,
                         'gateway' => 'Monnify',
                         'status' => 'Approved',
@@ -93,11 +94,9 @@ class MonnifyWebhookController extends Controller
                     Notification::create([
                         'user_id' => $getUserId,
                         'message_title' => 'Top Up',
-                        'messages' => 'Wallet TopUp of ₦'.number_format($amountPaid, 2).' Was Successful',
+                        'messages' => 'Wallet TopUp of ₦' . number_format($amountPaid, 2) . ' Was Successful',
                     ]);
-
                 }
-
             }
         }
 
