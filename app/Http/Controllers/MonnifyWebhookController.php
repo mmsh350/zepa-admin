@@ -71,6 +71,11 @@ class MonnifyWebhookController extends Controller
             : null;
         $email = $eventData['customer']['email'];
 
+        // Apply deduction logic
+        if ($amountPaid >= 10000) {
+            $amountPaid -= 50; // Deduct 50 Naira
+        }
+
         $transaction = Transaction::where('referenceId', $transactionReference)->first();
 
         if ($transaction) {
@@ -96,6 +101,11 @@ class MonnifyWebhookController extends Controller
         $bankName = $eventData['destinationAccountInformation']['bankName'];
         $accountNumber = $eventData['destinationAccountInformation']['accountNumber'];
         $accountName = $eventData['paymentSourceInformation'][0]['accountName'];
+
+        // Apply deduction logic
+        if ($amountPaid >= 10000) {
+            $amountPaid -= 50; // Deduct 50 Naira
+        }
 
         $response = Virtual_Accounts::select('user_id')->where('accountNo', $accountNumber)->first();
         if ($response) {
