@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Action;
 
 use App\Http\Controllers\Controller;
 use App\Models\BVNEnrollment;
+use App\Models\BVNModification;
 use App\Models\CRM_REQUEST;
 use App\Models\CRM_REQUEST2;
 use App\Models\Notification;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AgencyController extends Controller
 {
@@ -139,6 +141,10 @@ class AgencyController extends Controller
                 $requests = BVNEnrollment::with(['user', 'transactions'])->findOrFail($request_id);
                 $request_type = 'bvn-enrollment';
                 break;
+             case 'bvn-modification':
+                $requests = BVNModification::with(['user', 'transactions'])->findOrFail($request_id);
+                $request_type = 'bvn-modification';
+                break;
             default:
                 $requests = CRM_REQUEST::with(['user', 'transactions'])->findOrFail($request_id);
                 $request_type = 'crm';
@@ -180,6 +186,11 @@ class AgencyController extends Controller
                 $requestDetails = BVNEnrollment::findOrFail($id);
                 $route = 'bvn-enrollment';
                 $status  == 'resolved' ? $status = 'successful': $request->status;
+                break;
+
+            case 'bvn-modification':
+                $requestDetails = BVNModification::findOrFail($id);
+                $route = 'bvn-modification';
                 break;
 
             default:
@@ -405,7 +416,141 @@ class AgencyController extends Controller
         ));
     }
 
-    public function showBVN(Request $request) {}
+    public function showBVN(Request $request) {
+          $userId = $this->loginUserId;
 
-    public function bvnModRequest(Request $request) {}
+        // Notification Data
+        $notifications = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Notification Count
+        $notifyCount = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->count();
+
+        // CRM Request Data
+        $pending = BVNModification::whereIn('status', ['pending', 'processing'])
+            ->count();
+
+        $resolved = BVNModification::where('status', 'resolved')
+            ->count();
+
+        $rejected = BVNModification::where('status', 'rejected')
+            ->count();
+
+
+        $total_request = BVNModification::count();
+
+        $query = BVNModification::with(['user', 'transactions']); // Load related data
+
+        if ($request->filled('search')) { // Check if search input is provided
+            $searchTerm = $request->search;
+
+             $query->where(function ($q) use ($searchTerm) {
+                $q->where('refno', 'like', "%{$searchTerm}%")
+                    ->orWhere('enrollment_center', 'like', "%{$searchTerm}%")
+                    ->orWhere('status', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('user', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('first_name', 'like', "%{$searchTerm}%")
+                            ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                    });
+            });
+
+        }
+
+        // Check if date_from and date_to are provided and filter accordingly
+        if ($dateFrom = request('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom); // Adjust 'created_at' to your date field
+        }
+
+        if ($dateTo = request('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo); // Adjust 'created_at' to your date field
+        }
+
+        $crm = $query
+            ->orderByRaw("
+                CASE
+                    WHEN status = 'pending' THEN 1
+                    WHEN status = 'processing' THEN 2
+                    ELSE 3
+                END
+            ") // Prioritize 'pending' first, then 'processing', and others last
+            ->orderByDesc('id') // Sort by latest record within the same priority
+            ->paginate(10);
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        $request_type = 'bvn-modification';
+
+        return view('bvn-mod', compact(
+            'notifications',
+            'pending',
+            'resolved',
+            'rejected',
+            'total_request',
+            'crm',
+            'notifyCount',
+            'notificationsEnabled', 'request_type',
+        ));
+    }
+
+public function viewDocument($id)
+{
+    // Fetch the request using the ID
+    $request = BVNModification::findOrFail($id);
+
+    // Get the document path (this should be relative to your external storage URL)
+    $documentPath = $request->docs; // Example: 'Documents/1730123905_Daniel2.pdf'
+
+    // Build the full public URL pointing to the external storage location
+    $externalUrl = 'https://zepasolutions.com/storage/' . $documentPath;
+
+
+
+    // Check if the file exists externally
+    // You might want to check if the URL is reachable by performing a HTTP request to check its status
+    $headers = get_headers($externalUrl);
+
+    // If the file is not found (404 status)
+    if (strpos($headers[0], '404') !== false) {
+        return redirect()->back()->with('error', 'Document not found.');
+    }
+
+    // Redirect to the external URL for viewing
+    return redirect($externalUrl);
+}
+
+    public function downloadDocument($id)
+{
+    // Fetch the request using the ID
+    $request = BVNModification::findOrFail($id);
+
+    // Get the document path (this should be relative to your storage or external URL)
+    $documentPath = $request->docs; // Example: 'Documents/1730123905_Daniel2.pdf'
+
+
+    $storagePath = "";
+
+    // If the file exists locally, allow downloading
+    if (file_exists($storagePath)) {
+        return response()->download($storagePath, basename($documentPath));
+    }
+
+    // If the document is stored externally (in your case, on an external URL), use the URL
+    $externalUrl = 'https://zepasolutions.com/storage/' . $documentPath;
+
+    // Check if the file exists on the external URL (using a simple HTTP request check)
+    $headers = get_headers($externalUrl);
+    if (strpos($headers[0], '404') !== false) {
+        return redirect()->back()->with('error', 'Document not found.');
+    }
+
+    // Redirect the user to the external URL for downloading
+    return redirect($externalUrl);
+}
+
 }

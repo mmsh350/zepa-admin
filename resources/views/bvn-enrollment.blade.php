@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'ZEPA Solutions - BVN Enrollment')
+@section('title', 'BVN Enrollment')
 @section('content')
 
    <!------App Header ----->

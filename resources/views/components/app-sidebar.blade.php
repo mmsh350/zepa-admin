@@ -174,13 +174,13 @@
                     class="slide has-sub {{ request()->is('bvn-mod') ||
                     request()->is('crm') ||
                     request()->is('account-upgrade') ||
-                    request()->is('crm2') ||
+                    request()->is('crm2') ||  request()->is('bvn-modification') ||
                     request()->is('bvn-enrollment')||request()->is('view-request*')
                         ? 'open'
                         : '' }}">
                     <a href="javascript:void(0);"
                         class="side-menu__item  {{ request()->is('bvn-mod') ||
-                        request()->is('crm') ||
+                        request()->is('crm') ||request()->is('bvn-modification') ||
                         request()->is('account-upgrade') ||
                         request()->is('crm2') ||
                         request()->is('bvn-enrollment')||request()->is('view-request*')
@@ -193,7 +193,7 @@
                     <ul class="slide-menu child1">
                         <li class="slide">
                             <a href="{{ route('bvn-modification') }}"
-                                class="side-menu__item {{ request()->is('bvn-mod') ? 'active' : '' }}">BVN
+                                class="side-menu__item {{ request()->is('bvn-modification') || request()->is('view-request*') ? 'active' : '' }}">BVN
                                 Modification </a>
                         </li>
                         <li class="slide">
@@ -207,17 +207,19 @@
                                 using Phone and DOB
                             </a>
                         </li>
-                        <li class="slide">
-                            <a href="{{ route('account-upgrade') }}"
-                                class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
-                                Upgrade
-                            </a>
-                        </li>
+
 
                         <li class="slide">
                             <a href="{{ route('bvn-enrollment') }}"
                                 class="side-menu__item {{ request()->is('bvn-enrollment') || request()->is('view-request*')? 'active' : '' }}">BVN
                                 Enrollement
+                            </a>
+                        </li>
+
+                           <li class="slide">
+                            <a href="{{ route('account-upgrade') }}"
+                                class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
+                                Upgrade
                             </a>
                         </li>
                     </ul>

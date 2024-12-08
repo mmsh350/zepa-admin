@@ -49,4 +49,10 @@ class Transaction extends Model
     {
         return $this->hasOne(BVNEnrollment::class, 'tnx_id');
     }
+
+
+     public function bvnModifications()
+    {
+        return $this->hasOne(BVNModification::class, 'tnx_id');
+    }
 }

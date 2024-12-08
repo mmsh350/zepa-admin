@@ -14,15 +14,38 @@
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="d-flex align-items-center justify-content-between my-3">
-            <h4 class="mb-0">Request Details</h4>
+            <h4 class="mb-0">Request Details </h4>
+            <small class="pull-right fw-bold"> (Last Modified - {{$requests->updated_at}})</small>
         </div>
+                                        @if (session('success'))
+                                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                   {!! session('success') !!}
+                                                </div>
+                                          @endif
 
+                                             @if (session('error'))
+                                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                {{ session('error') }}
+                                             </div>
+                                             @endif
+
+
+                                         @if ($errors->any())
+                                          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                             <ul>
+                                                @foreach ($errors->all() as $error)
+                                                      <li>{{ $error }}</li>
+                                                @endforeach
+                                             </ul>
+                                          </div>
+                                    @endif
         <!-- Request Details Card -->
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">Details</h5>
+
                     </div>
                     <div class="card-body">
                         <!-- Grid Layout for User and Transaction Details -->
@@ -108,7 +131,7 @@
                             </div>
                         </div>
 
-                         @else
+                         @elseif($request_type == 'bvn-enrollment')
                           <div class="mb-4">
                             <div class="p-3 border rounded bg-light">
                                 <h6 class="text-uppercase  mb-3"><span class="text-muted">Request Information </span>- <strong>BVN ENROLLMENT</strong></h6>
@@ -143,7 +166,62 @@
                                 <p><strong>Comments:</strong><br/> {!! $requests->reason !!}</p>
                             </div>
                         </div>
+
+                        @else
+                        <div class="mb-4">
+                            <div class="p-3 border rounded bg-light">
+    <h6 class="text-uppercase mb-3">
+        <span class="text-muted">Request Information</span> -
+        <strong>BVN Modifications</strong>
+    </h6>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
+            <p><strong>Enrollment Center:</strong> {{ $requests->enrollment_center }}</p>
+            <p><strong>Type:</strong> {{ $requests->type }}</p>
+            <p><strong>BVN:</strong> {{ $requests->bvn_no }}</p>
+            <p><strong>Modification:</strong> {{ $requests->data_to_modify }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Date:</strong> {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
+            <p><strong>Status:</strong>
+                @if($requests->status == 'pending')
+                    <span class="badge bg-warning">Pending</span>
+                @elseif($requests->status == 'resolved')
+                    <span class="badge bg-success">Resolved</span>
+                @elseif($requests->status == 'processing')
+                    <span class="badge bg-primary">Processing</span>
+                @else
+                    <span class="badge bg-danger">Rejected</span>
+                @endif
+            </p>
+        </div>
+    </div>
+    <p><strong>Comments:</strong><br> {!! $requests->reason !!}</p>
+    <hr>
+    <div class="mt-3">
+        <h6 class="text-uppercase">Documents</h6>
+         <p>
+    <!-- View Document Button with Themify Icon -->
+    <a href="{{ route('document.view', $requests->id) }}" class="btn btn-info btn-sm" target="_blank">
+        <i class="ti ti-eye me-2"></i> View Document
+    </a>
+
+    <!-- Download Document Button with Themify Icon -->
+    <a href="{{ route('document.download', $requests->id) }}" class="btn btn-success btn-sm">
+        <i class="ti ti-download me-2"></i> Download Document
+    </a>
+</p>
+
+
+    </div>
+</div>
+
+                        </div>
                          @endif
+
+
+
 
                         <!-- Comment and Action Section -->
                         <div class="p-3 border rounded bg-light">
@@ -303,5 +381,5 @@
     <script src="{{asset('assets/libs/quill/quill.min.js')}}"></script>
 
     <!-- Internal Quill JS -->
-    <script src="{{asset('assets/js/quill-editor.js')}}"></script>
+
 @endsection

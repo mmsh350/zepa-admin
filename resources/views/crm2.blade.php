@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'ZEPA Solutions - CRM With Phone No & DOB')
+@section('title', 'CRM With Phone No & DOB')
 @section('content')
 
    <!------App Header ----->
