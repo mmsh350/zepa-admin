@@ -19,7 +19,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::post('/monnify/webhook', [MonnifyWebhookController::class, 'handleWebhook']);
 
 Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
@@ -83,10 +82,8 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('getUserdetails', [WalletController::class, 'getUserdetails']);
 
     Route::get('account-upgrade', [AgencyController::class, 'showUpgrade'])->name('account-upgrade');
-    Route::post('upgrade-account', [AgencyController::class, 'upgradeAccount'])->name('upgrade-account');
 
-    Route::get('/document/view/{id}', [AgencyController::class, 'viewDocument'])->name('document.view');
-Route::get('/document/download/{id}', [AgencyController::class, 'downloadDocument'])->name('document.download');
+    Route::get('/document/view/{id}/{type}', [AgencyController::class, 'viewDocument'])->name('document.view');
 
     Route::get('/wema-bank', function () {
         $path = 'docs/wema.pdf';
@@ -106,7 +103,7 @@ Route::get('/document/download/{id}', [AgencyController::class, 'downloadDocumen
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL')."{$phoneNumber}&text={$message}";
+        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -188,4 +185,4 @@ Route::get('/document/download/{id}', [AgencyController::class, 'downloadDocumen
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

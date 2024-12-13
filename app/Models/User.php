@@ -87,9 +87,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(BVNEnrollment::class, 'user_id');
     }
 
-     public function bvnModifications()
+    public function bvnModifications()
     {
         return $this->hasMany(BVNModification::class, 'user_id');
+    }
+
+    public function acctUpgrade()
+    {
+        return $this->hasMany(ACC_Upgrade::class, 'user_id');
     }
 
     public function getFullNameAttribute()

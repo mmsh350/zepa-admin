@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'BVN Modifications')
+@section('title', 'Account Upgrade')
 @section('content')
 
     <!------App Header ----->
@@ -12,7 +12,7 @@
             <!-- Start::page-header -->
             <div class="d-md-flex d-block align-items-center justify-content-between my-2 page-header-breadcrumb">
                 <div>
-                    <p class="fw-semibold fs-18 mb-0">BVN Modifications</p>
+                    <p class="fw-semibold fs-18 mb-0">Account Upgrade</p>
                     <span class="fs-semibold text-muted">
                         <p>Modify the status of the request from this section. You can view, update, and process requests.
                         </p>
@@ -151,7 +151,7 @@
                                                 </div>
                                             @endif
                                             <div class="col-12  mb-3">
-                                                <form action="{{ route('bvn-modification') }}" method="GET">
+                                                <form action="{{ route('account-upgrade') }}" method="GET">
                                                     <div class="row g-2">
                                                         <div class="col-md-3">
                                                             <input type="text" name="search" class="form-control"
@@ -193,10 +193,9 @@
                                                                     ID</th>
                                                                 <th scope="col" class="cust2 text-light">Reference No.
                                                                 </th>
-                                                                <th class="cust2 text-light">BVN No.</th>
+
                                                                 <th class="cust2 text-light">Agent Name</th>
-                                                                <th scope="col" class="cust2 text-light">Enrollment
-                                                                    Center</th>
+
                                                                 <th scope="col" class="cust2 text-light">Date</th>
                                                                 <th scope="col" class="text-center cust2 text-light">
                                                                     Status</th>
@@ -213,9 +212,9 @@
                                                                 <tr>
                                                                     <th scope="row">{{ $serialNumber++ }}</th>
                                                                     <td>{{ Str::upper($data->refno) }}</td>
-                                                                    <td>{{ Str::upper($data->bvn_no) }}</td>
+
                                                                     <td>{{ $data->user->full_name }}</td>
-                                                                    <td>{{ $data->enrollment_center }}</td>
+
                                                                     <td>{{ \Carbon\Carbon::parse($data->created_at)->format('d/m/Y') }}
                                                                     </td>
                                                                     <td class="text-center">
