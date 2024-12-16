@@ -301,7 +301,7 @@ class ProfileController extends Controller
 
             try {
                 //Send Mail in response to kyc submitted
-                $send = Mail::to($email)->queue(new AccountUpgradeNotification($mail_data));
+                $send = Mail::to($email)->send(new AccountUpgradeNotification($mail_data));
             } catch (TransportExceptionInterface $e) {
             }
 
@@ -358,7 +358,7 @@ class ProfileController extends Controller
 
             try {
                 //Send Mail in response to kyc submitted
-                $send = Mail::to($email)->queue(new AccountUpgradeNotification($mail_data));
+                $send = Mail::to($email)->send(new AccountUpgradeNotification($mail_data));
             } catch (TransportExceptionInterface $e) {
             }
 

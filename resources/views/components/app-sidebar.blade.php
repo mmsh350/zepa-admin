@@ -218,7 +218,7 @@
 
                            <li class="slide">
                             <a href="{{ route('account-upgrade') }}"
-                                class="side-menu__item {{ request()->is('account-upgrade') ? 'active' : '' }}">Account
+                                class="side-menu__item {{ request()->is('account-upgrade')  || request()->is('view-request*')? 'active' : '' }}">Account
                                 Upgrade
                             </a>
                         </li>

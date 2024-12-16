@@ -118,7 +118,7 @@ class kycController extends Controller
             ];
             try {
                 //Send Mail in response to kyc submitted
-                $send = Mail::to($email)->queue(new kyc_notify_mail($mail_data));
+                $send = Mail::to($email)->send(new kyc_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
             }
         }
@@ -150,7 +150,7 @@ class kycController extends Controller
 
             try {
                 //Send Mail in response to kyc submitted
-                Mail::to($email)->queue(new kyc_notify_mail($mail_data));
+                Mail::to($email)->send(new kyc_notify_mail($mail_data));
             } catch (TransportExceptionInterface $e) {
                 // Log the error for debugging
                 Log::error('Mail sending failed: '.$e->getMessage());

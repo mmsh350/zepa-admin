@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Action;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bonus;
+use App\Models\Dashboard;
 use App\Models\News;
 use App\Models\Notification;
 use App\Models\Services;
@@ -20,40 +21,32 @@ class DashboardController extends Controller
 {
     public function show(Request $request)
     {
-        // Login User Id
+
         $loginUserId = Auth::id();
 
-        // Fetch Notifications
         $notifications = Notification::where('user_id', $loginUserId)
             ->where('status', 'unread')
             ->latest()
             ->take(3)
             ->get();
 
-        // Notification Count
+
         $notifyCount = $notifications->count();
 
-        // Create Virtual Account and Wallet Account
         $this->createAccounts($loginUserId);
 
-        // Return Wallet Balance
         $walletBalance = Wallet::getTotalWalletBalance();
 
-        // Return Wallet Balance
         $bonusBalance = Bonus::getTotalBonusBalance();
 
         $transactionCount = Transaction::count();
 
-        // Get Total User Count
         $userCount = User::count();
 
-        // Get Admin Count
         $adminCount = User::where('role', 'admin')->count();
 
-        // Get Agent Count
         $agentCount = User::where('role', 'agent')->count();
 
-        // Get General User Count
         $generalUserCount = User::where('role', 'user')->count();
 
         //Get Virtual Accounts
@@ -61,6 +54,13 @@ class DashboardController extends Controller
 
         //Get Virtual Accounts
         $servicesCount = Services::count();
+
+        //Utility count
+         $dashboard = new Dashboard();
+
+         $totalAgencyCounts = $dashboard->getAgencyCounts();
+
+         $totalIdentityCounts = $dashboard->getIdentityCounts();
 
         // Fetch News
         $newsItems = News::all();
@@ -82,7 +82,9 @@ class DashboardController extends Controller
             'generalUserCount',
             'virtualAccountCount',
             'servicesCount',
-            'notificationsEnabled'
+            'notificationsEnabled',
+            'totalAgencyCounts',
+            'totalIdentityCounts'
         ));
     }
 
@@ -95,4 +97,5 @@ class DashboardController extends Controller
         $repObj2 = new WalletRepository;
         $repObj2->createWalletAccount($userId);
     }
+
 }

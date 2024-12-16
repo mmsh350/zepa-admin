@@ -84,7 +84,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-2 col-lg-2 col-md-2">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -107,7 +107,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -179,7 +179,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -204,7 +204,7 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-2 col-lg-2 col-md-2 d-none d-md-block">
+                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
@@ -218,7 +218,7 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                 0 </h4>
+                                                                 {{ $totalIdentityCounts }} </h4>
                                                              <p class="text-muted mb-0">Identity</p>
                                                          </div>
 
@@ -229,30 +229,7 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
-                                     <div class="card custom-card overflow-hidden">
-                                         <div class="card-body">
-                                             <div class="d-flex align-items-top justify-content-between">
-                                                 <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-secondary-transparent">
-                                                         <i class="ri-task-line fs-16"></i>
-                                                     </span>
-                                                 </div>
-                                                 <div class="flex-fill ms-3">
-                                                     <div
-                                                         class="d-flex align-items-center justify-content-between flex-wrap">
-                                                         <div>
-                                                             <h4 class="fw-semibold mt-1">
-                                                                0 </h4>
-                                                             <p class="text-muted mb-0">Utility</p>
-                                                         </div>
 
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
 
                                  <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
                                      <div class="card custom-card overflow-hidden">
@@ -269,7 +246,7 @@
                                                          class="d-flex align-items-center justify-content-between flex-wrap">
                                                          <div>
                                                              <h4 class="fw-semibold mt-1">
-                                                                0 </h4>
+                                                                 {{ $totalAgencyCounts }}</h4>
                                                              <p class="text-muted mb-0">Agency</p>
                                                          </div>
 
@@ -280,30 +257,7 @@
                                      </div>
                                  </div>
 
-                                 <div class="col-xxl-4 col-lg-4 col-md-4 d-none d-md-block">
-                                     <div class="card custom-card overflow-hidden">
-                                         <div class="card-body">
-                                             <div class="d-flex align-items-top justify-content-between">
-                                                 <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-danger-transparent">
-                                                         <i class="ri-refresh-line fs-16"></i>
-                                                     </span>
-                                                 </div>
-                                                 <div class="flex-fill ms-3">
-                                                     <div
-                                                         class="d-flex align-items-center justify-content-between flex-wrap">
-                                                         <div>
-                                                             <h4 class="fw-semibold mt-1">
-                                                                0 </h4>
-                                                             <p class="text-muted mb-0">Upgardes</p>
-                                                         </div>
 
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
                              </div>
                          </div>
                      </div>
