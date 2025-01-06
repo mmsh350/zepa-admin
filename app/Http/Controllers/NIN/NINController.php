@@ -120,7 +120,8 @@ class NINController extends Controller
                 $response = curl_exec($ch);
                 curl_close($ch);
 
-                $data = $this->formatAndDecodeJson($response);
+                $data = json_decode($response, true);
+                //$data = $this->formatAndDecodeJson($response);
 
                 if ($data['success'] == true && $data['data']['status'] == 'found') {
 

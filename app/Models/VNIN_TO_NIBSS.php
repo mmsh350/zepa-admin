@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ACC_Upgrade extends Model
+class VNIN_TO_NIBSS extends Model
 {
-    use HasFactory;
-
-    protected $table = 'account_upgrades';
+     protected $table = 'vnin_to_nibss';
 
     public function user()
     {

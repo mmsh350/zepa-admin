@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Action\AgencyController;
-use App\Http\Controllers\Action\BankVerificationController;
+use App\Http\Controllers\Action\BankController;
 use App\Http\Controllers\Action\BVNController;
 use App\Http\Controllers\Action\DashboardController;
 use App\Http\Controllers\Action\kycController;
@@ -10,7 +10,6 @@ use App\Http\Controllers\Action\ServicesController;
 use App\Http\Controllers\Action\TransactionController;
 use App\Http\Controllers\Action\UtilityController;
 use App\Http\Controllers\Action\WalletController;
-use App\Http\Controllers\MonnifyWebhookController;
 use App\Http\Controllers\NIN\NINController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
 
 Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
@@ -44,10 +42,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/nin-demographic', [NINController::class, 'show'])->name('nin-demo');
 
     //Bank Verify
-    Route::get('/bank', [BankVerificationController::class, 'show'])->name('bank');
-    Route::post('/retrieveBank', [BankVerificationController::class, 'retrieveBank'])->name('retrieve-bank');
+    Route::get('/bank', [BankController::class, 'show'])->name('bank');
+    Route::post('/retrieveBank', [BankController::class, 'retrieveBank'])->name('retrieve-bank');
 
-    Route::get('/fetchBanks', [BankVerificationController::class, 'fetchBanks']);
+    Route::get('/fetchBanks', [BankController::class, 'fetchBanks']);
 
     //Clain & Transfer
     Route::get('claim', [WalletController::class, 'claim'])->name('claim');
@@ -74,8 +72,13 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('crm2', [AgencyController::class, 'showCRM2'])->name('crm2');
     Route::post('crm-request2', [AgencyController::class, 'crmRequest2'])->name('crmRequest2');
 
-    Route::get('bvn-modification', [AgencyController::class, 'showBVN'])->name('bvn-modification');
-    Route::post('modify-bvn', [AgencyController::class, 'bvnModRequest'])->name('modify-bvn');
+    // Route::get('bvn-modification', [AgencyController::class, 'showBVN'])->name('bvn-modification');
+    // Route::post('modify-bvn', [AgencyController::class, 'bvnModRequest'])->name('modify-bvn');
+
+    Route::get('nin-services', [AgencyController::class, 'ninServices'])->name('nin-services');
+
+    Route::get('vnin-to-nibss', [AgencyController::class, 'vninToNibss'])->name('vnin-to-nibss');
+
 
     Route::get('bvn-enrollment', [AgencyController::class, 'showEnrollment'])->name('bvn-enrollment');
     Route::post('request-enrollment', [AgencyController::class, 'bvnEnrollmentRequest'])->name('enroll');
@@ -103,7 +106,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
+        $url = env('API_URL')."{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -179,10 +182,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 
     //AIRTIME & PRICE UPDATE QUERY move to admin
-    Route::get('/bankcodes', [BankVerificationController::class, 'genBankCodes']);
+    Route::get('/bankcodes', [BankController::class, 'getBankAccount']);
     Route::get('/variation/{type}', [UtilityController::class, 'getVariation']);
     //ONLY IF UPDATE IS NECCESSARY
 
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dashboard extends Model
 {
-
     /**
      * Get counts of CRMRequest and CRMRequest2.
      *
@@ -21,7 +20,7 @@ class Dashboard extends Model
             BVNEnrollment::count() +
             ACC_Upgrade::count();
     }
-     
+
     public function getIdentityCounts()
     {
         return Verification::count();

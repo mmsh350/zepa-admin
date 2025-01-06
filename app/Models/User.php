@@ -97,6 +97,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ACC_Upgrade::class, 'user_id');
     }
 
+    public function ninService()
+    {
+        return $this->hasMany(NIN_SERVICE::class, 'user_id');
+    }
+
+    public function vninToNibss()
+    {
+        return $this->hasMany(VNIN_TO_NIBSS::class, 'user_id');
+    }
+
     public function getFullNameAttribute()
     {
         return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");

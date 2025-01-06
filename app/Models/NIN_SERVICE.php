@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ACC_Upgrade extends Model
+class NIN_SERVICE extends Model
 {
-    use HasFactory;
 
-    protected $table = 'account_upgrades';
+    protected $table = 'nin_requests';
 
     public function user()
     {

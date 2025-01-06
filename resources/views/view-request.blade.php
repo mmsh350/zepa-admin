@@ -222,7 +222,7 @@
                                 </div>
 
                             </div>
-                        @else
+                       @elseif($request_type == 'upgrade')
                             <div class="mb-4">
                                 <div class="p-3 border rounded bg-light">
                                     <h6 class="text-uppercase mb-3">
@@ -258,6 +258,75 @@
                                         </p>
                                     </div>
                                     <p><strong>Comments:</strong><br> {!! $requests->reason !!}</p>
+                                    <hr>
+                                </div>
+
+                            </div>
+
+                        @elseif($request_type == 'nin-services')
+
+                        <div class="mb-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <h6 class="text-uppercase mb-3">
+                                        <span class="text-muted">Request Information</span> -
+                                        <strong>NIN SERVICE</strong>
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
+                                            <p><strong>Tracking / NIN Number.:</strong> {{ strtoupper($requests->trackingId) }}</p>
+                                            <p><strong>Service Type.:</strong> {{ strtoupper($requests->service_type) }}</p>
+                                            <p><strong>Date:</strong>
+                                                {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
+                                            <p><strong>Status:</strong>
+                                                @if ($requests->status == 'pending')
+                                                    <span class="badge bg-warning">Pending</span>
+                                                @elseif($requests->status == 'resolved')
+                                                    <span class="badge bg-success">Resolved</span>
+                                                @elseif($requests->status == 'processing')
+                                                    <span class="badge bg-primary">Processing</span>
+                                                @else
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-3"><strong>Comments:</strong><br> {!! $requests->reason !!}</p>
+                                    <hr>
+                                </div>
+
+                            </div>
+                        @else
+                            <div class="mb-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <h6 class="text-uppercase mb-3">
+                                        <span class="text-muted">Request Information</span> -
+                                        <strong>VNIN SERVICE</strong>
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
+                                            <p><strong>Request ID.:</strong> {{ strtoupper($requests->requestId) }}</p>
+                                            <p><strong>NIN Number.:</strong> {{ strtoupper($requests->nin_number) }}</p>
+                                            <p><strong>BVN Number.:</strong> {{ strtoupper($requests->bvn_number) }}</p>
+                                            <p><strong>Date:</strong>
+                                                {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
+                                            <p><strong>Status:</strong>
+                                                @if ($requests->status == 'pending')
+                                                    <span class="badge bg-warning">Pending</span>
+                                                @elseif($requests->status == 'resolved')
+                                                    <span class="badge bg-success">Resolved</span>
+                                                @elseif($requests->status == 'processing')
+                                                    <span class="badge bg-primary">Processing</span>
+                                                @else
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-3"><strong>Comments:</strong><br> {!! $requests->reason !!}</p>
                                     <hr>
                                 </div>
 

@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class BVNModification extends Model
 {
-     protected $table = 'bvn_modifications';
+    protected $table = 'bvn_modifications';
 
-      // Define the relationship with User
+    // Define the relationship with User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -4,6 +4,7 @@
 @section('title', 'Transaction Receipt')
 
 @section('content')
+
 <div class="receipt-container" id="receipt">
     <div class="receipt-header">
         <i class="fas fa-check-circle"></i>
@@ -52,8 +53,15 @@
         <button class="btn btn-primary" onclick="printReceipt()">
             <i class="fas fa-print"></i> Print
         </button>
+        <button class="btn btn-secondary" id="shareButton">
+            <i class="fas fa-share"></i> Share
+        </button>
+         <button id="downloadButton" class="btn btn-success">
+        <i class="fas fa-download"></i> Download
+    </button>
     </div>
 </div>
+
 @endsection
 
 

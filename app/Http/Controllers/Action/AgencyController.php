@@ -8,9 +8,11 @@ use App\Models\BVNEnrollment;
 use App\Models\BVNModification;
 use App\Models\CRM_REQUEST;
 use App\Models\CRM_REQUEST2;
+use App\Models\NIN_SERVICE;
 use App\Models\Notification;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\VNIN_TO_NIBSS;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -112,7 +114,7 @@ class AgencyController extends Controller
     }
 
     // Display all CRM requests for a user
-    public function showRequests($request_id, $type,  $requests = null)
+    public function showRequests($request_id, $type, $requests = null)
     {
 
         $userId = $this->loginUserId;
@@ -149,6 +151,17 @@ class AgencyController extends Controller
                 $requests = ACC_Upgrade::with(['user', 'transactions'])->findOrFail($request_id);
                 $request_type = 'upgrade';
                 break;
+
+            case 'nin-services':
+                $requests = NIN_SERVICE::with(['user', 'transactions'])->findOrFail($request_id);
+                $request_type = 'nin-services';
+                break;
+
+            case 'vnin-to-nibss':
+                $requests = VNIN_TO_NIBSS::with(['user', 'transactions'])->findOrFail($request_id);
+                $request_type = 'vnin-to-nibss';
+                break;
+
             default:
                 $requests = CRM_REQUEST::with(['user', 'transactions'])->findOrFail($request_id);
                 $request_type = 'crm';
@@ -191,7 +204,7 @@ class AgencyController extends Controller
             case 'bvn-enrollment':
                 $requestDetails = BVNEnrollment::findOrFail($id);
                 $route = 'bvn-enrollment';
-                $status  == 'resolved' ? $status = 'successful' : $request->status;
+                $status == 'resolved' ? $status = 'successful' : $request->status;
                 break;
 
             case 'bvn-modification':
@@ -203,6 +216,17 @@ class AgencyController extends Controller
                 $requestDetails = ACC_Upgrade::findOrFail($id);
                 $route = 'account-upgrade';
                 break;
+
+            case 'nin-services':
+                $requestDetails = NIN_SERVICE::findOrFail($id);
+                $route = 'nin-services';
+                break;
+
+            case 'vnin-to-nibss':
+                $requestDetails = VNIN_TO_NIBSS::findOrFail($id);
+                $route = 'vnin-to-nibss';
+                break;
+
             default:
                 $requestDetails = CRM_REQUEST::findOrFail($id);
                 break;
@@ -231,7 +255,7 @@ class AgencyController extends Controller
                 $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
             }
 
-            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -241,8 +265,8 @@ class AgencyController extends Controller
                 'payer_email' => $payer_email,
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
-                'service_type' => 'CRM Refund',
-                'service_description' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
+                'service_type' => 'Agency Refund',
+                'service_description' => 'Wallet credited with a Request fee of '.number_format($refundAmount, 2),
                 'amount' => $refundAmount,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -251,8 +275,8 @@ class AgencyController extends Controller
             //In App Notification
             Notification::create([
                 'user_id' => $requestDetails->user_id,
-                'message_title' => 'CRM Refund',
-                'messages' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
+                'message_title' => 'Agency Refund',
+                'messages' => 'Wallet credited with a Request fee of '.number_format($refundAmount, 2),
             ]);
         }
 
@@ -452,7 +476,6 @@ class AgencyController extends Controller
         $rejected = BVNModification::where('status', 'rejected')
             ->count();
 
-
         $total_request = BVNModification::count();
 
         $query = BVNModification::with(['user', 'transactions']); // Load related data
@@ -536,7 +559,6 @@ class AgencyController extends Controller
         $rejected = ACC_Upgrade::where('status', 'rejected')
             ->count();
 
-
         $total_request = ACC_Upgrade::count();
 
         $query = ACC_Upgrade::with(['user', 'transactions']); // Load related data
@@ -591,9 +613,173 @@ class AgencyController extends Controller
             'request_type',
         ));
     }
+    public function ninServices(Request $request)
+    {
+        $userId = $this->loginUserId;
+
+        // Notification Data
+        $notifications = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Notification Count
+        $notifyCount = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->count();
+
+        // CRM Request Data
+        $pending = NIN_SERVICE::whereIn('status', ['pending', 'processing'])
+            ->count();
+
+        $resolved = NIN_SERVICE::where('status', 'resolved')
+            ->count();
+
+        $rejected = NIN_SERVICE::where('status', 'rejected')
+            ->count();
+
+        $total_request = NIN_SERVICE::count();
+
+        $query = NIN_SERVICE::with(['user', 'transactions']); // Load related data
+
+        if ($request->filled('search')) { // Check if search input is provided
+            $searchTerm = $request->search;
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('refno', 'like', "%{$searchTerm}%")
+                    ->orWhere('service_type', 'like', "%{$searchTerm}%")
+                    ->orWhere('status', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('user', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('first_name', 'like', "%{$searchTerm}%")
+                            ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                    });
+            });
+        }
+
+
+        if ($dateFrom = request('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = request('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $nin = $query
+            ->orderByRaw("
+                CASE
+                    WHEN status = 'pending' THEN 1
+                    WHEN status = 'processing' THEN 2
+                    ELSE 3
+                END
+            ") // Prioritize 'pending' first, then 'processing', and others last
+            ->orderByDesc('id') // Sort by latest record within the same priority
+            ->paginate(10);
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        $request_type = 'nin-services';
+
+        return view('nin-services', compact(
+            'notifications',
+            'pending',
+            'resolved',
+            'rejected',
+            'total_request',
+            'nin',
+            'notifyCount',
+            'notificationsEnabled',
+            'request_type',
+        ));
+    }
+
+    public function vninToNibss(Request $request)
+    {
+        $userId = $this->loginUserId;
+
+        // Notification Data
+        $notifications = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Notification Count
+        $notifyCount = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->count();
+
+        // CRM Request Data
+        $pending = VNIN_TO_NIBSS::whereIn('status', ['pending', 'processing'])
+            ->count();
+
+        $resolved = VNIN_TO_NIBSS::where('status', 'resolved')
+            ->count();
+
+        $rejected = VNIN_TO_NIBSS::where('status', 'rejected')
+            ->count();
+
+        $total_request = VNIN_TO_NIBSS::count();
+
+        $query = VNIN_TO_NIBSS::with(['user', 'transactions']); // Load related data
+
+        if ($request->filled('search')) {
+
+            // Check if search input is provided
+            $searchTerm = $request->search;
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('refno', 'like', "%{$searchTerm}%")
+                    ->orWhere('bvn_number', 'like', "%{$searchTerm}%")
+                    ->orWhere('status', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('user', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('first_name', 'like', "%{$searchTerm}%")
+                            ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                    });
+            });
+        }
+
+
+        if ($dateFrom = request('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = request('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $vnin = $query
+            ->orderByRaw("
+                CASE
+                    WHEN status = 'pending' THEN 1
+                    WHEN status = 'processing' THEN 2
+                    ELSE 3
+                END
+            ") // Prioritize 'pending' first, then 'processing', and others last
+            ->orderByDesc('id') // Sort by latest record within the same priority
+            ->paginate(10);
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        $request_type = 'vnin-to-nibss';
+
+        return view('vnin-to-nibss', compact(
+            'notifications',
+            'pending',
+            'resolved',
+            'rejected',
+            'total_request',
+            'vnin',
+            'notifyCount',
+            'notificationsEnabled',
+            'request_type',
+        ));
+    }
     public function viewDocument($id, $type)
     {
-
 
         // Determine the request type and fetch the corresponding record
         $request = $type === 'bvn-mod'
@@ -604,9 +790,7 @@ class AgencyController extends Controller
         $documentPath = $request->docs; // Example: 'Documents/1730123905_Daniel2.pdf'
 
         // Build the full public URL pointing to the external storage location
-        $externalUrl = 'https://zepasolutions.com/storage/' . $documentPath;
-
-
+        $externalUrl = 'https://zepasolutions.com/storage/'.$documentPath;
 
         // Check if the file exists externally
         // You might want to check if the URL is reachable by performing a HTTP request to check its status

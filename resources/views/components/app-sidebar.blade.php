@@ -175,15 +175,22 @@
                     request()->is('crm') ||
                     request()->is('account-upgrade') ||
                     request()->is('crm2') ||  request()->is('bvn-modification') ||
-                    request()->is('bvn-enrollment')||request()->is('view-request*')
+                    request()->is('bvn-enrollment')||
+                    request()->is('nin-services')
+                    ||request()->is('vnin-to-nibss')
+                    ||request()->is('view-request*')
                         ? 'open'
                         : '' }}">
                     <a href="javascript:void(0);"
                         class="side-menu__item  {{ request()->is('bvn-mod') ||
-                        request()->is('crm') ||request()->is('bvn-modification') ||
+                        request()->is('crm') || request()->is('bvn-modification') ||
                         request()->is('account-upgrade') ||
                         request()->is('crm2') ||
-                        request()->is('bvn-enrollment')||request()->is('view-request*')
+                        request()->is('bvn-enrollment') ||
+                         request()->is('nin-services')
+                         ||  request()->is('vnin-to-nibss')
+                         ||
+                         request()->is('view-request*')
                             ? 'active'
                             : '' }}">
                         <i class="bx bx-briefcase side-menu__icon"></i>
@@ -191,6 +198,15 @@
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
                     <ul class="slide-menu child1">
+                         <li class="slide">
+                            <a href="{{ route('nin-services') }}"
+                                class="side-menu__item {{ request()->is('nin-services') || request()->is('view-request*') ? 'active' : '' }}">NIN Services </a>
+                        </li>
+                          <li class="slide">
+                            <a href="{{ route('vnin-to-nibss') }}"
+                                class="side-menu__item {{ request()->is('vnin-to-nibss') || request()->is('view-request*') ? 'active' : '' }}">VNIN to NIBSS
+                            </a>
+                        </li>
                         <li class="slide">
                             <a href="{{ route('bvn-modification') }}"
                                 class="side-menu__item {{ request()->is('bvn-modification') || request()->is('view-request*') ? 'active' : '' }}">BVN

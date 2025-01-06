@@ -108,6 +108,7 @@
                                                                 <th scope="col">Amount</th>
                                                                 <th scope="col" class="text-center">Status</th>
                                                                 <th scope="col" class="text-center">Receipt</th>
+                                                                <th scope="col">Payer</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -116,13 +117,13 @@
                                                                 <tr>
                                                                     <td scope="row">{{ $serialNumber++ }}</td>
                                                                     <td>
-                                                                        <a
+                                                                        <a target="_blank"
                                                                             href="{{ route('reciept', $data->referenceId) }}">
                                                                             {{ strtoupper($data->referenceId) }}
                                                                         </a>
                                                                     </td>
                                                                     <td>{{ $data->service_type }}</td>
-                                                                    <td>{{ $data->service_description }}</td>
+                                                                    <td>{{ $data->service_description}}</td>
                                                                     <td>&#8358;{{ $data->amount }}</td>
                                                                     <td class="text-center">
                                                                         @if ($data->status == 'Approved')
@@ -137,10 +138,11 @@
                                                                         @endif
                                                                     </td>
                                                                     <td class="text-center">
-                                                                        <a href="{{ route('reciept', $data->referenceId) }}"
+                                                                        <a target="_blank" href="{{ route('reciept', $data->referenceId) }}"
                                                                             class="btn btn-outline-primary btn-sm">
                                                                             <i class="bi bi-download"></i> Download </a>
                                                                     </td>
+                                                                    <td>({{$data->payer_name}})</td>
                                                                 </tr>
                                                                 @php $i++ @endphp
                                                             @endforeach

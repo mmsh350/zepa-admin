@@ -50,7 +50,6 @@ class Transaction extends Model
         return $this->hasOne(BVNEnrollment::class, 'tnx_id');
     }
 
-
     public function bvnModifications()
     {
         return $this->hasOne(BVNModification::class, 'tnx_id');
@@ -59,5 +58,15 @@ class Transaction extends Model
     public function acctUpgrades()
     {
         return $this->hasOne(ACC_Upgrade::class, 'tnx_id');
+    }
+
+    public function ninService()
+    {
+        return $this->hasOne(NIN_SERVICE::class, 'tnx_id');
+    }
+
+    public function vninToNibss()
+    {
+        return $this->hasOne(VNIN_TO_NIBSS::class, 'tnx_id');
     }
 }
