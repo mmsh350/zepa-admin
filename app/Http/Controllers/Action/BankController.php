@@ -6,10 +6,6 @@ use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
-use App\Models\Services;
-use App\Models\Transaction;
-use App\Models\Wallet;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,113 +21,7 @@ class BankController extends Controller
         $this->loginUserId = Auth::id();
     }
 
-    //Show BVN Page
-    public function show(Request $request) {}
-
-    public function retrieveBank(Request $request)
-    {
-
-        $request->validate([
-            'accountNumber' => 'required|numeric|digits:10',
-            'bankcode' => ['required', 'string'],
-        ]);
-
-        //Bank Services Fee
-        $ServicesFee = 0;
-        $ServicesFee = Services::where('service_code', '104')->first();
-        $ServicesFee = $ServicesFee->amount;
-
-        //Check if wallet is funded
-        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
-        $wallet_balance = $wallet->balance;
-        $balance = 0;
-
-        if ($wallet_balance < $ServicesFee) {
-            return response()->json([
-                'message' => 'Error',
-                'errors' => ['Wallet Error' => 'Sorry Wallet Not Sufficient for Transaction !'],
-            ], 422);
-        } else {
-
-            try {
-
-                $client = new \GuzzleHttp\Client;
-
-                $response = $client->request('POST', 'https://api.prembly.com/identitypass/verification/bank_account/advance', [
-                    'form_params' => [
-                        'number' => $request->accountNumber,
-                        'bank_code' => $request->bankcode,
-                    ],
-                    'headers' => [
-                        'accept' => 'application/json',
-                        'app-id' => env('appId'),
-                        'content-type' => 'application/x-www-form-urlencoded',
-                        'x-api-key' => env('xApiKey'),
-                    ],
-                ]);
-
-                $data = json_decode($response->getBody()->getContents(), true);
-
-                if ($data['status'] == true) {
-
-                    $balance = $wallet->balance - $ServicesFee;
-
-                    $affected = Wallet::where('user_id', $this->loginUserId)
-                        ->update(['balance' => $balance]);
-
-                    $referenceno = '';
-                    srand((float) microtime() * 1000000);
-                    $gen = '123456123456789071234567890890';
-                    $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-                    $ddesc = '';
-                    for ($i = 0; $i < 12; $i++) {
-                        $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
-                    }
-
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
-                    $payer_email = auth()->user()->email;
-                    $payer_phone = auth()->user()->phone_number;
-
-                    Transaction::create([
-                        'user_id' => $this->loginUserId,
-                        'payer_name' => $payer_name,
-                        'payer_email' => $payer_email,
-                        'payer_phone' => $payer_phone,
-                        'referenceId' => $referenceno,
-                        'service_type' => 'Bank Account Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServicesFee, 2),
-                        'amount' => $ServicesFee,
-                        'gateway' => 'Wallet',
-                        'status' => 'Approved',
-                    ]);
-
-                    //Return Json response
-                    return json_encode(['status' => $data['status'], 'data' => $data]);
-
-                } elseif ($data['status'] == false) {
-                    $errMsg = '';
-                    if (isset($data['message'])) {
-                        $errMsg = $data['message'];
-                    }
-
-                    return response()->json([
-                        'status' => 'Request failed',
-                        'errors' => ['Request failed please try again later. '.$errMsg],
-                    ], 422);
-
-                }
-
-            } catch (RequestException $e) {
-                return response()->json([
-                    'status' => 'Request failed',
-                    'errors' => ['Request failed cannot connect to server, please try again later. '],
-                ], 422);
-            }
-
-        }
-    }
-
-    public function genBankCodes()
+    public function pullBankCodes()
     {
         try {
             $requestTime = (int) (microtime(true) * 1000);
@@ -232,14 +122,17 @@ class BankController extends Controller
     public function fetchBanks()
     {
         // Fetch bank codes from the database
-        $banks = DB::table('bank_codes')->select(['name', 'code'])->get();
+        $banks = DB::table('banks')->select(['bank_code', 'bank_name', 'bank_url'])->get();
 
         // Return the bank codes as a JSON response
         return response()->json($banks);
     }
 
-    public function getBankAccount()
+    public function verifyBankAccount(Request $request)
     {
+        // Retrieve the query parameters
+        $accountNumber = $request->query('acctno');
+        $bankCode = $request->query('bankCode');
 
         try {
             $requestTime = (int) (microtime(true) * 1000);
@@ -250,8 +143,8 @@ class BankController extends Controller
                 'requestTime' => $requestTime,
                 'version' => env('VERSION'),
                 'nonceStr' => $noncestr,
-                'bankCode' => '100004',
-                'bankAccNo' => '023408103440497',
+                'bankCode' => $bankCode,
+                'bankAccNo' => $accountNumber,
             ];
 
             $signature = signatureHelper::generate_signature($data, config('keys.private'));
@@ -289,7 +182,8 @@ class BankController extends Controller
 
             // Decode the JSON response to an associative array
             $responseData = json_decode($response, true);
-            echo $response;
+
+            return $response;
 
         } catch (\Exception $e) {
             Log::error('Error in get Account Details: '.$e->getMessage());

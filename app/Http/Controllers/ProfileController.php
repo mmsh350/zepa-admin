@@ -177,7 +177,7 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         // Create or update the user's PIN
-        $user->pin = bcrypt($request->pin); // Store hashed PIN
+        $user->pin = bcrypt($request->pin);
         $user->save();
 
         // Clear the session variables

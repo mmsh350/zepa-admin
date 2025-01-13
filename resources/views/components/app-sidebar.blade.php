@@ -18,11 +18,6 @@
                     <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
                 </svg>
             </div>
-            @php
-                $title = 'Settings';
-                $menu = 'Settings';
-            @endphp
-
 
             <ul class="main-menu">
                 <!-- Start::slide -->
@@ -34,9 +29,9 @@
                     </a>
                 </li>
                 <li
-                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer')? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim')|| request()->is('transfer') ? 'active' : '' }}">
                         <i class="bx bx-wallet side-menu__icon"></i> <box-icon type='solid' name='wallet'></box-icon>
                         <span class="side-menu__label">Wallet</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -56,6 +51,10 @@
                             <a href="{{ route('claim') }}"
                                 class="side-menu__item {{ request()->is('claim') ? 'active' : '' }}">Claim Bonus
                             </a>
+                        </li>
+                         <li class="slide">
+                            <a href="{{ route('transfer') }}"
+                                class="side-menu__item {{ request()->is('transfer') ? 'active' : '' }}">Transfer</a>
                         </li>
                     </ul>
                 </li>

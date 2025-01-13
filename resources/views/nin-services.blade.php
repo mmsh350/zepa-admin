@@ -194,7 +194,7 @@
                                                                 <th scope="col" class="cust2 text-light">Reference No.
                                                                 </th>
                                                                  <th class="cust2 text-light">Agent Name</th>
-                                                                <th class="cust2 text-light">Service Type</th>
+                                                                <th class="cust2 text-light">Tracking / NIN No.</th>
                                                                 <th scope="col" class="cust2 text-light">Date</th>
                                                                 <th scope="col" class="text-center cust2 text-light">
                                                                     Status</th>
@@ -211,7 +211,7 @@
                                                                     <th scope="row">{{ $serialNumber++ }}</th>
                                                                     <td>{{ Str::upper($data->refno) }}</td>
                                                                     <td>{{ $data->user->full_name }}</td>
-                                                                    <td>{{ Str::upper($data->service_type) }}</td>
+                                                                    <td>{{ Str::upper($data->trackingId) }}</td>
                                                                     <td>{{ \Carbon\Carbon::parse($data->created_at)->format('d/m/Y') }}
                                                                     </td>
                                                                     <td class="text-center">

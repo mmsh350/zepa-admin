@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class NIN_SERVICE extends Model
 {
-
     protected $table = 'nin_requests';
 
     public function user()

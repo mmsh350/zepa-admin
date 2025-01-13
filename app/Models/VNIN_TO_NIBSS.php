@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VNIN_TO_NIBSS extends Model
 {
-     protected $table = 'vnin_to_nibss';
+    protected $table = 'vnin_to_nibss';
 
     public function user()
     {

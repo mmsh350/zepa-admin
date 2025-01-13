@@ -26,9 +26,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     //Dashboard
     Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
 
-    //Transaction
-    Route::get('/transactions', [DashboardController::class, 'show'])->name('transactions');
-
     //BVN Verify
     Route::get('/bvn', [BVNController::class, 'show'])->name('bvn');
     Route::post('/retrieveBVN', [BVNController::class, 'retrieveBVN'])->name('retrieve-bvn');
@@ -41,19 +38,13 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/nin-vnin', [NINController::class, 'show'])->name('nin-vnin');
     Route::get('/nin-demographic', [NINController::class, 'show'])->name('nin-demo');
 
-    //Bank Verify
-    Route::get('/bank', [BankController::class, 'show'])->name('bank');
-    Route::post('/retrieveBank', [BankController::class, 'retrieveBank'])->name('retrieve-bank');
-
-    Route::get('/fetchBanks', [BankController::class, 'fetchBanks']);
-
     //Clain & Transfer
     Route::get('claim', [WalletController::class, 'claim'])->name('claim');
     Route::get('claim-bonus/{id}', [WalletController::class, 'claimBonus'])->name('claim-bonus');
     Route::get('p2p', [WalletController::class, 'p2p'])->name('p2p');
     Route::get('getReciever', [WalletController::class, 'getReciever']);
     Route::get('funding', [WalletController::class, 'funding'])->name('funding');
-    Route::post('transfer-funds', [WalletController::class, 'transfer'])->name('transfer-funds');
+    Route::post('transfer-funds', [WalletController::class, 'transferP2p'])->name('transfer-funds');
 
     //Agency Services
     Route::get('crm', [AgencyController::class, 'showCRM'])->name('crm');
@@ -72,13 +63,9 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('crm2', [AgencyController::class, 'showCRM2'])->name('crm2');
     Route::post('crm-request2', [AgencyController::class, 'crmRequest2'])->name('crmRequest2');
 
-    // Route::get('bvn-modification', [AgencyController::class, 'showBVN'])->name('bvn-modification');
-    // Route::post('modify-bvn', [AgencyController::class, 'bvnModRequest'])->name('modify-bvn');
-
     Route::get('nin-services', [AgencyController::class, 'ninServices'])->name('nin-services');
 
     Route::get('vnin-to-nibss', [AgencyController::class, 'vninToNibss'])->name('vnin-to-nibss');
-
 
     Route::get('bvn-enrollment', [AgencyController::class, 'showEnrollment'])->name('bvn-enrollment');
     Route::post('request-enrollment', [AgencyController::class, 'bvnEnrollmentRequest'])->name('enroll');
@@ -135,10 +122,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/notification', [ProfileController::class, 'update'])->name('notification.update');
     Route::post('/notification/update', [ProfileController::class, 'notify'])->name('notification.update');
 
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Route::post('/upgrade', [ProfileController::class, 'upgrade'])->name('upgrade');
-
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
     Route::post('/buy-airtime', [UtilityController::class, 'buyAirtime'])->name('buyairtime');
 
@@ -182,9 +165,16 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 
     //AIRTIME & PRICE UPDATE QUERY move to admin
-    Route::get('/bankcodes', [BankController::class, 'getBankAccount']);
+    Route::get('/bankcodes', [BankController::class, 'pullBankCodes']);
     Route::get('/variation/{type}', [UtilityController::class, 'getVariation']);
     //ONLY IF UPDATE IS NECCESSARY
+
+    //Payout
+    Route::get('/transfer', [WalletController::class, 'showpayout'])->name('transfer');
+    Route::get('/verifyBankAccount', [BankController::class, 'verifyBankAccount'])->name('verifyBankAccount');
+    Route::get('/fetchBanks', [BankController::class, 'fetchBanks']);
+    Route::post('/payout', [WalletController::class, 'payout'])->name('payout');
+    Route::post('/validatePin', [TransactionController::class, 'validatePin'])->name('pin.validate');
 
 });
 

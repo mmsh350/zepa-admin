@@ -613,6 +613,7 @@ class AgencyController extends Controller
             'request_type',
         ));
     }
+
     public function ninServices(Request $request)
     {
         $userId = $this->loginUserId;
@@ -648,7 +649,7 @@ class AgencyController extends Controller
 
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('refno', 'like', "%{$searchTerm}%")
-                    ->orWhere('service_type', 'like', "%{$searchTerm}%")
+                    ->orWhere('trackingId', 'like', "%{$searchTerm}%")
                     ->orWhere('status', 'like', "%{$searchTerm}%")
                     ->orWhereHas('user', function ($subQuery) use ($searchTerm) {
                         $subQuery->where('first_name', 'like', "%{$searchTerm}%")
@@ -656,7 +657,6 @@ class AgencyController extends Controller
                     });
             });
         }
-
 
         if ($dateFrom = request('date_from')) {
             $query->whereDate('created_at', '>=', $dateFrom);
@@ -741,7 +741,6 @@ class AgencyController extends Controller
             });
         }
 
-
         if ($dateFrom = request('date_from')) {
             $query->whereDate('created_at', '>=', $dateFrom);
         }
@@ -778,6 +777,7 @@ class AgencyController extends Controller
             'request_type',
         ));
     }
+
     public function viewDocument($id, $type)
     {
 

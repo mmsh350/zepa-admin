@@ -164,10 +164,11 @@ class DashboardController extends Controller
                 $updated = WalletAccount::where('id', 1)
                     ->update(['available_balance' => $availableBalance]);
 
-            if (! $updated) {
-                throw new Exception('Failed to update wallet account balance.');
-            }
-            return  $availableBalance;
+                if (! $updated) {
+                    throw new Exception('Failed to update wallet account balance.');
+                }
+
+                return $availableBalance;
 
             } else {
                 throw new Exception('API Error: '.($responseData['responseMessage'] ?? 'Unknown error.'));
@@ -246,7 +247,8 @@ class DashboardController extends Controller
             if (! $updated) {
                 throw new Exception('Failed to update wallet account balance.');
             }
-             return $availableBalance;
+
+            return $availableBalance;
         } catch (Exception $e) {
             // Log the error
             Log::error('Error in getPalmPayBalance: '.$e->getMessage());
