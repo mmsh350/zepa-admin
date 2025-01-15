@@ -14,19 +14,23 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\VNIN_TO_NIBSS;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AgencyController extends Controller
 {
-    protected $loginUserId;
 
-    // Constructor to initialize the property
-    public function __construct()
+    protected $loginUserId;
+    protected $walletService;
+
+    public function __construct(WalletService $walletService)
     {
         $this->loginUserId = Auth::id();
+        $this->walletService = $walletService;
     }
+
 
     // Show CRM
     public function showCRM(Request $request)
@@ -235,6 +239,25 @@ class AgencyController extends Controller
         $requestDetails->status = $status;
         $requestDetails->reason = $request->comment;
 
+        $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+        $payer_email = auth()->user()->email;
+        $payer_phone = auth()->user()->phone_number;
+
+        $referenceno = '';
+        srand((float) microtime() * 1000000);
+        $gen = '123456123456789071234567890890';
+        $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
+        $ddesc = '';
+        for ($i = 0; $i < 12; $i++) {
+            $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+        }
+
+
+        if ($request->status === 'resolved') {
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
+        }
+
         if ($request->status === 'rejected') {
 
             $refundAmount = $request->refundAmount;
@@ -246,18 +269,6 @@ class AgencyController extends Controller
             Wallet::where('user_id', $requestDetails->user_id)
                 ->update(['balance' => $balance]);
 
-            $referenceno = '';
-            srand((float) microtime() * 1000000);
-            $gen = '123456123456789071234567890890';
-            $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
-            $ddesc = '';
-            for ($i = 0; $i < 12; $i++) {
-                $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
-            }
-
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
-            $payer_email = auth()->user()->email;
-            $payer_phone = auth()->user()->phone_number;
 
             Transaction::create([
                 'user_id' => $requestDetails->user_id,
@@ -266,7 +277,7 @@ class AgencyController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Agency Refund',
-                'service_description' => 'Wallet credited with a Request fee of '.number_format($refundAmount, 2),
+                'service_description' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
                 'amount' => $refundAmount,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
@@ -276,7 +287,7 @@ class AgencyController extends Controller
             Notification::create([
                 'user_id' => $requestDetails->user_id,
                 'message_title' => 'Agency Refund',
-                'messages' => 'Wallet credited with a Request fee of '.number_format($refundAmount, 2),
+                'messages' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
             ]);
         }
 
@@ -790,7 +801,7 @@ class AgencyController extends Controller
         $documentPath = $request->docs; // Example: 'Documents/1730123905_Daniel2.pdf'
 
         // Build the full public URL pointing to the external storage location
-        $externalUrl = 'https://zepasolutions.com/storage/'.$documentPath;
+        $externalUrl = 'https://zepasolutions.com/storage/' . $documentPath;
 
         // Check if the file exists externally
         // You might want to check if the URL is reachable by performing a HTTP request to check its status

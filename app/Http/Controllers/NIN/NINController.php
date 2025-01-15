@@ -9,19 +9,23 @@ use App\Models\Transaction;
 use App\Models\Verification;
 use App\Models\Wallet;
 use App\Repositories\NIN_PDF_Repository;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class NINController extends Controller
 {
-    protected $loginUserId;
 
-    // Constructor to initialize the property
-    public function __construct()
+    protected $loginUserId;
+    protected $walletService;
+
+    public function __construct(WalletService $walletService)
     {
         $this->loginUserId = Auth::id();
+        $this->walletService = $walletService;
     }
+
 
     //Show NIN Page
     public function show(Request $request)
@@ -98,7 +102,7 @@ class NINController extends Controller
                 }
 
                 $referenceNumber = Str::upper(Str::random(10));
-                $endpoint = env('ENDPOINT').$endpoint_part;
+                $endpoint = env('ENDPOINT') . $endpoint_part;
                 $postdata = [
                     'value' => $request->input('nin'), //NIN Mondatory
                     'ref' => $referenceNumber,
@@ -114,7 +118,7 @@ class NINController extends Controller
                     CURLOPT_HTTPHEADER,
                     [
                         'Content-Type: application/json',
-                        'Authorization: '.env('ACCESS_TOKEN').'',
+                        'Authorization: ' . env('ACCESS_TOKEN') . '',
                     ]
                 );
                 $response = curl_exec($ch);
@@ -141,7 +145,7 @@ class NINController extends Controller
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -152,7 +156,7 @@ class NINController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'NIN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                         'amount' => $ServiceFee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -170,7 +174,7 @@ class NINController extends Controller
                     for ($i = 0; $i < 12; $i++) {
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -181,7 +185,7 @@ class NINController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'NIN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format(
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
                             $ServiceFee,
                             2
                         ),
@@ -192,7 +196,7 @@ class NINController extends Controller
 
                     return response()->json([
                         'status' => 'Not Found',
-                        'errors' => ['Succesfully Verified with '.$data['data']['reason']],
+                        'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
                     ], 422);
                 }
             } catch (\Exception $e) {
@@ -236,7 +240,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -247,11 +251,13 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Regular NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
 
             //Generate PDF
             $repObj = new NIN_PDF_Repository;
@@ -294,7 +300,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -305,11 +311,13 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Standard NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
 
             //Generate PDF
             $repObj = new NIN_PDF_Repository;
@@ -351,7 +359,7 @@ class NINController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -362,11 +370,13 @@ class NINController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Premium NIN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($ServiceFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
                 'amount' => $ServiceFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
 
             //Generate PDF
             $repObj = new NIN_PDF_Repository;
@@ -393,7 +403,7 @@ class NINController extends Controller
         $formattedString = str_replace('\"', '"', $formattedString);
 
         // Trim leading and trailing whitespace
-        $formattedString = trim($formattedString).'}';
+        $formattedString = trim($formattedString) . '}';
 
         //return $formattedString;
 

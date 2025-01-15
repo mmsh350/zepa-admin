@@ -8,18 +8,22 @@ use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\Verification;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BVNController extends Controller
 {
-    protected $loginUserId;
 
-    // Constructor to initialize the property
-    public function __construct()
+
+    protected $loginUserId;
+    protected $walletService;
+
+    public function __construct(WalletService $walletService)
     {
         $this->loginUserId = Auth::id();
+        $this->walletService = $walletService;
     }
 
     // Show BVN Page
@@ -93,7 +97,7 @@ class BVNController extends Controller
                 ];
 
                 $endpoint_part = '/bvn2/verify';
-                $endpoint = env('ENDPOINT').$endpoint_part;
+                $endpoint = env('ENDPOINT') . $endpoint_part;
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $endpoint);
                 curl_setopt($ch, CURLOPT_POST, 1);
@@ -104,7 +108,7 @@ class BVNController extends Controller
                     CURLOPT_HTTPHEADER,
                     [
                         'Content-Type: application/json',
-                        'Authorization: '.env('ACCESS_TOKEN').'',
+                        'Authorization: ' . env('ACCESS_TOKEN') . '',
                     ]
                 );
                 $response = curl_exec($ch);
@@ -130,7 +134,7 @@ class BVNController extends Controller
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -141,7 +145,7 @@ class BVNController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'BVN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
                         'amount' => $BVNFee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -158,7 +162,7 @@ class BVNController extends Controller
                     for ($i = 0; $i < 12; $i++) {
                         $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
                     }
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -169,7 +173,7 @@ class BVNController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $referenceno,
                         'service_type' => 'NIN Verification',
-                        'service_description' => 'Wallet debitted with a service fee of ₦'.number_format(
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
                             $BVNFee,
                             2
                         ),
@@ -180,7 +184,7 @@ class BVNController extends Controller
 
                     return response()->json([
                         'status' => 'Not Found',
-                        'errors' => ['Succesfully Verified with '.$data['data']['reason']],
+                        'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
                     ], 422);
                 }
             } catch (\Exception $e) {
@@ -224,7 +228,7 @@ class BVNController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -235,11 +239,13 @@ class BVNController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Premium BVN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
                 'amount' => $BVNFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
 
             if (Verification::where('idno', $bvnno)->exists()) {
 
@@ -293,7 +299,7 @@ class BVNController extends Controller
                 $referenceno .= substr($data, (rand() % (strlen($data))), 1);
             }
 
-            $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
             $payer_email = auth()->user()->email;
             $payer_phone = auth()->user()->phone_number;
 
@@ -304,11 +310,13 @@ class BVNController extends Controller
                 'payer_phone' => $payer_phone,
                 'referenceId' => $referenceno,
                 'service_type' => 'Standard BVN Slip',
-                'service_description' => 'Wallet debitted with a service fee of ₦'.number_format($BVNFee, 2),
+                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($BVNFee, 2),
                 'amount' => $BVNFee,
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
+
+            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "slip_download");
 
             if (Verification::where('idno', $bvnno)->exists()) {
 
@@ -371,7 +379,7 @@ class BVNController extends Controller
         $formattedString = str_replace('\"', '"', $formattedString);
 
         // Trim leading and trailing whitespace
-        $formattedString = trim($formattedString).'}';
+        $formattedString = trim($formattedString) . '}';
 
         //return $formattedString;
 
