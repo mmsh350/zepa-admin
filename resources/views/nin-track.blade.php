@@ -7,11 +7,9 @@
     <!-- Start::app-sidebar -->
 
     @include('components.app-sidebar')
-
     <!-- Start::app-content -->
     <div class="main-content app-content">
         <div class="container-fluid">
-
             <!-- End::page-header -->
             <!-- Start::row-1 -->
             <div class="row mt-4">
@@ -23,7 +21,8 @@
                                     <div class="card custom-card">
                                         <div class="card-header  justify-content-between">
                                             <div class="card-title">
-                                                <i class="bx bx-fingerprint side-menu__icon"></i> Verify NIN Using Phone No.
+                                                <i class="bx bx-fingerprint side-menu__icon"></i> Verify NIN Using Tracking
+                                                No.
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -56,10 +55,10 @@
                                                             <div class="col-md-12 mx-auto">
                                                             </div>
                                                             <div class="col-md-12 ">
-                                                                <p class="mb-2 text-muted">Verify NIN Phone No.</p>
-                                                                <input type="text" id="nin" name="phone"
+                                                                <p class="mb-2 text-muted">Verify Tracking Number</p>
+                                                                <input type="text" id="nin" name="trackingId"
                                                                     value="" class="form-control text-center"
-                                                                    maxlength="11" required />
+                                                                    maxlength="15" required />
                                                             </div>
                                                             <div class="col-md-12 mx-auto">
                                                             </div>
@@ -107,8 +106,7 @@
                                                     Standard NIN Slip (&#x20A6;{{ $standard_nin_fee->amount }})</a>
                                                 <a href="#" id="premiumSlip" type="button"
                                                     class="btn btn-secondary btn-wave"><i class="bi bi-download"></i>&nbsp;
-                                                    Premium NIN Slip
-                                                    (&#x20A6;{{ $premium_nin_fee->amount }})</a>
+                                                    Premium NIN Slip (&#x20A6;{{ $premium_nin_fee->amount }})</a>
                                             </div>
                                         </div>
                                     </div>
@@ -123,6 +121,7 @@
     </div>
 
 @endsection
+
 @section('page-js')
     <script src="{{ asset('assets/js/nin.js') }}"></script>
 @endsection
