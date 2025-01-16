@@ -42,8 +42,13 @@ class WalletService
                 // Increment the wallet balance by the service fee
                 $newBalance = $wallet->balance + $serviceFee;
 
+                $newDeposit = $wallet->deposit + $serviceFee;
                 // Update the wallet balance
-                $wallet->update(['balance' => $newBalance]);
+
+                $wallet->update([
+                    'balance' => $newBalance,
+                    'deposit' => $newDeposit,
+                ]);
 
                 // Step 2: Record the transaction in the transactions table
                 Transaction::create([

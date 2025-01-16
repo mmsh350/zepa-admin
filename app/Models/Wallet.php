@@ -12,7 +12,7 @@ class Wallet extends Model
     protected $fillable = [
         'user_id',
         'balance',
-        'deposite',
+        'deposit',
     ];
 
     public static function getTotalWalletBalance()
