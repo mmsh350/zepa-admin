@@ -29,9 +29,9 @@
                     </a>
                 </li>
                 <li
-                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer')? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim')|| request()->is('transfer') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('funding') || request()->is('p2p') || request()->is('claim') || request()->is('transfer') ? 'active' : '' }}">
                         <i class="bx bx-wallet side-menu__icon"></i> <box-icon type='solid' name='wallet'></box-icon>
                         <span class="side-menu__label">Wallet</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -52,7 +52,7 @@
                                 class="side-menu__item {{ request()->is('claim') ? 'active' : '' }}">Claim Bonus
                             </a>
                         </li>
-                         <li class="slide">
+                        <li class="slide">
                             <a href="{{ route('transfer') }}"
                                 class="side-menu__item {{ request()->is('transfer') ? 'active' : '' }}">Transfer</a>
                         </li>
@@ -61,18 +61,18 @@
                 <!-- End::slide -->
                 <!-- Start::slide -->
                 <li
-                    class="slide has-sub {{ request()->is('nin') || request()->is('nin-phone') || request()->is('bvn') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('nin') || request()->is('nin-phone') || request()->is('bvn') || request()->is('nin-track') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item  {{ request()->is('nin') || request()->is('nin-phone') || request()->is('bvn') ? 'active' : '' }}">
+                        class="side-menu__item  {{ request()->is('nin') || request()->is('nin-phone') || request()->is('bvn') || request()->is('nin-track') ? 'active' : '' }}">
                         <i class="bx bx-fingerprint side-menu__icon"></i>
                         <span class="side-menu__label">Identity</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
                     <ul class="slide-menu child1 ">
                         <li
-                            class="slide has-sub  {{ request()->is('nin') || request()->is('nin-phone') ? 'open' : '' }}">
+                            class="slide has-sub  {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') ? 'open' : '' }}">
                             <a href="javascript:void(0);"
-                                class="side-menu__item {{ request()->is('nin') || request()->is('nin-phone') ? 'active' : '' }}">
+                                class="side-menu__item {{ request()->is('nin') || request()->is('nin-phone') || request()->is('nin-track') ? 'active' : '' }}">
                                 NIN
                                 Verification <i class="fe fe-chevron-right side-menu__angle"></i></a>
                             <ul class="slide-menu child2">
@@ -85,6 +85,12 @@
                                     <a href="{{ route('nin-phone') }}"
                                         class="side-menu__item {{ request()->is('nin-phone') ? 'active' : '' }}">Verify
                                         NIN using Phone No
+                                    </a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{{ route('nin-track') }}"
+                                        class="side-menu__item {{ request()->is('nin-track') ? 'active' : '' }}">Verify
+                                        NIN using Tracking No
                                     </a>
                                 </li>
                                 <!--   <li class="slide">
@@ -173,23 +179,24 @@
                     class="slide has-sub {{ request()->is('bvn-mod') ||
                     request()->is('crm') ||
                     request()->is('account-upgrade') ||
-                    request()->is('crm2') ||  request()->is('bvn-modification') ||
-                    request()->is('bvn-enrollment')||
-                    request()->is('nin-services')
-                    ||request()->is('vnin-to-nibss')
-                    ||request()->is('view-request*')
+                    request()->is('crm2') ||
+                    request()->is('bvn-modification') ||
+                    request()->is('bvn-enrollment') ||
+                    request()->is('nin-services') ||
+                    request()->is('vnin-to-nibss') ||
+                    request()->is('view-request*')
                         ? 'open'
                         : '' }}">
                     <a href="javascript:void(0);"
                         class="side-menu__item  {{ request()->is('bvn-mod') ||
-                        request()->is('crm') || request()->is('bvn-modification') ||
+                        request()->is('crm') ||
+                        request()->is('bvn-modification') ||
                         request()->is('account-upgrade') ||
                         request()->is('crm2') ||
                         request()->is('bvn-enrollment') ||
-                         request()->is('nin-services')
-                         ||  request()->is('vnin-to-nibss')
-                         ||
-                         request()->is('view-request*')
+                        request()->is('nin-services') ||
+                        request()->is('vnin-to-nibss') ||
+                        request()->is('view-request*')
                             ? 'active'
                             : '' }}">
                         <i class="bx bx-briefcase side-menu__icon"></i>
@@ -197,13 +204,15 @@
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
                     <ul class="slide-menu child1">
-                         <li class="slide">
+                        <li class="slide">
                             <a href="{{ route('nin-services') }}"
-                                class="side-menu__item {{ request()->is('nin-services') || request()->is('view-request*') ? 'active' : '' }}">NIN Services </a>
+                                class="side-menu__item {{ request()->is('nin-services') || request()->is('view-request*') ? 'active' : '' }}">NIN
+                                Services </a>
                         </li>
-                          <li class="slide">
+                        <li class="slide">
                             <a href="{{ route('vnin-to-nibss') }}"
-                                class="side-menu__item {{ request()->is('vnin-to-nibss') || request()->is('view-request*') ? 'active' : '' }}">VNIN to NIBSS
+                                class="side-menu__item {{ request()->is('vnin-to-nibss') || request()->is('view-request*') ? 'active' : '' }}">VNIN
+                                to NIBSS
                             </a>
                         </li>
                         <li class="slide">
@@ -216,9 +225,10 @@
                                 class="side-menu__item {{ request()->is('crm') || request()->is('view-request*') ? 'active' : '' }}">CRM</a>
                         </li>
 
-                          <li class="slide">
+                        <li class="slide">
                             <a href="{{ route('crm2') }}"
-                                class="side-menu__item {{ request()->is('crm2') || request()->is('view-request*') ? 'active' : '' }}">Find BVN
+                                class="side-menu__item {{ request()->is('crm2') || request()->is('view-request*') ? 'active' : '' }}">Find
+                                BVN
                                 using Phone and DOB
                             </a>
                         </li>
@@ -226,14 +236,14 @@
 
                         <li class="slide">
                             <a href="{{ route('bvn-enrollment') }}"
-                                class="side-menu__item {{ request()->is('bvn-enrollment') || request()->is('view-request*')? 'active' : '' }}">BVN
+                                class="side-menu__item {{ request()->is('bvn-enrollment') || request()->is('view-request*') ? 'active' : '' }}">BVN
                                 Enrollement
                             </a>
                         </li>
 
-                           <li class="slide">
+                        <li class="slide">
                             <a href="{{ route('account-upgrade') }}"
-                                class="side-menu__item {{ request()->is('account-upgrade')  || request()->is('view-request*')? 'active' : '' }}">Account
+                                class="side-menu__item {{ request()->is('account-upgrade') || request()->is('view-request*') ? 'active' : '' }}">Account
                                 Upgrade
                             </a>
                         </li>

@@ -32,11 +32,12 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     //NIN Verification
     Route::get('/nin', [NINController::class, 'show'])->name('nin');
-    Route::post('/retrieveNIN', [NINController::class, 'retrieveNIN'])->name('retrieve-nin');
-
+    Route::get('/nin-track', [NINController::class, 'show'])->name('nin-track');
     Route::get('/nin-phone', [NINController::class, 'show'])->name('nin-phone');
     Route::get('/nin-vnin', [NINController::class, 'show'])->name('nin-vnin');
-    Route::get('/nin-demographic', [NINController::class, 'show'])->name('nin-demo');
+
+    Route::post('/retrieveNIN', [NINController::class, 'retrieveNIN'])->name('retrieve-nin');
+
 
     //Clain & Transfer
     Route::get('claim', [WalletController::class, 'claim'])->name('claim');
@@ -93,7 +94,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/support', function () {
         $phoneNumber = env('phoneNumber');
         $message = urlencode(env('message'));
-        $url = env('API_URL')."{$phoneNumber}&text={$message}";
+        $url = env('API_URL') . "{$phoneNumber}&text={$message}";
 
         return redirect($url);
     })->name('support');
@@ -119,7 +120,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/pin-verify', [ProfileController::class, 'verifyPin'])->name('pin.verify');
     Route::post('/pin-update', [ProfileController::class, 'updatePin'])->name('pin.update');
-    Route::post('/notification', [ProfileController::class, 'update'])->name('notification.update');
+    Route::post('/notification', [ProfileController::class, 'update'])->name('notification');
     Route::post('/notification/update', [ProfileController::class, 'notify'])->name('notification.update');
 
     Route::get('/airtime', [UtilityController::class, 'airtime'])->name('airtime');
@@ -175,7 +176,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/fetchBanks', [BankController::class, 'fetchBanks']);
     Route::post('/payout', [WalletController::class, 'payout'])->name('payout');
     Route::post('/validatePin', [TransactionController::class, 'validatePin'])->name('pin.validate');
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
