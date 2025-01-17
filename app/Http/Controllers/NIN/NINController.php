@@ -130,7 +130,7 @@ class NINController extends Controller
                     // Handle NIN request
                     $endpoint_part = '/nin/phone2';
                     $postdata = [
-                        'value' => $request->input('nin'),
+                        'value' => $request->input('phone'),
                         'ref' => $referenceNumber,
                     ];
                 } elseif ($request->has('trackingId')) {
@@ -164,16 +164,34 @@ class NINController extends Controller
                         'Authorization: ' . env('ACCESS_TOKEN') . '',
                     ]
                 );
+
                 $response = curl_exec($ch);
                 curl_close($ch);
 
                 $data = json_decode($response, true);
 
+                $redirect_url = "";
+
                 if ($request->has('trackingId')) {
-                    $this->handleResponse($data, $wallet, $ServiceFee, 'withTracking');
+                     $redirect_url  = $this->handleResponse($data, $wallet, $ServiceFee, 'withTracking');
                 } else {
-                    $this->handleResponse($data, $wallet, $ServiceFee);
+                     $redirect_url = $this->handleResponse($data, $wallet, $ServiceFee);
                 }
+
+                if( $redirect_url == 1){
+
+                      return json_encode(['status' => $data['success'], 'data' => $data]);
+                }
+                else  if( $redirect_url == 2){
+                   return response()->json(['status' => 'Not Found','errors' => ['Succesfully Verified with ' . $data['data']['reason']],], 422);
+
+                }
+                else
+                {
+                    return response()->json(['status' => 'Not Found','errors' => ['Verification Failed !'],], 422);
+
+                }
+
 
                 //$data = $this->formatAndDecodeJson($response);
 
@@ -393,27 +411,11 @@ class NINController extends Controller
 
     private function processResponseData($data, $type)
     {
+
         if ($type == 'withTracking') {
-            $user = Verification::create([
-                'idno' => $data['data']['idNumber'],
-                'type' => 'NIN',
-                'nin' => $data['data']['idNumber'],
-                // 'trackingId' => $data['nin_data']['trackingId'],
-                // 'title' => $data['nin_data']['title'],
-                'first_name' => $data['data']['firstName'],
-                'middle_name' => $data['data']['middleName'],
-                'last_name' => $data['data']['lastName'],
-                'phoneno' => $data['data']['mobile'],
-                'email' => $data['data']['email'],
-                'dob' => $data['data']['dateOfBirth'],
-                'gender' => $data['data']['gender'] == 'm' || $data['data']['gender'] == 'Male' ? 'Male' : 'Female',
-                'state' => $data['data']['state'],
-                'lga' => $data['data']['lga'],
-                'address' => $data['data']['addressLine'],
-                'photo' => $data['data']['image'],
-            ]);
-        } else {
-            $user = Verification::create([
+
+
+                $user = Verification::create([
                 'idno' => $data['data']['nin'],
                 'type' => 'NIN',
                 'nin' => $data['data']['nin'],
@@ -422,22 +424,46 @@ class NINController extends Controller
                 'middle_name' => $data['data']['middlename'],
                 'last_name' => $data['data']['lastname'],
                 // 'phoneno' => $data['data']['mobile'],
-                'email' => $data['data']['email'],
-                // 'dob' => $data['data']['dateOfBirth'],
+                // 'email' => $data['data']['email'],
+                'dob' => '1970-01-01',
                 'gender' => $data['data']['gender'] == 'm' || $data['data']['gender'] == 'Male' ? 'Male' : 'Female',
                 'state' => $data['data']['state'],
                 'lga' => $data['data']['residence_lga'],
                 'address' => $data['data']['address'],
                 'photo' => $data['data']['face'],
             ]);
+
+
+        } else {
+
+
+
+        $user = Verification::create([
+            'idno' => $data['data']['idNumber'],
+            'type' => 'NIN',
+            'nin' => $data['data']['idNumber'],
+            // 'trackingId' => $data['nin_data']['trackingId'],
+            // 'title' => $data['nin_data']['title'],
+            'first_name' => $data['data']['firstName'],
+            'middle_name' => $data['data']['middleName'],
+            'last_name' => $data['data']['lastName'],
+            'phoneno' => $data['data']['mobile'],
+            'email' => $data['data']['email'],
+            'dob' => $data['data']['dateOfBirth'],
+            'gender' => $data['data']['gender'] == 'm' || $data['data']['gender'] == 'Male' ? 'Male' : 'Female',
+            'state' => $data['data']['state'],
+            'lga' => $data['data']['lga'],
+            'address' => $data['data']['addressLine'],
+            'photo' => $data['data']['image'],
+        ]);
         }
     }
 
     private function handleResponse($data, $wallet, $ServiceFee, $type = "Normal")
     {
 
-
         if ($data['success'] == true && ($data['data']['status'] == 'found' || $data['data']['status'] == 1)) {
+
 
             $this->processResponseData($data, $type);
 
@@ -473,50 +499,10 @@ class NINController extends Controller
             ]);
 
             //Return Json response
-            return json_encode(['status' => $data['success'], 'data' => $data]);
-        } else {
+            return 1;
+        }else if($data['success'] == true && ($data['data']['status'] == 'not_found' || $data['data']['status'] == 0)){
 
-            $referenceno = '';
-            srand((float) microtime() * 1000000);
-            $gen = '123456123456789071234567890890';
-            $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-            $ddesc = '';
-            for ($i = 0; $i < 12; $i++) {
-                $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
-            }
-            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
-            $payer_email = auth()->user()->email;
-            $payer_phone = auth()->user()->phone_number;
-
-            Transaction::create([
-                'user_id' => $this->loginUserId,
-                'payer_name' => $payer_name,
-                'payer_email' => $payer_email,
-                'payer_phone' => $payer_phone,
-                'referenceId' => $referenceno,
-                'service_type' => 'NIN Verification',
-                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
-                    $ServiceFee,
-                    2
-                ),
-                'amount' => $ServiceFee,
-                'gateway' => 'Wallet',
-                'status' => 'Approved',
-            ]);
-
-            return response()->json([
-                'status' => 'Not Found',
-                'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
-            ], 422);
-        }
-    }
-
-    private function handleResponse2($data, $wallet, $ServiceFee)
-    {
-
-        if ($data['success'] == true && $data['data']['status'] == 1) {
-
-            $this->processResponseData($data);
+            $this->processResponseData($data, $type);
 
             $balance = $wallet->balance - $ServiceFee;
 
@@ -548,43 +534,9 @@ class NINController extends Controller
                 'gateway' => 'Wallet',
                 'status' => 'Approved',
             ]);
-
-            //Return Json response
-            return json_encode(['status' => $data['success'], 'data' => $data]);
-        } else {
-
-            $referenceno = '';
-            srand((float) microtime() * 1000000);
-            $gen = '123456123456789071234567890890';
-            $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
-            $ddesc = '';
-            for ($i = 0; $i < 12; $i++) {
-                $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
-            }
-            $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
-            $payer_email = auth()->user()->email;
-            $payer_phone = auth()->user()->phone_number;
-
-            Transaction::create([
-                'user_id' => $this->loginUserId,
-                'payer_name' => $payer_name,
-                'payer_email' => $payer_email,
-                'payer_phone' => $payer_phone,
-                'referenceId' => $referenceno,
-                'service_type' => 'NIN Verification',
-                'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
-                    $ServiceFee,
-                    2
-                ),
-                'amount' => $ServiceFee,
-                'gateway' => 'Wallet',
-                'status' => 'Approved',
-            ]);
-
-            return response()->json([
-                'status' => 'Not Found',
-                'errors' => ['Succesfully Verified with ' . $data['data']['reason']],
-            ], 422);
+            return 2;
+        }else {
+            return 0;
         }
     }
 }
