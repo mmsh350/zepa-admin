@@ -34,7 +34,8 @@
                                                             d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 11V17H13V11H11ZM11 7V9H13V7H11Z">
                                                         </path>
                                                     </svg>
-                                                    <p> Note that &#x20A6;{{ $ServiceFee->amount }}. fee will be deducted
+                                                    <p> Note that &#x20A6;{{ $trackingServiceFee->amount }}. fee will be
+                                                        deducted
                                                         from your wallet balance for each verification attempt, regardless
                                                         of the outcome. This includes instances where the NIN is not
                                                         successfully verified or if the data is not found.
@@ -101,7 +102,7 @@
                                                     <a href="#" id="regularSlip" type="button"
                                                         class="btn btn-outline-info btn-wave"><i
                                                             class="bi bi-download"></i>&nbsp; Regular NIN Slip
-                                                        (&#x20A6;{{ $regular_nin_fee->amount }})</a>
+                                                        (&#x20A6;{{ $ServiceFee->amount }})</a>
                                                 </div>
 
                                             </div>

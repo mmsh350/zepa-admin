@@ -45,7 +45,7 @@ class NINController extends Controller
             ->count();
 
         // Fetch all required service fees in one query
-        $serviceCodes = ['113', '114', '115', '116'];
+        $serviceCodes = ['113', '114', '115', '116', '154'];
         $services = Services::whereIn('service_code', $serviceCodes)->get()->keyBy('service_code');
 
         // Extract specific service fees
@@ -53,6 +53,8 @@ class NINController extends Controller
         $regular_nin_fee = $services->get('114');
         $standard_nin_fee = $services->get('115');
         $premium_nin_fee = $services->get('116');
+
+        $trackingServiceFee = $services->get('154');
 
         // Check if the user has notifications enabled
         $notificationsEnabled = Auth::user()->notification;
@@ -81,6 +83,7 @@ class NINController extends Controller
             'regular_nin_fee',
             'standard_nin_fee',
             'premium_nin_fee',
+            'trackingServiceFee',
             'notificationsEnabled'
         ));
     }
@@ -253,7 +256,7 @@ class NINController extends Controller
 
         //NIN Services Fee
         $ServiceFee = 0;
-        $ServiceFee = Services::where('service_code', '113')->first();
+        $ServiceFee = Services::where('service_code', '154')->first();
         $ServiceFee = $ServiceFee->amount;
 
         //Check if wallet is funded
@@ -294,7 +297,6 @@ class NINController extends Controller
 
 
                 $response = curl_exec($ch);
-
 
                 curl_close($ch);
 
