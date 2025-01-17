@@ -102,7 +102,7 @@
                                                     <a href="#" id="regularSlip" type="button"
                                                         class="btn btn-outline-info btn-wave"><i
                                                             class="bi bi-download"></i>&nbsp; Regular NIN Slip
-                                                        (&#x20A6;{{ $ServiceFee->amount }})</a>
+                                                        (&#x20A6;{{ $regular_nin_fee->amount }})</a>
                                                 </div>
 
                                             </div>
