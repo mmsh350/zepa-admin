@@ -25,5 +25,8 @@ class Verification extends Model
         'registration_date',
         'address',
         'photo',
+        'state',
+        'lga',
+        'trackingId',
     ];
 }

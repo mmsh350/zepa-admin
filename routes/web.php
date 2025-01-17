@@ -37,6 +37,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/nin-vnin', [NINController::class, 'show'])->name('nin-vnin');
 
     Route::post('/retrieveNIN', [NINController::class, 'retrieveNIN'])->name('retrieve-nin');
+    Route::post('/retrieveNIN2', [NINController::class, 'retrieveNIN2'])->name('retrieve-nin-track');
 
 
     //Clain & Transfer
