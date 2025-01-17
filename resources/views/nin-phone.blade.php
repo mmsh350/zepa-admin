@@ -57,7 +57,7 @@
                                                             </div>
                                                             <div class="col-md-12 ">
                                                                 <p class="mb-2 text-muted">Verify NIN Phone No.</p>
-                                                                <input type="text" id="nin" name="phone"
+                                                                <input type="text" id="nin" name="nin"
                                                                     value="" class="form-control text-center"
                                                                     maxlength="11" required />
                                                             </div>
