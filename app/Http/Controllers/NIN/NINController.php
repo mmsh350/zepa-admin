@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\NIN;
 
+use App\Helpers\noncestrHelper;
+use App\Helpers\signatureHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use App\Models\Services;
@@ -26,7 +28,43 @@ class NINController extends Controller
         $this->walletService = $walletService;
     }
 
+    public function ninV2Form(Request $request)
+    {
+        $loginUserId = $this->loginUserId;
 
+        // Fetch unread notifications (limit to 3 and sort by ID descending)
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Count unread notifications
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
+
+        // Fetch all required service fees in one query
+        $serviceCodes = ['115', '116', '159'];
+        $services = Services::whereIn('service_code', $serviceCodes)->get()->keyBy('service_code');
+
+        // Extract specific service fees
+        $ServiceFee = $services->get('159');
+        $standard_nin_fee = $services->get('115');
+        $premium_nin_fee = $services->get('116');
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        return view('nin-verify2', compact(
+            'notifications',
+            'notifyCount',
+            'ServiceFee',
+            'standard_nin_fee',
+            'premium_nin_fee',
+            'notificationsEnabled'
+        ));
+    }
     //Show NIN Page
     public function show(Request $request)
     {
@@ -88,7 +126,178 @@ class NINController extends Controller
         ));
     }
 
+    public function ninV2Retrieve(Request $request)
+    {
 
+        $request->validate(
+            ['nin' => 'required|numeric|digits:11'],
+            [
+                'nin.required' => 'The NIN number is required.',
+                'nin.numeric' => 'The NIN number must be a numeric value.',
+                'nin.digits' => 'The NIN must be exactly 11 digits.',
+            ]
+        );
+
+        //NIN Services Fee
+        $ServiceFee = 0;
+        $ServiceFee = Services::where('service_code', '159')->first();
+        $ServiceFee = $ServiceFee->amount;
+
+        //Check if wallet is funded
+        $wallet = Wallet::where('user_id', $this->loginUserId)->first();
+        $wallet_balance = $wallet->balance;
+        $balance = 0;
+
+        if ($wallet_balance < $ServiceFee) {
+            return response()->json([
+                'message' => 'Error',
+                'errors' => ['Wallet Error' => 'Sorry Wallet Not Sufficient for Transaction !'],
+            ], 422);
+        } else {
+
+           try {
+
+            $requestTime = (int) (microtime(true) * 1000);
+
+            $noncestr = noncestrHelper::generateNonceStr();
+            $orderId =  noncestrHelper::generateOrderId();
+
+            $data = [
+
+                'version' => env('VERSION'),
+                'nonceStr' => $noncestr,
+                'requestTime' => $requestTime,
+                'nin' => $request->nin,
+            ];
+
+            $signature = signatureHelper::generate_signature($data, config('keys.private2'));
+
+            $url = env('Domain') . '/api/validator-service/open/nin/inquire';
+            $token = env('BEARER');
+            $headers = [
+                'Accept: application/json, text/plain, */*',
+                'CountryCode: NG',
+                "Signature: $signature",
+                'Content-Type: application/json',
+                "Authorization: Bearer $token",
+            ];
+
+            // Initialize cURL
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+            // Execute request
+            $response = curl_exec($ch);
+
+            // Check for cURL errors
+            if (curl_errno($ch)) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
+            }
+
+            // Close cURL session
+            curl_close($ch);
+
+              // Decode the JSON response to an associative array
+            $data = json_decode($response, true);
+
+                if ($data['respCode'] == 00000000) {
+
+                    $this->processResponseData3($data);
+
+                    $balance = $wallet->balance - $ServiceFee;
+
+                    Wallet::where('user_id', $this->loginUserId)
+                        ->update(['balance' => $balance]);
+
+                    $referenceno = '';
+                    srand((float) microtime() * 1000000);
+                    $gen = '123456123456789071234567890890';
+                    $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
+                    $ddesc = '';
+                    for ($i = 0; $i < 12; $i++) {
+                        $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+                    }
+
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+                    $payer_email = auth()->user()->email;
+                    $payer_phone = auth()->user()->phone_number;
+
+                    Transaction::create([
+                        'user_id' => $this->loginUserId,
+                        'payer_name' => $payer_name,
+                        'payer_email' => $payer_email,
+                        'payer_phone' => $payer_phone,
+                        'referenceId' => $referenceno,
+                        'service_type' => 'NIN Verification',
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format($ServiceFee, 2),
+                        'amount' => $ServiceFee,
+                        'gateway' => 'Wallet',
+                        'status' => 'Approved',
+                    ]);
+
+                    //Return Json response
+                    return json_encode(['status' =>'success', 'data' => $data]);
+                 }
+                else if ($data['respCode'] == 99120010) {
+
+
+                    $balance = $wallet->balance - $ServiceFee;
+
+                    Wallet::where('user_id', $this->loginUserId)
+                        ->update(['balance' => $balance]);
+
+                    $referenceno = '';
+                    srand((float) microtime() * 1000000);
+                    $gen = '123456123456789071234567890890';
+                    $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz'; // if you need alphabatic also
+                    $ddesc = '';
+                    for ($i = 0; $i < 12; $i++) {
+                        $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+                    }
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+                    $payer_email = auth()->user()->email;
+                    $payer_phone = auth()->user()->phone_number;
+
+                    Transaction::create([
+                        'user_id' => $this->loginUserId,
+                        'payer_name' => $payer_name,
+                        'payer_email' => $payer_email,
+                        'payer_phone' => $payer_phone,
+                        'referenceId' => $referenceno,
+                        'service_type' => 'NIN Verification',
+                        'service_description' => 'Wallet debitted with a service fee of ₦' . number_format(
+                            $ServiceFee,
+                            2
+                        ),
+                        'amount' => $ServiceFee,
+                        'gateway' => 'Wallet',
+                        'status' => 'Approved',
+                    ]);
+
+                    return response()->json([
+                        'status' => 'Not Found',
+                        'errors' => ['Succesfully Verified with ( NIN do not exist)'],
+                    ], 422);
+                } else {
+                    return response()->json([
+                        'status' => 'Verification Failed',
+                        'errors' => ['No need to worry, your wallet remains secure and intact. Please try again or contact support for assistance.'],
+                    ], 422);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'Request failed',
+                    'errors' => ['An error occurred while making the API request'],
+                ], 422);
+            }
+        }
+    }
     public function retrieveNIN(Request $request)
     {
 
@@ -632,6 +841,22 @@ class NINController extends Controller
             'lga' => $data['data']['residence_lga'],
             'address' => $data['data']['address'],
             'photo' => $data['data']['face'],
+        ]);
+    }
+
+    public function processResponseData3($data)
+    {
+        $user = Verification::create([
+            'idno' => $data['data']['nin'],
+            'type' => 'NIN',
+            'nin' => $data['data']['nin'],
+            'first_name' => $data['data']['firstName'],
+            'middle_name' => $data['data']['middleName'],
+            'last_name' => $data['data']['surname'],
+            'dob' =>  $data['data']['birthDate'],
+            'gender' => $data['data']['gender'],
+            'phoneno' => $data['data']['telephoneNo'],
+            'photo' => $data['data']['photo'],
         ]);
     }
 }

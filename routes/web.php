@@ -39,6 +39,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/retrieveNIN', [NINController::class, 'retrieveNIN'])->name('retrieve-nin');
     Route::post('/retrieveNIN2', [NINController::class, 'retrieveNIN2'])->name('retrieve-nin-track');
 
+    //NIN Version 2
+    Route::get('/nin2', [NINController::class, 'ninV2Form'])->name('nin2');
+    Route::post('/nin2-retrieve', [NINController::class, 'ninV2Retrieve'])->name('ninV2Retrieve');
+
 
     //Clain & Transfer
     Route::get('claim', [WalletController::class, 'claim'])->name('claim');
