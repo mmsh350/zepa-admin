@@ -75,9 +75,9 @@
                 <!-- End::slide -->
                 <!-- Start::slide -->
                 <li
-                    class="slide has-sub {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('nin-track') ? 'open' : '' }}">
+                    class="slide has-sub {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                       class="side-menu__item {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('nin-track') ? 'active' : '' }}">
+                       class="side-menu__item {{ request()->is('nin') || request()->is('nin2') || request()->is('nin-phone') || request()->is('bvn') || request()->is('bvn2') || request()->is('nin-track') ? 'active' : '' }}">
                         <i class="bx bx-fingerprint side-menu__icon"></i>
                         <span class="side-menu__label">Identity</span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -130,6 +130,18 @@
                                 <li class="slide">
                                     <a href="{{ route('bvn') }}"
                                        class="side-menu__item {{ request()->is('bvn') ? 'active' : '' }}">Verify
+                                        BVN</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide has-sub {{ request()->is('bvn2') ? 'open' : '' }}">
+                            <a href="javascript:void(0);"
+                               class="side-menu__item {{ request()->is('bvn') ? 'active' : '' }}">BVN Verification V2
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{{ route('bvn2') }}"
+                                       class="side-menu__item {{ request()->is('bvn2') ? 'active' : '' }}">Verify
                                         BVN</a>
                                 </li>
                             </ul>

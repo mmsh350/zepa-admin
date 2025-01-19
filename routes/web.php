@@ -30,6 +30,9 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/bvn', [BVNController::class, 'show'])->name('bvn');
     Route::post('/retrieveBVN', [BVNController::class, 'retrieveBVN'])->name('retrieve-bvn');
 
+    Route::get('/bvn2', [BVNController::class, 'show'])->name('bvn2');
+    Route::post('/bvnv2-retrieve', [BVNController::class, 'bvnV2Retrieve'])->name('bvnV2Retrieve');
+
     //NIN Verification
     Route::get('/nin', [NINController::class, 'show'])->name('nin');
     Route::get('/nin-track', [NINController::class, 'show'])->name('nin-track');

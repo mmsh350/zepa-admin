@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'BVN Verification')
+@section('title', 'BVN Verification V2 ')
 @section('content')
 
     <!------App Header ----->
@@ -21,7 +21,7 @@
                                     <div class="card custom-card">
                                         <div class="card-header justify-content-between">
                                             <div class="card-title">
-                                                <i class="bx bx-fingerprint side-menu__icon"></i> Verify BVN
+                                                <i class="bx bx-fingerprint side-menu__icon"></i> Verify BVN V2
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -36,7 +36,7 @@
                                                               d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 11V17H13V11H11ZM11 7V9H13V7H11Z">
                                                         </path>
                                                     </svg>
-                                                    Please be aware that N{{ $BVNFee->amount }}.verification fee
+                                                    Please be aware that N{{ $bvn_v2_fee->amount }}.verification fee
                                                     will be deducted from your wallet balance regardless of the
                                                     outcome, except in cases where the BVN is not successfully
                                                     verified due to a successful verification not being possible
@@ -145,5 +145,5 @@
     </div>
 @endsection
 @section('page-js')
-    <script src="{{ asset('assets/js/bvn.js') }}"></script>
+    <script src="{{ asset('assets/js/bvn-v2.js') }}"></script>
 @endsection

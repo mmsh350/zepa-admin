@@ -160,7 +160,6 @@ class NINController extends Controller
             $requestTime = (int) (microtime(true) * 1000);
 
             $noncestr = noncestrHelper::generateNonceStr();
-            $orderId =  noncestrHelper::generateOrderId();
 
             $data = [
 
@@ -241,6 +240,8 @@ class NINController extends Controller
                         'status' => 'Approved',
                     ]);
 
+                   $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "verification_v2");
+
                     //Return Json response
                     return json_encode(['status' =>'success', 'data' => $data]);
                  }
@@ -279,6 +280,8 @@ class NINController extends Controller
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
                     ]);
+
+                    $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "verification_v2");
 
                     return response()->json([
                         'status' => 'Not Found',
