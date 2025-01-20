@@ -84,7 +84,10 @@
                                                                     Slip</option>
                                                                 <option value="Top up"
                                                                     {{ request('service_type') == 'Top up' ? 'selected' : '' }}>
-                                                                    Top up</option>
+                                                                    Top up (P2P) </option>
+                                                                <option value="Wallet Topup"
+                                                                    {{ request('service_type') == 'Wallet Topup' ? 'selected' : '' }}>
+                                                                    Funding</option>
                                                                 <option value="Upgrade"
                                                                     {{ request('service_type') == 'Upgrade' ? 'selected' : '' }}>
                                                                     Upgrade</option>
