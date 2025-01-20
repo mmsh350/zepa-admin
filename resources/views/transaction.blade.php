@@ -34,12 +34,28 @@
                                             <div class="table-responsive">
                                                 <form method="GET" action="{{ route('transactions') }}" class="mb-3">
                                                     <div class="row">
-                                                        <div class="col-md-4">
-                                                            <input type="text" name="reference" class="form-control"
-                                                                placeholder="Search by Reference No."
-                                                                value="{{ request('reference') }}">
+
+                                                        <div class="row col-md-6">
+
+                                                            <div class="col">
+                                                                <input type="text" name="reference" class="form-control"
+                                                                    placeholder="Search by Reference No."
+                                                                    value="{{ request('reference') }}">
+                                                            </div>
+
+                                                            <div class="col">
+                                                                <input type="date" name="date_from" class="form-control"
+                                                                    value="{{ request('date_from') }}"
+                                                                    placeholder="Start Date">
+                                                            </div>
+
+                                                            <div class="col">
+                                                                <input type="date" name="date_to" class="form-control"
+                                                                    value="{{ request('date_to') }}" placeholder="End Date">
+                                                            </div>
+
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-2">
                                                             <select name="status" class="form-control">
                                                                 <option value="">Select Status</option>
                                                                 <option value="Approved"
@@ -53,7 +69,7 @@
                                                                     Pending</option>
                                                             </select>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-2">
                                                             <select name="service_type" class="form-control">
                                                                 <option value="">Select Service Type</option>
 
@@ -81,7 +97,12 @@
                                                                 <option value="Verification"
                                                                     {{ request('service_type') == 'Verification' ? 'selected' : '' }}>
                                                                     Verification</option>
-
+                                                                <option value="Payout"
+                                                                    {{ request('service_type') == 'Payout' ? 'selected' : '' }}>
+                                                                    Payout</option>
+                                                                <option value="Fee"
+                                                                    {{ request('service_type') == 'Fee' ? 'selected' : '' }}>
+                                                                    Developer Comm. </option>
                                                             </select>
                                                         </div>
                                                         <div class="col-md-2">
@@ -93,9 +114,9 @@
                                                     transaction receipt or use the download button</small>
                                                 @if (!$transactions->isEmpty())
                                                     @php
-                                                        $currentPage = $transactions->currentPage(); // Current page number
-                                                        $perPage = $transactions->perPage(); // Number of items per page
-                                                        $serialNumber = ($currentPage - 1) * $perPage + 1; // Starting serial number for current page
+                                                        $currentPage = $transactions->currentPage();
+                                                        $perPage = $transactions->perPage();
+                                                        $serialNumber = ($currentPage - 1) * $perPage + 1;
                                                     @endphp
 
                                                     <table class="table text-nowrap" style="background:#fafafc !important">
@@ -123,7 +144,7 @@
                                                                         </a>
                                                                     </td>
                                                                     <td>{{ $data->service_type }}</td>
-                                                                    <td>{{ $data->service_description}}</td>
+                                                                    <td>{{ $data->service_description }}</td>
                                                                     <td>&#8358;{{ $data->amount }}</td>
                                                                     <td class="text-center">
                                                                         @if ($data->status == 'Approved')
@@ -138,15 +159,26 @@
                                                                         @endif
                                                                     </td>
                                                                     <td class="text-center">
-                                                                        <a target="_blank" href="{{ route('reciept', $data->referenceId) }}"
+                                                                        <a target="_blank"
+                                                                            href="{{ route('reciept', $data->referenceId) }}"
                                                                             class="btn btn-outline-primary btn-sm">
                                                                             <i class="bi bi-download"></i> Download </a>
                                                                     </td>
-                                                                    <td>({{$data->payer_name}})</td>
+                                                                    <td>({{ $data->payer_name }})</td>
                                                                 </tr>
                                                                 @php $i++ @endphp
                                                             @endforeach
                                                         </tbody>
+                                                        <tfoot
+                                                            style="background: #e9ecef; font-weight: bold; border-top: 2px solid #dee2e6;">
+                                                            <tr>
+                                                                <th colspan="4" class="text-end" style="padding: 10px;">
+                                                                    Total Amount:</th>
+                                                                <th style="padding: 10px; color: #ff0f17;">
+                                                                    &#8358;{{ number_format($total_amount, 2) }}</th>
+                                                                <th colspan="3"></th>
+                                                            </tr>
+                                                        </tfoot>
                                                     </table>
                                                     <!-- Pagination Links -->
                                                     <div class="d-flex justify-content-center">
