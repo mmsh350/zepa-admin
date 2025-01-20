@@ -35,18 +35,25 @@ class TransactionController extends Controller
         $serviceTypeFilter = $request->input('service_type');
 
         // Transactions: Apply filters and paginate
-        $transactions = Transaction::query()
-            ->when($statusFilter, fn ($query) => $query->where('status', $statusFilter))
-            ->when($referenceFilter, fn ($query) => $query->where('referenceId', 'like', "%$referenceFilter%"))
-            ->when($serviceTypeFilter, fn ($query) => $query->where('service_type', 'like', "%$serviceTypeFilter%"))
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $query = Transaction::query()
+            ->when($statusFilter, fn($query) => $query->where('status', $statusFilter))
+            ->when($referenceFilter, fn($query) => $query->where('referenceId', 'like', "%$referenceFilter%"))
+            ->when($serviceTypeFilter, fn($query) => $query->where('service_type', 'like', "%$serviceTypeFilter%"))
+            ->when(request('date_from'), fn($query, $dateFrom) => $query->whereDate('created_at', '>=', $dateFrom))
+            ->when(request('date_to'), fn($query, $dateTo) => $query->whereDate('created_at', '<=', $dateTo));
+        // ->orderBy('id', 'desc')
+        // ->paginate(10);
+
+        $transactions = $query->orderBy('id', 'desc')->paginate(10);
+
+        // Calculate total amount
+        $total_amount = $query->sum('amount');
 
         // Check if notifications are enabled for the user
         $notificationsEnabled = Auth::user()->notification ?? false;
 
         // Pass data to the view
-        return view('transaction', compact('transactions', 'notifications', 'notifyCount', 'notificationsEnabled'));
+        return view('transaction', compact('transactions', 'notifications', 'notifyCount', 'notificationsEnabled', 'total_amount'));
     }
 
     public function reciept(Request $request)
@@ -70,7 +77,7 @@ class TransactionController extends Controller
         ]);
 
         $userId = auth()->id(); // Get the authenticated user ID
-        $rateLimitKey = 'pin-attempts:'.$userId;
+        $rateLimitKey = 'pin-attempts:' . $userId;
 
         // Check if the user has reached the limit
         if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
@@ -78,7 +85,7 @@ class TransactionController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Too many failed attempts. Please try again after '.gmdate('i:s', $secondsUntilUnlock).' minutes.',
+                'message' => 'Too many failed attempts. Please try again after ' . gmdate('i:s', $secondsUntilUnlock) . ' minutes.',
             ]);
         }
 
