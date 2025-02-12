@@ -149,10 +149,15 @@
                                             <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
                                             <p><strong>Request Type.:</strong> {{ strtoupper($requests->type) }}</p>
                                             <p><strong>Wallet ID.:</strong> {{ $requests->wallet_id }}</p>
+                                            <p><strong>BVN NO.:</strong> {{ $requests->bvn }}</p>
+                                            <p><strong>Bank Name.:</strong> {{ $requests->bank_name }}</p>
+                                            <p><strong>Account Number:</strong> {{ $requests->account_number }}</p>
+                                            <p><strong>Account Name.:</strong> {{ $requests->account_name }}</p>
+
                                             <p><strong>Date:</strong>
                                                 {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
                                             <p><strong>Status:</strong>
-                                                @if ($requests->status == 'pending')
+                                                @if ($requests->status == 'submitted')
                                                     <span class="badge bg-warning">Pending</span>
                                                 @elseif($requests->status == 'successful')
                                                     <span class="badge bg-success">Successful</span>
@@ -222,7 +227,7 @@
                                 </div>
 
                             </div>
-                       @elseif($request_type == 'upgrade')
+                        @elseif($request_type == 'upgrade')
                             <div class="mb-4">
                                 <div class="p-3 border rounded bg-light">
                                     <h6 class="text-uppercase mb-3">
@@ -262,10 +267,8 @@
                                 </div>
 
                             </div>
-
                         @elseif($request_type == 'nin-services')
-
-                        <div class="mb-4">
+                            <div class="mb-4">
                                 <div class="p-3 border rounded bg-light">
                                     <h6 class="text-uppercase mb-3">
                                         <span class="text-muted">Request Information</span> -
@@ -274,8 +277,10 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
-                                            <p><strong>Tracking / NIN Number.:</strong> {{ strtoupper($requests->trackingId) }}</p>
-                                            <p><strong>Service Type.:</strong> {{ strtoupper($requests->service_type) }}</p>
+                                            <p><strong>Tracking / NIN Number.:</strong>
+                                                {{ strtoupper($requests->trackingId) }}</p>
+                                            <p><strong>Service Type.:</strong>
+                                                {{ strtoupper($requests->service_type) }}</p>
                                             <p><strong>Date:</strong>
                                                 {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
                                             <p><strong>Status:</strong>
@@ -308,8 +313,10 @@
                                         <div class="col-md-6">
                                             <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
                                             <p><strong>Request ID.:</strong> {{ strtoupper($requests->requestId) }}</p>
-                                            <p><strong>NIN Number.:</strong> {{ strtoupper($requests->nin_number) }}</p>
-                                            <p><strong>BVN Number.:</strong> {{ strtoupper($requests->bvn_number) }}</p>
+                                            <p><strong>NIN Number.:</strong> {{ strtoupper($requests->nin_number) }}
+                                            </p>
+                                            <p><strong>BVN Number.:</strong> {{ strtoupper($requests->bvn_number) }}
+                                            </p>
                                             <p><strong>Date:</strong>
                                                 {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
                                             <p><strong>Status:</strong>
