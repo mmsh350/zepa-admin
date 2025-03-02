@@ -255,6 +255,7 @@ class AgencyController extends Controller
 
         if ($request->status === 'resolved') {
 
+             if($route == 'bvn-modification')
             $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
         }
 
