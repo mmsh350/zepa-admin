@@ -17,7 +17,6 @@ use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class AgencyController extends Controller
 {
@@ -255,8 +254,8 @@ class AgencyController extends Controller
 
         if ($request->status === 'resolved') {
 
-             if($route == 'bvn-modification')
-            $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
+            if ($route == 'bvn-modification')
+                $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
         }
 
         if ($request->status === 'rejected') {

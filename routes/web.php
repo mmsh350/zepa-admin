@@ -184,6 +184,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/fetchBanks', [BankController::class, 'fetchBanks']);
     Route::post('/payout', [WalletController::class, 'payout'])->name('payout');
     Route::post('/validatePin', [TransactionController::class, 'validatePin'])->name('pin.validate');
+    Route::get('/delete/{id}', [WalletController::class, 'virtualDeleteAccount']);
 });
 
 require __DIR__ . '/auth.php';
