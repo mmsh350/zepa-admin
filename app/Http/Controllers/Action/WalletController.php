@@ -601,12 +601,6 @@ class WalletController extends Controller
                 if (isset($response['data']['status']) && $response['data']['status'] === 1) {
 
                     $referenceno = $response['data']['orderId'];
-                    $newBalance = $walletBalance - ($amount + $charges); //new balance plus transfer fee
-
-                    // Update wallet balance
-                    Wallet::where('user_id', $this->loginUserId)->update([
-                        'balance' => $newBalance,
-                    ]);
 
                     Transaction::create([
                         'user_id' => $this->loginUserId,
@@ -618,7 +612,7 @@ class WalletController extends Controller
                         'service_description' => "Wallet Payout to {$request->accountNumber}" . ($request->reference ? "|desc|{$request->reference}" : "|NA"),
                         'amount' => $final_amount,
                         'gateway' => 'Wallet',
-                        'status' => 'Approved',
+                        'status' => 'Pending',
                     ]);
 
                     //In App Notification
