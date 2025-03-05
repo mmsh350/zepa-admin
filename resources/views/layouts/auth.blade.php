@@ -13,7 +13,7 @@
     <title>ZEPA Solutions - @yield('title')</title>
 
     <!-- fav icon -->
-    <link rel="icon" href="{{ asset('assets/home/images/favicon/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/home/images/favicon/favicon.ico') }}" type="image/x-icon">
 
     <!-- Main Theme Js -->
     <script src="{{ asset('assets/js/authentication-main.js') }}"></script>
