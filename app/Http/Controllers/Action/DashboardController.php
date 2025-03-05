@@ -31,9 +31,9 @@ class DashboardController extends Controller
 
         $loginUserId = Auth::id();
 
-        Cache::remember('monnify_balance', now()->addMinutes(2), function () {
-            return $this->getMonnifyBalance();
-        });
+        // Cache::remember('monnify_balance', now()->addMinutes(2), function () {
+        //     return $this->getMonnifyBalance();
+        // });
 
         Cache::remember('palm_pay_balance', now()->addMinutes(2), function () {
             return $this->getPalmPayBalance();
@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
         $bonusBalance = Bonus::getTotalBonusBalance();
 
-        $monnify = WalletAccount::getAccountDetailsById(1);
+        // $monnify = WalletAccount::getAccountDetailsById(1);
         $palmpay = WalletAccount::getAccountDetailsById(2);
 
         $transactionCount = Transaction::count();
@@ -102,7 +102,7 @@ class DashboardController extends Controller
             'notificationsEnabled',
             'totalAgencyCounts',
             'totalIdentityCounts',
-            'monnify',
+            // 'monnify',
             'palmpay'
         ));
     }
@@ -117,68 +117,68 @@ class DashboardController extends Controller
         $repObj2->createWalletAccount($userId);
     }
 
-    private function getMonnifyBalance()
-    {
-        try {
-            $access_token = monnifyAuthHelper::auth();
+    // private function getMonnifyBalance()
+    // {
+    //     try {
+    //         $access_token = monnifyAuthHelper::auth();
 
-            $accno = env('ACCNO');
+    //         $accno = env('ACCNO');
 
-            $handler = curl_init();
+    //         $handler = curl_init();
 
-            // Set headers
-            $headers = [
-                'Authorization: bearer '.$access_token,
-                'Content-Type: application/json',
-            ];
+    //         // Set headers
+    //         $headers = [
+    //             'Authorization: bearer '.$access_token,
+    //             'Content-Type: application/json',
+    //         ];
 
-            // Build the URL with the query parameter
-            $url = env('BASE_URL')."/v2/disbursements/wallet-balance?accountNumber=$accno";
+    //         // Build the URL with the query parameter
+    //         $url = env('BASE_URL')."/v2/disbursements/wallet-balance?accountNumber=$accno";
 
-            // Set cURL options
-            curl_setopt($handler, CURLOPT_URL, $url);
-            curl_setopt($handler, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
+    //         // Set cURL options
+    //         curl_setopt($handler, CURLOPT_URL, $url);
+    //         curl_setopt($handler, CURLOPT_HTTPHEADER, $headers);
+    //         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
 
-            // Execute the request
-            $response = curl_exec($handler);
+    //         // Execute the request
+    //         $response = curl_exec($handler);
 
-            // Check for errors
-            if (curl_errno($handler)) {
-                throw new Exception('Curl error: '.curl_error($handler));
-            }
+    //         // Check for errors
+    //         if (curl_errno($handler)) {
+    //             throw new Exception('Curl error: '.curl_error($handler));
+    //         }
 
-            // Close the handler
-            curl_close($handler);
+    //         // Close the handler
+    //         curl_close($handler);
 
-            // Decode the JSON response
-            $responseData = json_decode($response, true);
+    //         // Decode the JSON response
+    //         $responseData = json_decode($response, true);
 
-            // Check if the request was successful
-            if (isset($responseData['requestSuccessful']) && $responseData['requestSuccessful']) {
+    //         // Check if the request was successful
+    //         if (isset($responseData['requestSuccessful']) && $responseData['requestSuccessful']) {
 
-                // Extract the available balance
-                $availableBalance = $responseData['responseBody']['availableBalance'];
+    //             // Extract the available balance
+    //             $availableBalance = $responseData['responseBody']['availableBalance'];
 
-                // Update the wallet account balance where id = 1
-                $updated = WalletAccount::where('id', 1)
-                    ->update(['available_balance' => $availableBalance]);
+    //             // Update the wallet account balance where id = 1
+    //             $updated = WalletAccount::where('id', 1)
+    //                 ->update(['available_balance' => $availableBalance]);
 
-                if (! $updated) {
-                    throw new Exception('Failed to update wallet account balance.');
-                }
+    //             if (! $updated) {
+    //                 throw new Exception('Failed to update wallet account balance.');
+    //             }
 
-                return $availableBalance;
+    //             return $availableBalance;
 
-            } else {
-                throw new Exception('API Error: '.($responseData['responseMessage'] ?? 'Unknown error.'));
-            }
+    //         } else {
+    //             throw new Exception('API Error: '.($responseData['responseMessage'] ?? 'Unknown error.'));
+    //         }
 
-        } catch (Exception $e) {
-            Log::error('Error in getMonnifyBalance: '.$e->getMessage());
-        }
+    //     } catch (Exception $e) {
+    //         Log::error('Error in getMonnifyBalance: '.$e->getMessage());
+    //     }
 
-    }
+    // }
 
     private function getPalmPayBalance()
     {
@@ -198,7 +198,7 @@ class DashboardController extends Controller
 
             $signature = signatureHelper::generate_signature($data, config('keys.private'));
 
-            $url = env('BASE_URL3').'api/v2/merchant/manage/account/queryBalance';
+            $url = env('BASE_URL3') . 'api/v2/merchant/manage/account/queryBalance';
             $token = env('BEARER_TOKEN');
             $headers = [
                 'Accept: application/json, text/plain, */*',
@@ -223,7 +223,7 @@ class DashboardController extends Controller
 
             // Check for cURL errors
             if (curl_errno($ch)) {
-                throw new Exception('cURL Error: '.curl_error($ch));
+                throw new Exception('cURL Error: ' . curl_error($ch));
             }
 
             // Close cURL session
@@ -251,7 +251,7 @@ class DashboardController extends Controller
             return $availableBalance;
         } catch (Exception $e) {
             // Log the error
-            Log::error('Error in getPalmPayBalance: '.$e->getMessage());
+            Log::error('Error in getPalmPayBalance: ' . $e->getMessage());
         }
     }
 }

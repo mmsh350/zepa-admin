@@ -74,34 +74,10 @@
                                                          <div>
 
                                                              <h4 class="fw-semibold mt-1">
-                                                                 &#x20A6;{{ number_format($palmpay['availableBalance'], 2) }}</h4>
-                                                             <p class="text-muted mb-0">{{ $palmpay['accountName'] }} Balance</p>
-                                                         </div>
-
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
-
-                                  <div class="col-xxl-4 col-lg-4 col-md-4">
-                                     <div class="card custom-card overflow-hidden">
-                                         <div class="card-body">
-                                             <div class="d-flex align-items-top justify-content-between">
-                                                 <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-primary-transparent">
-                                                         <i class="ti ti-wallet fs-16"></i>
-                                                     </span>
-                                                 </div>
-                                                 <div class="flex-fill ms-3">
-                                                     <div
-                                                         class="d-flex align-items-center justify-content-between flex-wrap">
-                                                         <div>
-
-                                                             <h4 class="fw-semibold mt-1">
-                                                                 &#x20A6;{{ number_format($monnify['availableBalance'], 2) }}</h4>
-                                                             <p class="text-muted mb-0">{{ $monnify['accountName'] }} Balance</p>
+                                                                 &#x20A6;{{ number_format($palmpay['availableBalance'], 2) }}
+                                                             </h4>
+                                                             <p class="text-muted mb-0">{{ $palmpay['accountName'] }}
+                                                                 Balance</p>
                                                          </div>
 
                                                      </div>
