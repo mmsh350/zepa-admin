@@ -117,6 +117,7 @@
                                         <div class="col-md-6">
                                             <p><strong>Reference No.:</strong> {{ strtoupper($requests->refno) }}</p>
                                             <p><strong>Phone No.:</strong> {{ $requests->phoneno }}</p>
+                                            <p><strong>Surname.:</strong> {{ $requests->surname }}</p>
                                             <p><strong>Date of Birth.:</strong>
                                                 {{ \Carbon\Carbon::parse($requests->dob)->format('d/m/Y') }}</p>
                                         </div>
