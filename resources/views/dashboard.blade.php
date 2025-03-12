@@ -20,6 +20,11 @@
                      <span class="fs-semibold text-muted">Centralize your workflow and track all your activities, from start
                          to finish.</span>
                  </div>
+                 @if (session('error'))
+                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                         {{ session('error') }}
+                     </div>
+                 @endif
                  <div class="alert alert-outline-light d-flex align-items-center shadow-lg mt-2" role="alert">
                      <div>
                          <small class="fw-semibold mb-0 fs-15 ">Referral Code : {{ Auth::user()->referral_code }}</small>

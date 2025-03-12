@@ -6,7 +6,6 @@ use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
 use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -14,17 +13,21 @@ class VirtualAccountRepository
 {
     public function createVirtualAccount($loginUserId)
     {
+
         $exist = User::where('id', $loginUserId)
             ->where('vwallet_is_created', 0)
             ->exists();
         if ($exist) {
-            $customer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+
+            $this->verifyBVN($loginUserId);
+
+            $customer_name = trim(auth()->user()->first_name . ' ' . auth()->user()->middle_name . ' ' . auth()->user()->last_name);
 
             try {
 
                 $requestTime = (int) (microtime(true) * 1000);
                 $noncestr = noncestrHelper::generateNonceStr();
-                $accountReference = "Z" . strtoupper(bin2hex(random_bytes(6)));
+                $accountReference = "ZW" . strtoupper(bin2hex(random_bytes(5)));
 
                 $data = [
                     'requestTime' => $requestTime,
@@ -103,32 +106,34 @@ class VirtualAccountRepository
         }
     }
 
-    public function deleteVirtualAccount($loginUserId, $accountNumber)
+    private function verifyBVN($loginUserId)
     {
-
-
         try {
 
+            $bvn_no = auth()->user()->idNumber;
+
             $requestTime = (int) (microtime(true) * 1000);
+
             $noncestr = noncestrHelper::generateNonceStr();
 
             $data = [
-                'requestTime' => $requestTime,
-                'virtualAccountNo' => $accountNumber,
+
                 'version' => env('VERSION'),
                 'nonceStr' => $noncestr,
+                'requestTime' => $requestTime,
+                'bvn' => $bvn_no,
             ];
 
-            $signature = signatureHelper::generate_signature($data, config('keys.private'));
+            $signature = signatureHelper::generate_signature($data, config('keys.private2'));
 
-            $url = env('BASE_URL3') . 'api/v2/virtual/account/label/delete';
-            $token = env('BEARER_TOKEN');
+            $url = env('Domain') . '/api/validator-service/open/bvn/inquire';
+            $token = env('BEARER');
             $headers = [
                 'Accept: application/json, text/plain, */*',
                 'CountryCode: NG',
-                "Authorization: Bearer $token",
                 "Signature: $signature",
                 'Content-Type: application/json',
+                "Authorization: Bearer $token",
             ];
 
             // Initialize cURL
@@ -144,8 +149,6 @@ class VirtualAccountRepository
             // Execute request
             $response = curl_exec($ch);
 
-            dd($response);
-
             // Check for cURL errors
             if (curl_errno($ch)) {
                 throw new \Exception('cURL Error: ' . curl_error($ch));
@@ -153,10 +156,39 @@ class VirtualAccountRepository
 
             // Close cURL session
             curl_close($ch);
-        } catch (\Exception $e) {
-            Log::error('Error creating virtual account for user ' . $loginUserId . ': ' . $e->getMessage());
 
-            return response()->json(['error' => 'Failed to create virtual account.'], 500);
+
+            $data = json_decode($response, true);
+
+            if ($data['respCode'] == 00000000) {
+
+                $data = $data['data'];
+
+                $updateData = [
+                    'first_name'   => ucwords(strtolower($data['firstName'])),
+                    'middle_name'  => ucwords(strtolower($data['middleName'])) ?? null,
+                    'last_name'    => ucwords(strtolower($data['lastName'])),
+                    'dob'          => $data['birthday'],
+                    'gender'       => $data['gender'],
+                ];
+
+                if (!empty($data['phoneNumber'])) {
+                    $updateData['phone_number'] = $data['phoneNumber'];
+                }
+
+                if (!empty($data['photo'])) {
+                    $updateData['profile_pic'] = $data['photo'];
+                }
+                User::where('id', $loginUserId)->update($updateData);
+            } else if ($data['respCode'] == 99120020 || $data['respCode'] == 99120024) {
+
+                return redirect()->back()->with('error', 'Invalid or suspended BVN detected. Please update your BVN information and try again.');
+            } else {
+                return redirect()->back()->with('error', 'An error occurred while making the BVN Verification (System Err)');
+            }
+        } catch (\Exception $e) {
+
+            return redirect()->back()->with('error', 'An error occurred while making the BVN Verification');
         }
     }
 }
