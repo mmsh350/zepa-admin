@@ -224,6 +224,12 @@
                                                 <i class="ti ti-eye me-2"></i> View Document
                                             </a>
                                         </p>
+                                        <p>
+                                            <a href="{{ route('check.docs', ['id' => $requests->id, 'type' => 'bvn-mod']) }}"
+                                                class="btn btn-info btn-sm" target="_blank">
+                                                <i class="ti ti-eye me-2"></i> View Document Link 2
+                                            </a>
+                                        </p>
                                     </div>
                                 </div>
 

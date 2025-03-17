@@ -815,4 +815,40 @@ class AgencyController extends Controller
         // Redirect to the external URL for viewing
         return redirect($externalUrl);
     }
+
+    public function viewDocument2($id, $type)
+    {
+
+        // Determine the request type and fetch the corresponding record
+        $request = $type === 'bvn-mod'
+            ? BVNModification::findOrFail($id)
+            : ACC_Upgrade::findOrFail($id);
+
+        // Get the document path (this should be relative to your external storage URL)
+        $documentPath = $request->docs; // Example: 'Documents/1730123905_Daniel2.pdf'
+
+        // Get the directory path (removes the filename)
+        $directoryPath = dirname($documentPath); // Returns 'Documents'
+
+        // Define the backup directory path
+        $backupDirectory = $directoryPath . '/backup';
+
+
+        $newFilePath = $backupDirectory . '/' . basename($documentPath);
+
+        // Build the full public URL pointing to the external storage location
+        $externalUrl = 'https://zepasolutions.com/storage/' . $newFilePath;
+
+        // Check if the file exists externally
+        // You might want to check if the URL is reachable by performing a HTTP request to check its status
+        $headers = get_headers($externalUrl);
+
+        // If the file is not found (404 status)
+        if (strpos($headers[0], '404') !== false) {
+            return redirect()->back()->with('error', 'Document not found.');
+        }
+
+        // Redirect to the external URL for viewing
+        return redirect($externalUrl);
+    }
 }
