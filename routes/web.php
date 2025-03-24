@@ -169,8 +169,14 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     Route::get('/electricity', [ServicesController::class, 'show'])->name('electricity');
 
-    //More Services
-    Route::get('/services/{name}', [ServicesController::class, 'show'])->name('more-services');
+    //Services
+    Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
+    Route::post('/services/updateStatus', [ServicesController::class, 'updateStatus'])->name('services.updateStatus');
+    Route::put('/services/update/{id}', [ServicesController::class, 'update'])->name('services.update');
+    Route::get('/services/create', [ServicesController::class, 'create'])->name('services.create');
+    Route::get('/services/edit/{id}', [ServicesController::class, 'edit'])->name('services.edit');
+
+    Route::post('/services', [ServicesController::class, 'store'])->name('services.store');
 
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 

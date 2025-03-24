@@ -11,9 +11,12 @@ class Services extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'amount',
+        'category',
         'description',
         'currency',
         'service_code',
+        'status'
     ];
 }

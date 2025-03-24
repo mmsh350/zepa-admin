@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Action;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\Services;
+use App\Models\ServiceStatus;
 use App\Traits\ActiveUsers;
 use App\Traits\KycVerify;
 use Illuminate\Http\Request;
@@ -11,54 +13,119 @@ use Illuminate\Support\Facades\Auth;
 
 class ServicesController extends Controller
 {
-    use ActiveUsers;
-    use KycVerify;
 
-    //Show Dashboard
-    public function show(Request $request)
+
+    public function index()
     {
-        //Login User Id
+
         $loginUserId = Auth::id();
 
-        //Check if user is Disabled
-        if ($this->is_active() != 1) {
-            Auth::logout();
 
-            return view('error');
-        }
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
 
-        //Check if user is Pending, Rejected, or Verified KYC
-        $status = $this->is_verified();
 
-        if ($status == 'Pending') {
-            return redirect()->route('verification.kyc');
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
 
-        } elseif ($status == 'Submitted') {
-            return view('kyc-status')->with(compact('status'));
+        $notificationsEnabled = Auth::user()->notification;
 
-        } elseif ($status == 'Rejected') {
-            return view('kyc-status')->with(compact('status'));
-        } else {
+        $servicesStatus = ServiceStatus::excludeAdminPayout()->get();
 
-            //Notification Data
-            $notifications = Notification::all()->where('user_id', $loginUserId)
-                ->sortByDesc('id')
-                ->where('status', 'unread')
-                ->take(3);
+        $services = Services::orderBy('id', 'desc')->paginate(10); // Show 10 per page
 
-            //Notification Count
-            $notifycount = 0;
-            $notifycount = Notification::all()
-                ->where('user_id', $loginUserId)
-                ->where('status', 'unread')
-                ->count();
+        return view('services.index', compact('notifications', 'notifyCount', 'servicesStatus', 'services', 'notificationsEnabled'));
+    }
 
-            $type = $request->name;
+    public function updateStatus(Request $request)
+    {
+        $serviceIds = $request->input('services', []); // Get selected services
 
-            return view('more-services')
-                ->with(compact('type'))
-                ->with(compact('notifications'))
-                ->with(compact('notifycount'));
-        }
+        // Update all services based on selection
+        ServiceStatus::query()->update(['is_enabled' => 0]); // Set all to inactive
+        ServiceStatus::whereIn('id', $serviceIds)->update(['is_enabled' => 1]); // Activate selected
+
+        return redirect()->route('services.index')->with('success', 'Service Updated successful.');
+    }
+
+    public function create()
+    {
+        $loginUserId = Auth::id();
+
+
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
+
+        $notificationsEnabled = Auth::user()->notification;
+        return view('services.create', compact('notifications', 'notifyCount', 'notificationsEnabled'));
+    }
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'service_code' => 'required|unique:services',
+            'name' => 'required',
+            'category' => 'required',
+            'type' => 'required',
+            'amount' => 'required|numeric',
+            'description' => 'nullable',
+            'status' => 'required|in:enabled,disabled',
+        ]);
+
+        Services::create($request->all());
+        return redirect()->route('services.index')->with('success', 'Service Created Successfully!');
+    }
+
+    // Show edit form
+    public function edit($id)
+    {
+
+        $loginUserId = Auth::id();
+
+
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
+
+        $notificationsEnabled = Auth::user()->notification;
+
+        $service = Services::findOrFail($id);
+        return view('services.edit', compact('service', 'notifications', 'notifyCount', 'notificationsEnabled'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'category' => 'required',
+            'amount' => 'required|numeric',
+            'type' => 'required',
+            'description' => 'nullable',
+            'status' => 'required|in:enabled,disabled',
+        ]);
+
+        $service = Services::findOrFail($id);
+        $service->update($request->all());
+        return redirect()->route('services.index')->with('success', 'Service Updated Successfully!');
     }
 }

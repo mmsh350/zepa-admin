@@ -9,7 +9,7 @@ class Bonus extends Model
 {
     use HasFactory;
 
-    protected $table = 'bonus';
+    protected $table = 'bonus_histories';
 
     protected $fillable = [
         'user_id',
@@ -19,6 +19,6 @@ class Bonus extends Model
 
     public static function getTotalBonusBalance()
     {
-        return self::sum('balance');
+        return self::sum('amount');
     }
 }
