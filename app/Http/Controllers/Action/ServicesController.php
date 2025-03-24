@@ -49,7 +49,7 @@ class ServicesController extends Controller
         ServiceStatus::query()->update(['is_enabled' => 0]); // Set all to inactive
         ServiceStatus::whereIn('id', $serviceIds)->update(['is_enabled' => 1]); // Activate selected
 
-        return redirect()->route('services.index')->with('success', 'Service Updated successful.');
+        return redirect()->route('services.index')->with('success', 'Service Updated successfully.');
     }
 
     public function create()
