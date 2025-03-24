@@ -295,7 +295,7 @@
                 <li class="slide has-sub {{ request()->is('services*') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
                         class="side-menu__item {{ request()->is('verification.kyc') || request()->is('upgrade-list') ? 'active' : '' }}">
-                        <i class="bx bx-user side-menu__icon"></i>
+                        <i class="bx bx-wrench side-menu__icon"></i>
                         <span class="side-menu__label">Serivces </span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
                     </a>
