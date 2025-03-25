@@ -176,13 +176,17 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/services/create', [ServicesController::class, 'create'])->name('services.create');
     Route::get('/services/edit/{id}', [ServicesController::class, 'edit'])->name('services.edit');
 
+
+    //SME SERVICES
+    Route::get('/sme-service', [ServicesController::class, 'smeIndex'])->name('sme-service');
+
     Route::post('/services', [ServicesController::class, 'store'])->name('services.store');
 
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 
     //AIRTIME & PRICE UPDATE QUERY move to admin
     Route::get('/bankcodes', [BankController::class, 'pullBankCodes']);
-    Route::get('/variation/{type}', [UtilityController::class, 'getVariation']);
+    Route::get('/variation', [UtilityController::class, 'getVariation'])->name('variation');
     //ONLY IF UPDATE IS NECCESSARY
 
     //Payout

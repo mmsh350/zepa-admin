@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-@section('title', 'Services')
+@section('title', 'SME Services')
 @section('content')
 
     @include('components.app-header')
@@ -10,9 +10,9 @@
 
             <div class="d-md-flex d-block align-items-center justify-content-between my-2 page-header-breadcrumb">
                 <div>
-                    <p class="fw-semibold fs-18 mb-0">Manage Services</p>
+                    <p class="fw-semibold fs-18 mb-0">SME Data</p>
                     <span class="fs-semibold text-muted">
-                        <p>Modify services and service status form this module</p>
+                        <p>Manage SME services module</p>
                     </span>
                 </div>
             </div>
@@ -45,32 +45,37 @@
                                 <div class="col-xl-12">
                                     <div class="card custom-card ">
                                         <div class="card-header">
-                                            <h5 class="card-title">Service Status</h5>
+                                            <h5 class="card-title">VTPASS Data Variation</h5>
                                         </div>
                                         <div class="card-body">
-                                            <form method="POST" action="{{ route('services.updateStatus') }}">
-                                                @csrf
-                                                <div class="row g-3">
-                                                    @foreach ($servicesStatus as $service)
-                                                        <div class="col-md-6 col-lg-4">
-                                                            <div
-                                                                class="service-item d-flex align-items-center justify-content-between p-3 rounded shadow-sm">
-                                                                <label
-                                                                    class="fw-bold m-0">{{ $service->service_name }}</label>
-                                                                <input type="checkbox" class="toggle-switch"
-                                                                    name="services[]" value="{{ $service->id }}"
-                                                                    id="service-{{ $service->id }}"
-                                                                    {{ $service->is_enabled ? 'checked' : '' }}>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
+                                            <a href="{{ route('variation') }}" class="btn btn-primary mb-3"><i
+                                                    class='bx bx-refresh'></i>
+                                                Refresh Variation</a>
+                                            <div class="table-responsive">
+                                                <table class="table text-nowrap" style="background:#fafafc !important">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SN</th>
+                                                            <th>service ID</th>
+                                                            <th>Name</th>
+                                                            <th>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($dataVariations as $variation)
+                                                            <tr>
+                                                                <td> {{ $loop->iteration }}</td>
+                                                                <td>{{ $variation->service_id }}</td>
+                                                                <td>{{ $variation->name }}</td>
+                                                                <td>₦ {{ $variation->variation_amount }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                                <div class="d-flex justify-content-center mt-3">
+                                                    {{ $dataVariations->links('pagination::bootstrap-4') }}
                                                 </div>
-                                                <div class="text-center mt-4">
-                                                    <button type="submit" class="btn btn-primary save-btn">
-                                                        <i class="bx bx-save"></i> Save Changes
-                                                    </button>
-                                                </div>
-                                            </form>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -79,44 +84,40 @@
                                 <div class="col-xl-12">
                                     <div class="card custom-card ">
                                         <div class="card-header">
-                                            <h5 class="card-title">Other Services</h5>
+                                            <h5 class="card-title">Other SME Plan</h5>
                                         </div>
                                         <div class="card-body">
 
-                                            <a href="{{ route('services.create') }}" class="btn btn-primary mb-3"><i
-                                                    class="bx bx-plus"></i> Add New Service</a>
+                                            <a href="#" onclick="return confirm('coming soon')"
+                                                class="btn btn-primary mb-3"><i class="bx bx-plus"></i> Add New Plan</a>
                                             <div class="table-responsive">
                                                 <table class="table text-nowrap" style="background:#fafafc !important">
                                                     <thead>
                                                         <tr>
                                                             <th>SN</th>
-                                                            <th>Name</th>
-                                                            <th>Category</th>
-                                                            <th>Type</th>
+                                                            <th>Network</th>
+                                                            <th>Plan</th>
+                                                            <th>size</th>
+                                                            <th>validity</th>
                                                             <th>Amount</th>
-                                                            <th>Status</th>
                                                             <th>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($services as $service)
+                                                        @foreach ($smedatas as $smedata)
                                                             <tr>
                                                                 <td> {{ $loop->iteration }}</td>
-                                                                <td>{{ $service->name }}</td>
-                                                                <td>{{ $service->category }}</td>
-                                                                <td>{{ $service->type }}</td>
-                                                                <td>₦ {{ $service->amount }}</td>
+                                                                <td>{{ $smedata->network }}</td>
+                                                                <td>{{ $smedata->plan_type }}</td>
+                                                                <td>{{ $smedata->size }}</td>
+                                                                <td>{{ $smedata->validity }}</td>
+                                                                <td>₦ {{ $smedata->amount }}</td>
+
                                                                 <td>
-                                                                    <span
-                                                                        class="badge {{ $service->status == 'enabled' ? 'bg-success' : 'bg-danger' }}">
-                                                                        {{ ucfirst($service->status) }}
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <a href="{{ route('services.edit', $service->id) }}"
+                                                                    <a href="#"
+                                                                        onclick="return confirm('coming soon')"
                                                                         class="btn btn-primary btn-sm"><i
                                                                             class="bx bx-edit"></i> Edit</a>
-
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -126,7 +127,7 @@
 
                                             <!-- Pagination -->
                                             <div class="d-flex justify-content-center mt-3">
-                                                {{ $services->links('pagination::bootstrap-5') }}
+                                                {{ $smedatas->links('pagination::bootstrap-5') }}
                                             </div>
 
 

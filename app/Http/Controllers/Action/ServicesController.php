@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Action;
 
 use App\Http\Controllers\Controller;
+use App\Models\DataVariation;
 use App\Models\Notification;
 use App\Models\Services;
 use App\Models\ServiceStatus;
@@ -10,6 +11,7 @@ use App\Traits\ActiveUsers;
 use App\Traits\KycVerify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ServicesController extends Controller
 {
@@ -36,9 +38,37 @@ class ServicesController extends Controller
 
         $servicesStatus = ServiceStatus::excludeAdminPayout()->get();
 
-        $services = Services::orderBy('id', 'desc')->paginate(10); // Show 10 per page
+        $services = Services::orderBy('id', 'desc')->paginate(15); // Show 10 per page
 
         return view('services.index', compact('notifications', 'notifyCount', 'servicesStatus', 'services', 'notificationsEnabled'));
+    }
+
+    public function smeIndex()
+    {
+
+        $loginUserId = Auth::id();
+
+
+        $notifications = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+
+        $notifyCount = Notification::where('user_id', $loginUserId)
+            ->where('status', 'unread')
+            ->count();
+
+        $notificationsEnabled = Auth::user()->notification;
+
+
+
+        $dataVariations = DataVariation::paginate(12);
+
+        $smedatas = DB::table('sme_datas')->paginate(12);
+
+        return view('services.sme_data', compact('notifications', 'notifyCount',  'smedatas', 'notificationsEnabled', 'dataVariations'));
     }
 
     public function updateStatus(Request $request)

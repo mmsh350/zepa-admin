@@ -292,9 +292,10 @@
                         </li>
                     </ul>
                 </li>
-                <li class="slide has-sub {{ request()->is('services*') ? 'open' : '' }}">
+                <li
+                    class="slide has-sub {{ request()->is('services*') || request()->is('sme-service') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
-                        class="side-menu__item {{ request()->is('verification.kyc') || request()->is('upgrade-list') ? 'active' : '' }}">
+                        class="side-menu__item {{ request()->is('services*') || request()->is('sme-service') ? 'active' : '' }}">
                         <i class="bx bx-wrench side-menu__icon"></i>
                         <span class="side-menu__label">Serivces </span>
                         <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -306,7 +307,8 @@
                                 Services</a>
                         </li>
                         <li class="slide">
-                            <a href="#" onclick="return confirm('coming soon')" class="side-menu__item">Data
+                            <a href="{{ route('sme-service') }}"
+                                class="side-menu__item {{ request()->is('sme-service') ? 'active' : '' }} ">Data
                                 Services</a>
                         </li>
                     </ul>

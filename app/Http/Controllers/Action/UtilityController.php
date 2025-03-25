@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class UtilityController extends Controller
 {
@@ -46,7 +48,6 @@ class UtilityController extends Controller
         $priceList = Services::where('category', 'Airtime')->paginate(8);
 
         return view('buy-airtime', compact('notifications', 'notifyCount', 'priceList', 'notificationsEnabled'));
-
     }
 
     //Buy Airtime
@@ -92,7 +93,7 @@ class UtilityController extends Controller
         $ServiceFee = $ServiceFee->amount;
 
         if ($ServiceFee > $amount) {
-            return redirect()->back()->with('error', 'Please note that the minimum amount for airtime purchase on the '.$network.' network is ₦'.$amount);
+            return redirect()->back()->with('error', 'Please note that the minimum amount for airtime purchase on the ' . $network . ' network is ₦' . $amount);
         }
 
         //Check if wallet is funded
@@ -124,7 +125,7 @@ class UtilityController extends Controller
                     $affected = Wallet::where('user_id', $this->loginUserId)
                         ->update(['balance' => $balance]);
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -135,7 +136,7 @@ class UtilityController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $requestId,
                         'service_type' => 'Airtime Purchase',
-                        'service_description' => strtoupper($network).''.' Airtime purchase of '.number_format($request->amount, 2).' successfully on '.$mobile,
+                        'service_description' => strtoupper($network) . '' . ' Airtime purchase of ' . number_format($request->amount, 2) . ' successfully on ' . $mobile,
                         'amount' => $request->amount,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -146,18 +147,17 @@ class UtilityController extends Controller
                     Notification::create([
                         'user_id' => $this->loginUserId,
                         'message_title' => 'Airtime Purchase',
-                        'messages' => 'Airtime of ₦'.number_format($request->amount, 2).' was successful',
+                        'messages' => 'Airtime of ₦' . number_format($request->amount, 2) . ' was successful',
                     ]);
 
-                    $successMessage = strtoupper($network).' Airtime purchase successfully on '.$mobile;
+                    $successMessage = strtoupper($network) . ' Airtime purchase successfully on ' . $mobile;
 
                     // Correctly format the link
-                    $link = '<br /> <a href="'.route('reciept', $requestId).'"><i class="bi bi-download"></i>
+                    $link = '<br /> <a href="' . route('reciept', $requestId) . '"><i class="bi bi-download"></i>
                            Download Receipt</a>';
 
                     // Use session flash to store the success message with HTML
-                    return redirect()->back()->with('success', $successMessage.' '.$link);
-
+                    return redirect()->back()->with('success', $successMessage . ' ' . $link);
                 } else {
 
                     return redirect()->back()->with('error', 'Airtime Purchase Failed');
@@ -262,36 +262,73 @@ class UtilityController extends Controller
                 'notifications',
                 'notifycount'
             ));
-
     }
 
-    public function getVariation(Request $request)
+    public function getVariation()
     {
 
-        $response = Http::get(env('VARIATION_URL').$request->type);
+        $types = ['mtn-data', 'airtel-data', 'glo-data', 'etisalat-data', 'spectranet', 'smile-direct'];
+        $successCount = 0;
+        $failedTypes = [];
 
-        if ($response->successful()) {
+        try {
 
-            $data = $response->json();
-            $service_name = $data['content']['ServiceName'];
-            $service_id = $data['content']['serviceID'];
-            $convinience_fee = $data['content']['convinience_fee'];
+            DB::table('data_variations')->truncate();
+            Log::info("Truncated data_variations table before inserting new data.");
 
-            foreach ($data['content']['varations'] as $variation) {
-                DB::table('data_variations')->updateOrInsert(
-                    ['variation_code' => $variation['variation_code']],
-                    ['service_name' => $service_name,
-                        'service_id' => $service_id,
-                        'convinience_fee' => $convinience_fee,
-                        'name' => $variation['name'],
-                        'variation_amount' => $variation['variation_amount'],
-                        'fixedPrice' => $variation['fixedPrice'],
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]
-                );
+            foreach ($types as $type) {
+
+                $response = Http::get(env('VARIATION_URL') . $type);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    if (isset($data['content'])) {
+                        $service_name = $data['content']['ServiceName'] ?? null;
+                        $service_id = $data['content']['serviceID'] ?? null;
+                        $convenience_fee = $data['content']['convinience_fee'] ?? null;
+
+                        $insertData = [];
+
+                        foreach ($data['content']['varations'] as $variation) {
+                            $insertData[] = [
+                                'variation_code' => $variation['variation_code'],
+                                'service_name' => $service_name,
+                                'service_id' => $service_id,
+                                'convinience_fee' => $convenience_fee,
+                                'name' => $variation['name'],
+                                'variation_amount' => $variation['variation_amount'],
+                                'fixedPrice' => $variation['fixedPrice'],
+                                'created_at' => Carbon::now(),
+                                'updated_at' => Carbon::now(),
+                            ];
+                        }
+
+
+                        DB::table('data_variations')->insert($insertData);
+                        $successCount++;
+                        Log::info("Successfully inserted variations for: $type");
+                    }
+                } else {
+                    $failedTypes[] = $type;
+                    Log::error("Failed to fetch variation for: $type. Response: " . $response->body());
+                }
             }
+
+
+            if ($successCount > 0) {
+                Session::flash('success', "$successCount variations updated successfully.");
+            }
+
+            if (!empty($failedTypes)) {
+                Session::flash('error', "Failed to fetch variations for: " . implode(', ', $failedTypes));
+            }
+        } catch (\Exception $e) {
+            Log::error("Error in getVariation(): " . $e->getMessage());
+            Session::flash('error', "An error occurred while updating variations.");
         }
+
+        return redirect()->back();
     }
 
     public function buypin(Request $request)
@@ -338,7 +375,7 @@ class UtilityController extends Controller
                     $affected = Wallet::where('user_id', $this->loginUserId)
                         ->update(['balance' => $balance]);
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -349,7 +386,7 @@ class UtilityController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $requestId,
                         'service_type' => 'PIN Purchase',
-                        'service_description' => ' PIN purchase of '.number_format($fee, 2).' successfully on '.$request->mobileno,
+                        'service_description' => ' PIN purchase of ' . number_format($fee, 2) . ' successfully on ' . $request->mobileno,
                         'amount' => $fee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -367,17 +404,15 @@ class UtilityController extends Controller
                     Notification::create([
                         'user_id' => $this->loginUserId,
                         'message_title' => 'PIN Purchase',
-                        'messages' => 'PIN of ₦'.number_format($fee, 2).' was successful',
+                        'messages' => 'PIN of ₦' . number_format($fee, 2) . ' was successful',
                     ]);
 
-                    $successMessage = 'PIN Succesfully Purchased '.$data['purchased_code'];
+                    $successMessage = 'PIN Succesfully Purchased ' . $data['purchased_code'];
 
                     return redirect()->back()->with('success', $successMessage);
-
                 } else {
                     return redirect()->back()->with('error', 'PIN Purchase Failed. Please try again later.');
                 }
-
             } else {
 
                 return redirect()->back()->with('error', 'Failed to purchase PIN. Please try again later.');
@@ -429,7 +464,7 @@ class UtilityController extends Controller
                     $affected = Wallet::where('user_id', $this->loginUserId)
                         ->update(['balance' => $balance]);
 
-                    $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                    $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                     $payer_email = auth()->user()->email;
                     $payer_phone = auth()->user()->phone_number;
 
@@ -440,7 +475,7 @@ class UtilityController extends Controller
                         'payer_phone' => $payer_phone,
                         'referenceId' => $requestId,
                         'service_type' => 'Data Purchase',
-                        'service_description' => ' Data purchase of '.number_format($fee, 2).' successfully on '.$request->mobileno,
+                        'service_description' => ' Data purchase of ' . number_format($fee, 2) . ' successfully on ' . $request->mobileno,
                         'amount' => $fee,
                         'gateway' => 'Wallet',
                         'status' => 'Approved',
@@ -450,27 +485,24 @@ class UtilityController extends Controller
                     Notification::create([
                         'user_id' => $this->loginUserId,
                         'message_title' => 'Data Purchase',
-                        'messages' => 'Data of ₦'.number_format($fee, 2).' was successful',
+                        'messages' => 'Data of ₦' . number_format($fee, 2) . ' was successful',
                     ]);
 
-                    $successMessage = 'Data purchase successfully on '.$request->mobileno;
+                    $successMessage = 'Data purchase successfully on ' . $request->mobileno;
                     // Correctly format the link
-                    $link = '<br /> <a href="'.route('reciept', $requestId).'"><i class="bi bi-download"></i>
+                    $link = '<br /> <a href="' . route('reciept', $requestId) . '"><i class="bi bi-download"></i>
                             Download Receipt</a>';
 
                     // Use session flash to store the success message with HTML
-                    return redirect()->back()->with('success', $successMessage.' '.$link);
-
+                    return redirect()->back()->with('success', $successMessage . ' ' . $link);
                 } else {
                     return redirect()->back()->with('error', 'Data Purchase Failed. Please try again later.');
                 }
-
             } else {
 
                 return redirect()->back()->with('error', 'Failed to purchase data bundle. Please try again later.');
             }
         }
-
     }
 
     public function buySMEdata(Request $request)
@@ -503,7 +535,7 @@ class UtilityController extends Controller
 
                 // Send the POST request
                 $response = Http::withHeaders([
-                    'Authorization' => 'Token '.env('AUTH_TOKEN'),
+                    'Authorization' => 'Token ' . env('AUTH_TOKEN'),
                     'Content-Type' => 'application/json',
                 ])->post(env('SME_ENDPOINT'), [
                     'network' => $network_id,
@@ -524,7 +556,7 @@ class UtilityController extends Controller
                         $affected = Wallet::where('user_id', $this->loginUserId)
                             ->update(['balance' => $balance]);
 
-                        $payer_name = auth()->user()->first_name.' '.Auth::user()->last_name;
+                        $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
                         $payer_email = auth()->user()->email;
                         $payer_phone = auth()->user()->phone_number;
 
@@ -544,8 +576,8 @@ class UtilityController extends Controller
                             'payer_phone' => $payer_phone,
                             'referenceId' => $referenceno,
                             'service_type' => 'Data Purchase',
-                            'service_description' => ' Data purchase of '.number_format($fee, 2).' successfully on
-                   '.$request->mobileno,
+                            'service_description' => ' Data purchase of ' . number_format($fee, 2) . ' successfully on
+                   ' . $request->mobileno,
                             'amount' => $fee,
                             'gateway' => 'Wallet',
                             'status' => 'Approved',
@@ -555,33 +587,28 @@ class UtilityController extends Controller
                         Notification::create([
                             'user_id' => $this->loginUserId,
                             'message_title' => 'Data Purchase',
-                            'messages' => 'Data of ₦'.number_format($fee, 2).' was successful',
+                            'messages' => 'Data of ₦' . number_format($fee, 2) . ' was successful',
                         ]);
 
-                        $successMessage = 'Data purchase successfully on '.$request->mobileno;
+                        $successMessage = 'Data purchase successfully on ' . $request->mobileno;
 
                         // Correctly format the link
-                        $link = '<br /> <a href="'.route('reciept', $referenceno).'"><i class="bi bi-download"></i>
+                        $link = '<br /> <a href="' . route('reciept', $referenceno) . '"><i class="bi bi-download"></i>
                            Download Receipt</a>';
 
                         // Use session flash to store the success message with HTML
-                        return redirect()->back()->with('success', $successMessage.' '.$link);
-
+                        return redirect()->back()->with('success', $successMessage . ' ' . $link);
                     } else {
                         return redirect()->back()->with('error', 'Data Purchase Failed. Please try again later.');
                     }
-
                 } else {
                     return redirect()->back()->with('error', 'Data Purchase Failed. Please try again later.');
                 }
-
             } catch (\Exception $e) {
 
                 return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
             }
-
         }
-
     }
 
     public function fetchBundles(Request $request)
@@ -623,7 +650,6 @@ class UtilityController extends Controller
             ->get();
 
         return response()->json($types);
-
     }
 
     public function fetchDataPlan(Request $request)
@@ -659,7 +685,6 @@ class UtilityController extends Controller
             ->get();
 
         return response()->json($types);
-
     }
 
     public function fetchBundlePrice(Request $request)
@@ -717,14 +742,16 @@ class UtilityController extends Controller
                 'notifications',
                 'notifycount'
             ));
-
     }
 
     public function validateno(Request $request)
     {
         $request->validate([
-            'service_id' => ['required', 'string',
-                'in:gotv,dstv,Startimes,Showmax'],
+            'service_id' => [
+                'required',
+                'string',
+                'in:gotv,dstv,Startimes,Showmax'
+            ],
             'smartcardno' => 'required|numeric',
         ]);
 
@@ -752,8 +779,6 @@ class UtilityController extends Controller
                         return $data;
                     }
                 }
-
         }
-
     }
 }
