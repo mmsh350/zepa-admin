@@ -175,16 +175,24 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::put('/services/update/{id}', [ServicesController::class, 'update'])->name('services.update');
     Route::get('/services/create', [ServicesController::class, 'create'])->name('services.create');
     Route::get('/services/edit/{id}', [ServicesController::class, 'edit'])->name('services.edit');
-
+    Route::post('/services', [ServicesController::class, 'store'])->name('services.store');
 
     //SME SERVICES
     Route::get('/sme-service', [ServicesController::class, 'smeIndex'])->name('sme-service');
+    Route::get('/sme-service/variation/edit/{id}', [ServicesController::class, 'editVariations'])->name('services.variation.edit');
+    Route::put('/sme-service/variation/update/{id}', [ServicesController::class, 'updateVariation'])->name('services.variation.update');
 
-    Route::post('/services', [ServicesController::class, 'store'])->name('services.store');
+    Route::get('/sme-service/smedata/edit/{id}', [ServicesController::class, 'editSMEData'])->name('services.smedata.edit');
+    Route::put('/sme-service/smedata/update/{id}', [ServicesController::class, 'updateSMEData'])->name('services.smedata.update');
+    Route::get('/sme-service/create', [ServicesController::class, 'createSMEData'])->name('sme-service.create');
+    Route::post('/sme-service', [ServicesController::class, 'storeSMEData'])->name('sme-service.store');
+
+
+
 
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');
 
-    //AIRTIME & PRICE UPDATE QUERY move to admin
+
     Route::get('/bankcodes', [BankController::class, 'pullBankCodes']);
     Route::get('/variation', [UtilityController::class, 'getVariation'])->name('variation');
     //ONLY IF UPDATE IS NECCESSARY

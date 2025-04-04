@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DataVariation extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'status'
+    ];
 }

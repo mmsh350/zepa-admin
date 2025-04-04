@@ -48,9 +48,36 @@
                                             <h5 class="card-title">VTPASS Data Variation</h5>
                                         </div>
                                         <div class="card-body">
-                                            <a href="{{ route('variation') }}" class="btn btn-primary mb-3"><i
+                                            <a href="{{ route('variation') }}" class="btn btn-danger mb-3"><i
                                                     class='bx bx-refresh'></i>
                                                 Refresh Variation</a>
+
+
+                                            <form method="GET" action="{{ route('sme-service') }}"
+                                                class="row g-2 mb-3 align-items-end">
+                                                <div class="col-sm-5 col-md-4">
+                                                    <input type="text" name="search-variation" class="form-control"
+                                                        placeholder="Search..." value="{{ request('search-variation') }}">
+                                                </div>
+
+                                                <div class="col-sm-4 col-md-3">
+                                                    <select name="per_page" class="form-select"
+                                                        onchange="this.form.submit()">
+                                                        @foreach ([10, 15, 25, 50, 100] as $size)
+                                                            <option value="{{ $size }}"
+                                                                {{ request('per_page', 10) == $size ? 'selected' : '' }}>
+                                                                Show {{ $size }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-3 col-md-2">
+                                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                                </div>
+                                            </form>
+
+
                                             <div class="table-responsive">
                                                 <table class="table text-nowrap" style="background:#fafafc !important">
                                                     <thead>
@@ -59,6 +86,8 @@
                                                             <th>service ID</th>
                                                             <th>Name</th>
                                                             <th>Amount</th>
+                                                            <th>Status</th>
+                                                            <th>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -68,6 +97,17 @@
                                                                 <td>{{ $variation->service_id }}</td>
                                                                 <td>{{ $variation->name }}</td>
                                                                 <td>₦ {{ $variation->variation_amount }}</td>
+                                                                <td>
+                                                                    <span
+                                                                        class="badge {{ $variation->status == 'enabled' ? 'bg-success' : 'bg-danger' }}">
+                                                                        {{ ucfirst($variation->status) }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('services.variation.edit', $variation->id) }}"
+                                                                        class="btn btn-primary btn-sm"><i
+                                                                            class="bx bx-edit"></i> Edit</a>
+                                                                </td>
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
@@ -82,14 +122,38 @@
                                 </div>
 
                                 <div class="col-xl-12">
-                                    <div class="card custom-card ">
+                                    <div class="card custom-card">
                                         <div class="card-header">
                                             <h5 class="card-title">Other SME Plan</h5>
                                         </div>
                                         <div class="card-body">
 
-                                            <a href="#" onclick="return confirm('coming soon')"
-                                                class="btn btn-primary mb-3"><i class="bx bx-plus"></i> Add New Plan</a>
+                                            <a href="{{ route('sme-service.create') }}" class="btn btn-primary mb-3"><i
+                                                    class="bx bx-plus"></i> Add New Plan</a>
+
+                                            <form method="GET" action="{{ route('sme-service') }}"
+                                                class="row g-2 mb-3 align-items-end">
+                                                <div class="col-sm-5 col-md-4">
+                                                    <input type="text" name="search" class="form-control"
+                                                        placeholder="Search..." value="{{ request('search') }}">
+                                                </div>
+
+                                                <div class="col-sm-4 col-md-3">
+                                                    <select name="per_page2" class="form-select"
+                                                        onchange="this.form.submit()">
+                                                        @foreach ([10, 15, 25, 50, 100] as $size)
+                                                            <option value="{{ $size }}"
+                                                                {{ request('per_page2', 10) == $size ? 'selected' : '' }}>
+                                                                Show {{ $size }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-3 col-md-2">
+                                                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                                </div>
+                                            </form>
                                             <div class="table-responsive">
                                                 <table class="table text-nowrap" style="background:#fafafc !important">
                                                     <thead>
@@ -100,6 +164,7 @@
                                                             <th>size</th>
                                                             <th>validity</th>
                                                             <th>Amount</th>
+                                                            <th>Status</th>
                                                             <th>Actions</th>
                                                         </tr>
                                                     </thead>
@@ -112,10 +177,14 @@
                                                                 <td>{{ $smedata->size }}</td>
                                                                 <td>{{ $smedata->validity }}</td>
                                                                 <td>₦ {{ $smedata->amount }}</td>
-
                                                                 <td>
-                                                                    <a href="#"
-                                                                        onclick="return confirm('coming soon')"
+                                                                    <span
+                                                                        class="badge {{ $smedata->status == 'enabled' ? 'bg-success' : 'bg-danger' }}">
+                                                                        {{ ucfirst($smedata->status) }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('services.smedata.edit', $smedata->id) }}"
                                                                         class="btn btn-primary btn-sm"><i
                                                                             class="bx bx-edit"></i> Edit</a>
                                                                 </td>
