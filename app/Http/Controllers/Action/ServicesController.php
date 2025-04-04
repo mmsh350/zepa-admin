@@ -159,7 +159,7 @@ class ServicesController extends Controller
             ->count();
 
         $notificationsEnabled = Auth::user()->notification;
-        return view('services.createsmeData', compact('notifications', 'notifyCount', 'notificationsEnabled'));
+        return view('services.createSMEData', compact('notifications', 'notifyCount', 'notificationsEnabled'));
     }
 
     public function store(Request $request)
