@@ -172,7 +172,7 @@
                                                         @foreach ($smedatas as $smedata)
                                                             <tr>
                                                                 <td> {{ $loop->iteration }}</td>
-                                                                <td>{{ $smedata->network }} - {{ $smedata->data_id }}</td>
+                                                                <td>{{ $smedata->data_id }} - {{ $smedata->network }} </td>
                                                                 <td>{{ $smedata->plan_type }}</td>
                                                                 <td>{{ $smedata->size }}</td>
                                                                 <td>{{ $smedata->validity }}</td>
