@@ -159,7 +159,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>SN</th>
-                                                            <th>Network</th>
+                                                            <th>Network & ID</th>
                                                             <th>Plan</th>
                                                             <th>size</th>
                                                             <th>validity</th>
@@ -172,7 +172,7 @@
                                                         @foreach ($smedatas as $smedata)
                                                             <tr>
                                                                 <td> {{ $loop->iteration }}</td>
-                                                                <td>{{ $smedata->network }}</td>
+                                                                <td>{{ $smedata->network }} - {{ $smedata->data_id }}</td>
                                                                 <td>{{ $smedata->plan_type }}</td>
                                                                 <td>{{ $smedata->size }}</td>
                                                                 <td>{{ $smedata->validity }}</td>
