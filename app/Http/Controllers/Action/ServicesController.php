@@ -182,7 +182,7 @@ class ServicesController extends Controller
     {
 
         $validated = $request->validate([
-            'data_id'   => 'required|numeric|unique:sme_datas',
+            'data_id'   => 'required|numeric',
             'network'   => 'required|string',
             'amount'    => 'required|numeric',
             'plan_type' => 'required|string',
@@ -305,6 +305,7 @@ class ServicesController extends Controller
     {
 
         $validated = $request->validate([
+            'data_id'   => 'required|numeric',
             'network'   => 'required|string',
             'amount'    => 'required|numeric',
             'plan_type' => 'required|string',
