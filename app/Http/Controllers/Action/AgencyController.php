@@ -857,7 +857,7 @@ class AgencyController extends Controller
     {
 
            // Determine the request type and fetch the corresponding record
-        $request =  NIN_SERVICE::findOrFail($id)
+        $request =  NIN_SERVICE::findOrFail($id);
         // Get the document path (this should be relative to your external storage URL)
         $documentPath = $request->uploads; // Example: 'Documents/1730123905_Daniel2.pdf'
 
