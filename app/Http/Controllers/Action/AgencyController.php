@@ -258,9 +258,14 @@ class AgencyController extends Controller
                 $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
             }else if($route == 'nin-services'){
                     if ($requestDetails->service_type) {
-                        $service_key = $requestDetails->service_type === 'Date of Birth Update'
-                            ? 'nin_modification_dob'
-                            : 'nin_modification_general';
+                          $serviceTypeMap = [
+                            'Date of Birth Update' => 'nin_modification_dob',
+                            'Name Modification' => 'nin_modification_name',
+                            'Change of Address' => 'nin_modification_address',
+                            'Phone Number Update' => 'nin_modification_phone',
+                        ];
+                        
+                $service_key = $serviceTypeMap[$requestDetails->service_type] ?? 'nin_modification_general';
 
                 $this->walletService->creditDeveloperWallet(
                     $payer_name,
