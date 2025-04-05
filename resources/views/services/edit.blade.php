@@ -130,6 +130,26 @@
                                                             {{ $service->type == 'bvn_modification' ? 'selected' : '' }}>
                                                             BVN_MODIFICATION
                                                         </option>
+                                                        <option value="nin_modification_general"
+                                                            {{ $service->type == 'nin_modification_general' ? 'selected' : '' }}>
+                                                            NIN_MODIFICATION_GENERAL
+                                                        </option>
+                                                        <option value="nin_modification_dob"
+                                                            {{ $service->type == 'nin_modification_dob' ? 'selected' : '' }}>
+                                                            NIN_MODIFICATION_DOB
+                                                        </option>
+                                                        <option value="nin_modification_name"
+                                                            {{ $service->type == 'nin_modification_name' ? 'selected' : '' }}>
+                                                            NIN_MODIFICATION_NAME
+                                                        </option>
+                                                        <option value="nin_modification_phone"
+                                                            {{ $service->type == 'nin_modification_phone' ? 'selected' : '' }}>
+                                                             NIN_MODIFICATION_PHONE
+                                                        </option>
+                                                        <option value="nin_modification_address"
+                                                            {{ $service->type == 'nin_modification_address' ? 'selected' : '' }}>
+                                                            NIN_MODIFICATION_ADDRESS
+                                                        </option>
                                                         <option value="verification_v2"
                                                             {{ $service->type == 'verification_v2' ? 'selected' : '' }}>
                                                             VERIFICATION_V2
