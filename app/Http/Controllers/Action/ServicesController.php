@@ -84,7 +84,8 @@ class ServicesController extends Controller
         if (!empty($searchVariation)) {
             $variationQuery->where(function ($query) use ($searchVariation) {
                 $query->where('service_name', 'like', "%{$searchVariation}%")
-                    ->orWhere('name', 'like', "%{$searchVariation}%");
+                    ->orWhere('name', 'like', "%{$searchVariation}%")
+                     ->orWhere('data_id', 'like', "%{$searchVariation}%");
             });
         }
 
