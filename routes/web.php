@@ -84,6 +84,7 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     Route::get('/document/view/{id}/{type}', [AgencyController::class, 'viewDocument'])->name('document.view');
     Route::get('/document2/view/{id}/{type}', [AgencyController::class, 'viewDocument2'])->name('check.docs');
+    Route::get('/document3/view/{id}/{type}', [AgencyController::class, 'viewPhotograph'])->name('check.photo');
 
     Route::get('/wema-bank', function () {
         $path = 'docs/wema.pdf';
