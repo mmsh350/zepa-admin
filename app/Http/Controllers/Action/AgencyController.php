@@ -744,6 +744,7 @@ class AgencyController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('refno', 'like', "%{$searchTerm}%")
                     ->orWhere('bvn_number', 'like', "%{$searchTerm}%")
+                     ->orWhere('requestId', 'like', "%{$searchTerm}%")
                     ->orWhere('status', 'like', "%{$searchTerm}%")
                     ->orWhereHas('user', function ($subQuery) use ($searchTerm) {
                         $subQuery->where('first_name', 'like', "%{$searchTerm}%")
