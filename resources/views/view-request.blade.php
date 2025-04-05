@@ -311,7 +311,7 @@
                                             </p>
                                         </div>
                                           <div class="mt-1">
-                                        <h6 class="text-uppercase">Photograph</h6>
+                                        <p class="text-uppercase">Photo Upload</p>
                                         <p>
                                             <a href="{{ route('check.photo', ['id' => $requests->id, 'type' => 'photo']) }}
 "
