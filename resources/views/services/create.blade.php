@@ -87,6 +87,15 @@
                                                         <option value="bvn_modification">
                                                             BVN_MODIFICATION
                                                         </option>
+                                                         <option value="nin_modification_general">
+                                                            NIN_MODIFICATION_GENERAL
+                                                        </option> 
+                                                         <option value="nin_modification_dob">
+                                                            NIN_MODIFICATION_DOB
+                                                        </option> 
+                                                        <option value="bvn_modification">
+                                                            BVN_MODIFICATION
+                                                        </option>
                                                         <option value="verification_v2">
                                                             VERIFICATION_V2
                                                         </option>
