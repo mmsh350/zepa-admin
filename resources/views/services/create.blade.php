@@ -93,6 +93,15 @@
                                                          <option value="nin_modification_dob">
                                                             NIN_MODIFICATION_DOB
                                                         </option> 
+                                                         <option value="nin_modification_name">
+                                                            NIN_MODIFICATION_NAME
+                                                        </option> 
+                                                         <option value="nin_modification_phone">
+                                                            NIN_MODIFICATION_PHONE
+                                                        </option> 
+                                                         <option value="nin_modification_address">
+                                                            NIN_MODIFICATION_ADDRESS
+                                                        </option> 
                                                         <option value="bvn_modification">
                                                             BVN_MODIFICATION
                                                         </option>
