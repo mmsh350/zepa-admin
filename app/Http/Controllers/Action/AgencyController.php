@@ -257,8 +257,8 @@ class AgencyController extends Controller
             if ($route == 'bvn-modification'){
                 $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
             }else if($route == 'nin-services'){
-                    if ($request->service_type) {
-                        $service_key = $request->service_type === 'Date of Birth Update'
+                    if ($requestDetails->service_type) {
+                        $service_key = $requestDetails->service_type === 'Date of Birth Update'
                             ? 'nin_modification_dob'
                             : 'nin_modification_general';
 
