@@ -294,6 +294,8 @@
                                                 {{ strtoupper($requests->trackingId) }}</p>
                                             <p><strong>Service Type.:</strong>
                                                 {{ strtoupper($requests->service_type) }}</p>
+                                               <p><strong>Correction:</strong>
+                                                {{ strtoupper($requests->description) }}</p>
                                             <p><strong>Date:</strong>
                                                 {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
                                             <p><strong>Status:</strong>
@@ -308,6 +310,16 @@
                                                 @endif
                                             </p>
                                         </div>
+                                          <div class="mt-1">
+                                        <h6 class="text-uppercase">Photograph</h6>
+                                        <p>
+                                            <a href="{{ route('document.view', ['id' => $requests->id, 'type' => 'photo']) }}
+"
+                                                class="btn btn-info btn-sm" target="_blank">
+                                                <i class="ti ti-eye me-2"></i> View photo
+                                            </a>
+                                        </p>
+                                    </div>
                                     </div>
 
                                     <p class="mt-3"><strong>Comments:</strong><br> {!! $requests->reason !!}</p>
