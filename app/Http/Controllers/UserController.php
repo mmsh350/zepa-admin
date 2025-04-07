@@ -155,12 +155,12 @@ class UserController extends Controller
 
                 // Create transaction
                 $this->transactionService->createTransaction([
-                    'user_id' => $user->id,
-                    'payer_name' => $user->first_name . ' ' . $user->last_name,
-                    'payer_email' => $user->email,
-                    'payer_phone' => $user->phone_number,
-                    'service_type' => 'Wallet Credit',
-                    'service_description' => 'Admin Wallet Top-up',
+                    'user_id' => auth()->user()->id,
+                    'payer_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
+                    'payer_email' => auth()->user()->email,
+                    'payer_phone' => auth()->user()->phone_number,
+                    'service_type' => 'Wallet Topup',
+                    'service_description' => 'Your wallet has been credited with ' . '₦' . number_format($amountToAdd, 2),
                     'amount' => $amountToAdd,
                     'gateWay' => 'Internal',
                     'status' => 'Approved',
