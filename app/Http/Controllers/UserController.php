@@ -151,6 +151,7 @@ class UserController extends Controller
 
             if ($user->wallet) {
                 $user->wallet->balance += $amountToAdd;
+                $user->wallet->deposit += $amountToAdd;
                 $user->wallet->save();
 
                 // Create transaction
