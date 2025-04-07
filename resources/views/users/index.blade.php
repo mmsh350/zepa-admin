@@ -43,8 +43,8 @@
                                                 <table class="table text-nowrap" style="background:#fafafc !important">
                                                     <thead>
                                                         <tr>
+                                                            <th>ID</th>
                                                             <th>Email</th>
-                                                            {{-- <th>Username</th> --}}
                                                             <th>Name</th>
                                                             <th>Phone</th>
                                                             <th>Active</th>
@@ -55,6 +55,7 @@
                                                     <tbody>
                                                         @forelse($users as $user)
                                                             <tr>
+                                                                <td>{{ $loop->iteration }}</td>
                                                                 <td>{{ $user->email }}</td>
                                                                 <td>
                                                                     {!! $user->first_name || $user->last_name
