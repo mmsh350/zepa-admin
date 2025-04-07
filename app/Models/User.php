@@ -19,18 +19,35 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
+        'email',
+        'username',
+        'email_verified_at',
+        'password',
+        'pin',
         'first_name',
         'last_name',
         'middle_name',
-        'email',
-        'password',
+        'dob',
+        'gender',
         'phone_number',
-        'referral_code',
-        'refferral_id',
-        'role',
         'is_active',
-        'id_cards',
-
+        'role',
+        'referral_code',
+        'referral_bonus',
+        'refferral_id',
+        'claim_id',
+        'profile_pic',
+        'idType',
+        'idNumber',
+        'kyc_status',
+        'wallet_is_created',
+        'vwallet_is_created',
+        'notification',
+        'current_sign_in_at',
+        'last_sign_in_at',
+        'created_by',
+        'deleted_by',
+        'daily_limit',
     ];
 
     /**
@@ -110,5 +127,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getFullNameAttribute()
     {
         return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
     }
 }

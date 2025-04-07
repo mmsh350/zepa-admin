@@ -12,6 +12,7 @@ use App\Http\Controllers\Action\UtilityController;
 use App\Http\Controllers\Action\WalletController;
 use App\Http\Controllers\NIN\NINController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -205,6 +206,12 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/payout', [WalletController::class, 'payout'])->name('payout');
     Route::post('/validatePin', [TransactionController::class, 'validatePin'])->name('pin.validate');
     Route::get('/delete/{id}', [WalletController::class, 'virtualDeleteAccount']);
+
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
 });
 
 require __DIR__ . '/auth.php';

@@ -267,7 +267,8 @@
                     </ul>
                 </li>
 
-                <li class="slide has-sub {{ request()->is('kyc') || request()->is('upgrade-list') ? 'open' : '' }}">
+                <li
+                    class="slide has-sub {{ request()->is('kyc') || request()->is('upgrade-list') || request()->is('users*') ? 'open' : '' }}">
                     <a href="javascript:void(0);"
                         class="side-menu__item {{ request()->is('verification.kyc') || request()->is('upgrade-list') ? 'active' : '' }}">
                         <i class="bx bx-user side-menu__icon"></i>
@@ -286,7 +287,8 @@
                                 Upgrade</a>
                         </li>
                         <li class="slide">
-                            <a href="#" onclick="return confirm('Comming Soon')" class="side-menu__item">Manage
+                            <a href="{{ route('users.index') }}"
+                                class="side-menu__item {{ request()->is('users*') ? 'active' : '' }}">Manage
                                 Users
                             </a>
                         </li>
