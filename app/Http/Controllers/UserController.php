@@ -156,7 +156,7 @@ class UserController extends Controller
 
                 // Create transaction
                 $this->transactionService->createTransaction([
-                    'user_id' => auth()->user()->id,
+                    'user_id' => $user->id,
                     'payer_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
                     'payer_email' => auth()->user()->email,
                     'payer_phone' => auth()->user()->phone_number,
