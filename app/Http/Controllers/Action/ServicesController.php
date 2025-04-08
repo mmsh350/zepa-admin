@@ -85,7 +85,7 @@ class ServicesController extends Controller
             $variationQuery->where(function ($query) use ($searchVariation) {
                 $query->where('service_name', 'like', "%{$searchVariation}%")
                     ->orWhere('name', 'like', "%{$searchVariation}%")
-                     ->orWhere('data_id', 'like', "%{$searchVariation}%");
+                    ->orWhere('data_id', 'like', "%{$searchVariation}%");
             });
         }
 
@@ -176,7 +176,7 @@ class ServicesController extends Controller
         ]);
 
         Services::create($request->all());
-        return redirect()->route('services.index')->with('success', 'Service Created Successfully!');
+        return redirect()->route('sme-service.create')->with('success', 'Service Created Successfully!');
     }
 
     public function storeSMEData(Request $request)
