@@ -176,14 +176,14 @@ class ServicesController extends Controller
         ]);
 
         Services::create($request->all());
-        return redirect()->route('sme-service.create')->with('success', 'Service Created Successfully!');
+        return redirect()->route('services.index')->with('success', 'Service Created Successfully!');
     }
 
     public function storeSMEData(Request $request)
     {
 
         $validated = $request->validate([
-            'data_id'   => 'required|numeric',
+            'data_id'   => 'required|numeric|unique:sme_datas',
             'network'   => 'required|string',
             'amount'    => 'required|numeric',
             'plan_type' => 'required|string',
@@ -197,7 +197,7 @@ class ServicesController extends Controller
         DB::table('sme_datas')->insert($validated);
 
 
-        return redirect()->route('sme-service')->with('success', 'Service Created Successfully!');
+        return redirect()->route('sme-service.create')->with('success', 'Service Created Successfully!');
     }
 
 

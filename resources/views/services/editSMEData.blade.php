@@ -56,8 +56,8 @@
 
                                                 <div class="mb-3">
                                                     <label class="form-label">Data ID</label>
-                                                    <input type="text" name="data_id" class="form-control"
-                                                        value="{{ $service->data_id }}">
+                                                    <input type="text" readonly disabled name="data_id"
+                                                        class="form-control" value="{{ $service->data_id }}">
                                                 </div>
 
                                                 <div class="mb-3">
