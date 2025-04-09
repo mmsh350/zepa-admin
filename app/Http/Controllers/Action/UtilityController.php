@@ -267,7 +267,7 @@ class UtilityController extends Controller
     public function getVariation()
     {
 
-        $types = ['mtn-data', 'airtel-data', 'glo-data', 'etisalat-data', 'spectranet', 'smile-direct','waec-registration','waec'];
+        $types = ['mtn-data', 'airtel-data', 'glo-data', 'etisalat-data', 'spectranet', 'smile-direct', 'waec'];
         $successCount = 0;
         $failedTypes = [];
 
