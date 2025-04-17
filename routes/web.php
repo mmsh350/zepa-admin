@@ -10,6 +10,7 @@ use App\Http\Controllers\Action\ServicesController;
 use App\Http\Controllers\Action\TransactionController;
 use App\Http\Controllers\Action\UtilityController;
 use App\Http\Controllers\Action\WalletController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\NIN\NINController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -86,6 +87,13 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/document/view/{id}/{type}', [AgencyController::class, 'viewDocument'])->name('document.view');
     Route::get('/document2/view/{id}/{type}', [AgencyController::class, 'viewDocument2'])->name('check.docs');
     Route::get('/document3/view/{id}/{type}', [AgencyController::class, 'viewPhotograph'])->name('check.photo');
+
+    //APi Services
+
+    Route::group(['prefix' => 'api'], function () {
+        Route::get('update-enrollement', [ApiController::class, 'index'])->name('api.enrollment');
+    });
+
 
     Route::get('/wema-bank', function () {
         $path = 'docs/wema.pdf';
