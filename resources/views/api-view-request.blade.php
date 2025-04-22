@@ -110,9 +110,9 @@
 
                                 <!-- Refund Option -->
                                 <div class="mb-3 d-none" id="refundOption">
-                                    <label class="form-label"><strong>Refund Options</strong></label>
+                                    {{-- <label class="form-label"><strong>Refund Options</strong></label> --}}
 
-                                    <!-- Percentage Selection -->
+                                    {{-- <!-- Percentage Selection -->
                                     <div class="d-flex gap-3">
                                         <div class="form-check">
                                             <input type="radio" name="refund_percentage" value="10" id="refund10"
@@ -134,7 +134,7 @@
                                                 class="form-check-input refund-percentage">
                                             <label for="refund50" class="form-check-label">50%</label>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
 
                                     <!-- Calculated Refund Amount -->

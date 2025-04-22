@@ -156,4 +156,103 @@ class ApiController extends Controller
             )
         );
     }
+
+    public function updateRequestStatus(Request $request, $id, $type)
+    {
+
+        $request->validate([
+            'status' => 'required|string',
+            'comment' => 'required|string',
+        ]);
+
+        $route = 'crm';
+        $requestDetails = null;
+        $status = $request->status;
+
+
+        $requestDetails = CRM_REQUEST::findOrFail($id);
+
+
+        $requestDetails->status = $status;
+        $requestDetails->reason = $request->comment;
+
+        $payer_name = auth()->user()->first_name . ' ' . Auth::user()->last_name;
+        $payer_email = auth()->user()->email;
+        $payer_phone = auth()->user()->phone_number;
+
+        $referenceno = '';
+        srand((float) microtime() * 1000000);
+        $gen = '123456123456789071234567890890';
+        $gen .= 'aBCdefghijklmn123opq45rs67tuv89wxyz';
+        $ddesc = '';
+        for ($i = 0; $i < 12; $i++) {
+            $referenceno .= substr($gen, (rand() % (strlen($gen))), 1);
+        }
+
+
+        if ($request->status === 'resolved') {
+
+            if ($route == 'bvn-modification') {
+                $this->walletService->creditDeveloperWallet($payer_name, $payer_email, $payer_phone, $referenceno . "C2w", "bvn_modification");
+            } else if ($route == 'nin-services') {
+                if ($requestDetails->service_type) {
+                    $serviceTypeMap = [
+                        'Date of Birth Update' => 'nin_modification_dob',
+                        'Name Modification' => 'nin_modification_name',
+                        'Change of Address' => 'nin_modification_address',
+                        'Phone Number Update' => 'nin_modification_phone',
+                    ];
+
+                    $service_key = $serviceTypeMap[$requestDetails->service_type] ?? 'nin_modification_general';
+
+                    $this->walletService->creditDeveloperWallet(
+                        $payer_name,
+                        $payer_email,
+                        $payer_phone,
+                        $referenceno . "C2w",
+                        $service_key
+                    );
+                }
+            } else {
+                //do nothing
+            }
+        }
+
+        if ($request->status === 'rejected') {
+
+            $refundAmount = $request->refundAmount;
+
+            $wallet = Wallet::where('user_id', $requestDetails->user_id)->first();
+
+            $balance = $wallet->balance + $refundAmount;
+
+            Wallet::where('user_id', $requestDetails->user_id)
+                ->update(['balance' => $balance]);
+
+
+            Transaction::create([
+                'user_id' => $requestDetails->user_id,
+                'payer_name' => $payer_name,
+                'payer_email' => $payer_email,
+                'payer_phone' => $payer_phone,
+                'referenceId' => $referenceno,
+                'service_type' => 'Agency Refund',
+                'service_description' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
+                'amount' => $refundAmount,
+                'gateway' => 'Wallet',
+                'status' => 'Approved',
+            ]);
+
+            //In App Notification
+            Notification::create([
+                'user_id' => $requestDetails->user_id,
+                'message_title' => 'Agency Refund',
+                'messages' => 'Wallet credited with a Request fee of ' . number_format($refundAmount, 2),
+            ]);
+        }
+
+        $requestDetails->save();
+
+        return redirect()->route($route)->with('success', 'Request status updated successfully.');
+    }
 }
