@@ -10,6 +10,7 @@ use App\Http\Controllers\Action\ServicesController;
 use App\Http\Controllers\Action\TransactionController;
 use App\Http\Controllers\Action\UtilityController;
 use App\Http\Controllers\Action\WalletController;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\NIN\NINController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -61,6 +62,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/requests/{id}/{type}/update-status', [AgencyController::class, 'updateRequestStatus'])->name('update-request-status');
     Route::get('/view-request/{id}/{type}/edit', [AgencyController::class, 'showRequests'])->name('view-request');
 
+    //Agency API Request
+    Route::post('/api-requests/{id}/{type}/api-update-status', [ApiController::class, 'updateRequestStatus'])->name('api-update-request-status');
+    Route::get('/api-view-request/{id}/{type}/edit', [ApiController::class, 'showRequests'])->name('api-view-request');
+
     Route::get('crm2', [AgencyController::class, 'showCRM2'])->name('crm2');
     Route::post('crm-request2', [AgencyController::class, 'crmRequest2'])->name('crmRequest2');
 
@@ -86,6 +91,13 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::get('/document/view/{id}/{type}', [AgencyController::class, 'viewDocument'])->name('document.view');
     Route::get('/document2/view/{id}/{type}', [AgencyController::class, 'viewDocument2'])->name('check.docs');
     Route::get('/document3/view/{id}/{type}', [AgencyController::class, 'viewPhotograph'])->name('check.photo');
+
+    //APi Services
+
+    Route::group(['prefix' => 'api'], function () {
+        Route::get('update-enrollement', [ApiController::class, 'index'])->name('api.enrollment');
+    });
+
 
     Route::get('/wema-bank', function () {
         $path = 'docs/wema.pdf';

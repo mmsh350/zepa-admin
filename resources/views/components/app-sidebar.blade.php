@@ -316,6 +316,24 @@
                     </ul>
                 </li>
 
+                <li
+                    class="slide has-sub {{ request()->is('api*') || request()->is('api.enrollment') ? 'open' : '' }}">
+                    <a href="javascript:void(0);"
+                        class="side-menu__item {{ request()->is('api*') || request()->is('api.enrollment') ? 'active' : '' }}">
+                        <i class="bx bx-code side-menu__icon"></i>
+                        <span class="side-menu__label">API Services </span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide">
+                            <a href="{{ route('api.enrollment') }}"
+                                class="side-menu__item {{ request()->is('api.enrollment') ? 'active' : '' }}">BVN
+                                Enrollements</a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="slide">
                     <a href="{{ route('transactions') }}"
                         class="side-menu__item {{ request()->is('transactions') ? 'active' : '' }}">
