@@ -228,7 +228,7 @@
                                                                     </td>
                                                                     <td>
                                                                         @if ($data->status != 'rejected')
-                                                                            <a href="{{ route('view-request', [$data->id, $request_type]) }}"
+                                                                            <a href="{{ route('api-view-request', [$data->id, $request_type]) }}"
                                                                                 class="btn btn-icon btn-sm btn-light text-center">
                                                                                 <i class="ri-edit-line"></i>
                                                                             </a>

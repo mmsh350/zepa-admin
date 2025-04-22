@@ -62,6 +62,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::post('/requests/{id}/{type}/update-status', [AgencyController::class, 'updateRequestStatus'])->name('update-request-status');
     Route::get('/view-request/{id}/{type}/edit', [AgencyController::class, 'showRequests'])->name('view-request');
 
+    //Agency API Request
+    Route::post('/api-requests/{id}/{type}/api-update-status', [ApiController::class, 'updateRequestStatus'])->name('api-update-request-status');
+    Route::get('/api-view-request/{id}/{type}/edit', [ApiController::class, 'showRequests'])->name('api-view-request');
+
     Route::get('crm2', [AgencyController::class, 'showCRM2'])->name('crm2');
     Route::post('crm-request2', [AgencyController::class, 'crmRequest2'])->name('crmRequest2');
 

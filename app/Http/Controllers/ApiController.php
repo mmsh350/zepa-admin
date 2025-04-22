@@ -113,4 +113,47 @@ class ApiController extends Controller
             'request_type',
         ));
     }
+
+    public function showRequests($request_id, $type, $requests = null)
+    {
+
+
+        // Notification Data
+        $notifications = Notification::where('user_id', $this->loginUserId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Notification Count
+        $notifyCount = Notification::where('user_id',  $this->loginUserId)
+            ->where('status', 'unread')
+            ->count();
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        $requests = DB::connection('mysql_second')
+            ->table('bvn_enrollments')
+            ->where('id', $request_id)
+            ->first();
+
+        $request_type = 'bvn-enrollment';
+
+
+        if (strtolower($requests->status) == 'rejected') {
+            abort(404, 'Kindly Submit a new request');
+        }
+
+        return view(
+            'api-view-request',
+            compact(
+                'requests',
+                'notifications',
+                'notifyCount',
+                'notificationsEnabled',
+                'request_type'
+            )
+        );
+    }
 }
