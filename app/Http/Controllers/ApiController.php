@@ -156,4 +156,30 @@ class ApiController extends Controller
             )
         );
     }
+
+    public function updateRequestStatus(Request $request, $id, $type)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string',
+            'comment' => 'required|string',
+        ]);
+
+        $connection = DB::connection('mysql_second');
+        $table = $connection->table('bvn_enrollments');
+
+        $requestDetails = $table->where('id', $id)->first();
+
+        if (!$requestDetails) {
+            abort(404, 'Request not found.');
+        }
+
+        $table->where('id', $id)->update([
+            'status' => $validated['status'],
+            'reason' => $validated['comment'],
+        ]);
+
+        return redirect()
+            ->route('api.enrollment')
+            ->with('success', 'Request status updated successfully.');
+    }
 }
