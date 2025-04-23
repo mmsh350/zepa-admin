@@ -93,7 +93,7 @@
                         <!-- Comment and Action Section -->
                         <div class="p-3 border rounded bg-light">
                             <h6 class="text-uppercase text-muted mb-3">Action</h6>
-                            <form action="{{ route('update-request-status', [$requests->id, $request_type]) }}"
+                            <form action="{{ route('api-update-request-status', [$requests->id, $request_type]) }}"
                                 method="POST" id="statusForm">
                                 @csrf
 
@@ -102,50 +102,10 @@
                                     <label for="status" class="form-label"><strong>Select Status</strong></label>
                                     <select name="status" id="status" class="form-select" required>
                                         <option value="" disabled selected>-- Choose Status --</option>
-                                        <option value="resolved">Resolved</option>
+                                        <option value="successful">Resolved</option>
                                         <option value="processing">Processing</option>
-                                        <option value="rejected">Rejected</option>
                                     </select>
                                 </div>
-
-                                <!-- Refund Option -->
-                                <div class="mb-3 d-none" id="refundOption">
-                                    {{-- <label class="form-label"><strong>Refund Options</strong></label> --}}
-
-                                    {{-- <!-- Percentage Selection -->
-                                    <div class="d-flex gap-3">
-                                        <div class="form-check">
-                                            <input type="radio" name="refund_percentage" value="10" id="refund10"
-                                                class="form-check-input refund-percentage">
-                                            <label for="refund10" class="form-check-label">10%</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="radio" name="refund_percentage" value="20" id="refund20"
-                                                class="form-check-input refund-percentage">
-                                            <label for="refund20" class="form-check-label">20%</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="radio" name="refund_percentage" value="30" id="refund30"
-                                                class="form-check-input refund-percentage">
-                                            <label for="refund30" class="form-check-label">30%</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="radio" name="refund_percentage" value="50" id="refund50"
-                                                class="form-check-input refund-percentage">
-                                            <label for="refund50" class="form-check-label">50%</label>
-                                        </div>
-                                    </div> --}}
-
-
-                                    <!-- Calculated Refund Amount -->
-                                    <div class="mt-3">
-                                        <label for="refundAmount" class="form-label"><strong>Refund Amount
-                                                (₦)</strong></label>
-                                        <input type="text" id="refundAmount" name="refundAmount"
-                                            class="form-control">
-                                    </div>
-                                </div>
-
 
                                 <!-- Quill Editor Section -->
                                 <div class="mb-3">
@@ -185,15 +145,10 @@
         const refundOption = document.getElementById('refundOption');
         statusSelect.addEventListener('change', function() {
             clear();
-            if (this.value === 'rejected') {
-
-                refundOption.classList.remove('d-none');
-            } else if (this.value === 'processing') {
+            if (this.value === 'processing')
                 quill.root.innerHTML =
-                    "Thank you for reaching out. Your request has been received and is currently being processed. We will notify you promptly upon resolution."
-            } else {
-                refundOption.classList.add('d-none');
-            }
+                "Thank you for reaching out. Your request has been received and is currently being processed. We will notify you promptly upon resolution."
+
         });
 
         // Handle Form Submission
@@ -212,44 +167,7 @@
         });
     });
 </script>
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = document.getElementById('status');
-        const refundOption = document.getElementById('refundOption');
-        const refundAmountInput = document.getElementById('refundAmount');
-        const refundPercentageRadios = document.querySelectorAll('.refund-percentage');
-
-        // Transaction amount (Replace with actual value if dynamic)
-        const transactionAmount = {{ $requests->transactions->amount }};
-
-        // Show or hide refund option based on status
-        statusSelect.addEventListener('change', function() {
-            if (this.value === 'rejected') {
-                refundOption.classList.remove('d-none');
-                refundAmountInput.setAttribute('required', 'required');
-
-            } else {
-                refundOption.classList.add('d-none');
-                refundAmountInput.removeAttribute('required');
-                refundAmountInput.value = '';
-                refundPercentageRadios.forEach(radio => (radio.checked = false));
-            }
-        });
-
-        // Calculate refund amount based on selected percentage
-        refundPercentageRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                const percentage = parseInt(this.value, 10);
-                const refundAmount = (transactionAmount * percentage) / 100;
-                refundAmountInput.value = `${refundAmount}`;
-            });
-        });
-    });
-</script> --}}
 
 <!-- Quill Editor JS -->
 <script src="{{ asset('assets/libs/quill/quill.min.js') }}"></script>
-
-<!-- Internal Quill JS -->
-
 @endsection
