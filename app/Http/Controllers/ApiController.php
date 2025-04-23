@@ -7,6 +7,8 @@ use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
@@ -162,7 +164,10 @@ class ApiController extends Controller
         $validated = $request->validate([
             'status' => 'required|string',
             'comment' => 'required|string',
+            'url' => 'nullable|string'
         ]);
+
+        $url = $validated['url'];
 
         $connection = DB::connection('mysql_second');
         $table = $connection->table('bvn_enrollments');
@@ -177,6 +182,18 @@ class ApiController extends Controller
             'status' => $validated['status'],
             'reason' => $validated['comment'],
         ]);
+
+        if (!empty($url)) {
+            try {
+                Http::post($url, [
+                    'status' => $validated['status'],
+                    'reason' => $validated['comment'],
+                    'refno' => $request->refno,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Failed to post status update: " . $e->getMessage());
+            }
+        }
 
         return redirect()
             ->route('api.enrollment')

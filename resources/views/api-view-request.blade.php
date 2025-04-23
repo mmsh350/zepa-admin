@@ -61,7 +61,7 @@
                                         <p><strong>Bank Name.:</strong> {{ $requests->bank_name }}</p>
                                         <p><strong>Account Number:</strong> {{ $requests->account_number }}</p>
                                         <p><strong>Account Name.:</strong> {{ $requests->account_name }}</p>
-
+                                        <p><strong>Website.:</strong> {{ $requests->url }}</p>
                                         <p><strong>Date:</strong>
                                             {{ \Carbon\Carbon::parse($requests->created_at)->format('d/m/Y') }}</p>
                                         <p><strong>Status:</strong>
@@ -105,6 +105,8 @@
                                         <option value="successful">Resolved</option>
                                         <option value="processing">Processing</option>
                                     </select>
+                                    <input type="text" hidden value="{{ $requests->url }}" name="url">
+                                    <input type="text" hidden value="{{ $requests->refno }}" name="refno">
                                 </div>
 
                                 <!-- Quill Editor Section -->
