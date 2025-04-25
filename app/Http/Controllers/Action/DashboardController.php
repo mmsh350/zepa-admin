@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
@@ -53,6 +54,14 @@ class DashboardController extends Controller
         $bonusBalance = Bonus::getTotalBonusBalance();
 
         $devBalance = Wallet::getTotalWalletBalanceForUser();
+
+        $apiBalance = DB::connection('mysql_second')
+            ->table('wallets')
+            ->select('naira_balance')
+            ->where('id', 2)
+            ->first();
+
+        $apiBalance = $apiBalance?->naira_balance ?? 0;
 
         // $monnify = WalletAccount::getAccountDetailsById(1);
         $palmpay = WalletAccount::getAccountDetailsById(2);
@@ -105,7 +114,8 @@ class DashboardController extends Controller
             'totalIdentityCounts',
             // 'monnify',
             'palmpay',
-            'devBalance'
+            'devBalance',
+            'apiBalance'
         ));
     }
 
