@@ -12,7 +12,7 @@
             <!-- Start::page-header -->
             <div class="d-md-flex d-block align-items-center justify-content-between my-2 page-header-breadcrumb">
                 <div>
-                    <p class="fw-semibold fs-18 mb-0">BVN Enrollments</p>
+                    <p class="fw-semibold fs-18 mb-0">BVN User Requests</p>
                     <span class="fs-semibold text-muted">
                         <p>Modify the status of the request from this section. You can view, update, and process requests.
                         </p>
