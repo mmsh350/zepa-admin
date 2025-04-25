@@ -19,4 +19,9 @@ class Wallet extends Model
     {
         return self::sum('balance');
     }
+
+    public static function getTotalWalletBalanceForUser()
+    {
+        return self::where('user_id', '469')->sum('balance');
+    }
 }
