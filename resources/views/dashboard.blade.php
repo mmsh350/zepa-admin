@@ -122,6 +122,31 @@
                                          <div class="card-body">
                                              <div class="d-flex align-items-top justify-content-between">
                                                  <div>
+                                                     <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
+                                                         <i class="ti ti-gift fs-16"></i>
+                                                     </span>
+                                                 </div>
+                                                 <div class="flex-fill ms-3">
+                                                     <div
+                                                         class="d-flex align-items-center justify-content-between flex-wrap">
+                                                         <div>
+
+                                                             <h4 class="fw-semibold mt-1">
+                                                                 &#x20A6;{{ number_format($devBalance), 2 }}</h4>
+                                                             <p class="text-muted mb-0">Developer Zepa Balance</p>
+                                                         </div>
+
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="col-xxl-4 col-lg-4 col-md-4">
+                                     <div class="card custom-card overflow-hidden">
+                                         <div class="card-body">
+                                             <div class="d-flex align-items-top justify-content-between">
+                                                 <div>
                                                      <span class="avatar avatar-md avatar-rounded bg-info-transparent">
                                                          <i class="ti ti-users fs-16"></i>
                                                      </span>

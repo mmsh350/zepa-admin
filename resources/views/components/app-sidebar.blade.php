@@ -328,7 +328,7 @@
                         <li class="slide">
                             <a href="{{ route('api.enrollment') }}"
                                 class="side-menu__item {{ request()->is('api.enrollment') ? 'active' : '' }}">BVN
-                                Enrollements</a>
+                                User</a>
                         </li>
 
                     </ul>

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Action;
 
-use App\Helpers\monnifyAuthHelper;
 use App\Helpers\noncestrHelper;
 use App\Helpers\signatureHelper;
 use App\Http\Controllers\Controller;
@@ -52,6 +51,8 @@ class DashboardController extends Controller
         $walletBalance = Wallet::getTotalWalletBalance();
 
         $bonusBalance = Bonus::getTotalBonusBalance();
+
+        $devBalance = Wallet::getTotalWalletBalanceForUser();
 
         // $monnify = WalletAccount::getAccountDetailsById(1);
         $palmpay = WalletAccount::getAccountDetailsById(2);
@@ -103,7 +104,8 @@ class DashboardController extends Controller
             'totalAgencyCounts',
             'totalIdentityCounts',
             // 'monnify',
-            'palmpay'
+            'palmpay',
+            'devBalance'
         ));
     }
 
