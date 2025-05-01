@@ -149,8 +149,8 @@
                                             <div class="col-sm-8">
                                                 <select name="topup_type" class="form-control">
                                                      <option value="" selected> Choose</option>
-                                                    <option value="1"> Increase</option>
-                                                    <option value="2"> Reduce</option>
+                                                    <option value="1"> Credit </option>
+                                                    <option value="2"> Debit </option>
                                                 </select>
                                             </div>
                                         </div>

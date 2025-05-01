@@ -162,9 +162,11 @@ class UserController extends Controller
                  if ($request->topup_type == 1){
                         $user->wallet->balance += $amount;
                         $user->wallet->deposit += $amount;
+                        $topuptype ='credited';
                  }else{
                         $user->wallet->balance -= $amount;
                         $user->wallet->deposit -= $amount;
+                         $topuptype ='debited';
                  }
 
                 $user->wallet->save();
@@ -176,7 +178,7 @@ class UserController extends Controller
                     'payer_email' => auth()->user()->email,
                     'payer_phone' => auth()->user()->phone_number,
                     'service_type' => 'Wallet Topup',
-                    'service_description' => 'Your wallet has been credited with ' . '₦' . number_format($amount, 2),
+                    'service_description' => 'Your wallet has been '.$topuptype.' with ' . '₦' . number_format($amount, 2),
                     'amount' => $amount,
                     'gateWay' => 'Internal',
                     'status' => 'Approved',
