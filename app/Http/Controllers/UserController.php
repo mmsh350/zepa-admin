@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::query()->ExcludeAdmin();
 
         $loginUserId = Auth::id();
 
@@ -61,6 +62,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+
         $loginUserId = Auth::id();
 
         $notifications = Notification::where('user_id', $loginUserId)
@@ -75,7 +77,9 @@ class UserController extends Controller
 
         $notificationsEnabled = Auth::user()->notification;
 
-        return view('users.show', compact('user', 'notifications', 'notifyCount', 'notificationsEnabled'));
+        $transactions = Transaction::where('user_id', $user->id)->latest()->limit(10)->get();
+
+        return view('users.show', compact('user', 'notifications', 'notifyCount', 'notificationsEnabled','transactions'));
     }
 
     public function edit(User $user)
@@ -105,9 +109,6 @@ class UserController extends Controller
         return back()->with('success', 'User activation status updated.');
     }
 
-
-
-
     public function update(Request $request, User $user)
     {
         $request->validate([
@@ -124,6 +125,12 @@ class UserController extends Controller
             'wallet_balance' => 'nullable|numeric',
             'profile_pic' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if (!is_null($request->wallet_balance)) {
+                $request->validate([
+                    'topup_type' => 'required|numeric|in:1,2',
+                ]);
+         }
 
         $user->fill($request->only([
             'first_name',
@@ -147,11 +154,19 @@ class UserController extends Controller
 
         // Wallet balance update
         if ($request->wallet_balance) {
-            $amountToAdd = $request->wallet_balance;
+            $amount = $request->wallet_balance;
 
             if ($user->wallet) {
-                $user->wallet->balance += $amountToAdd;
-                $user->wallet->deposit += $amountToAdd;
+
+
+                 if ($request->topup_type == 1){
+                        $user->wallet->balance += $amount;
+                        $user->wallet->deposit += $amount;
+                 }else{
+                        $user->wallet->balance -= $amount;
+                        $user->wallet->deposit -= $amount;
+                 }
+
                 $user->wallet->save();
 
                 // Create transaction
@@ -161,8 +176,8 @@ class UserController extends Controller
                     'payer_email' => auth()->user()->email,
                     'payer_phone' => auth()->user()->phone_number,
                     'service_type' => 'Wallet Topup',
-                    'service_description' => 'Your wallet has been credited with ' . '₦' . number_format($amountToAdd, 2),
-                    'amount' => $amountToAdd,
+                    'service_description' => 'Your wallet has been credited with ' . '₦' . number_format($amount, 2),
+                    'amount' => $amount,
                     'gateWay' => 'Internal',
                     'status' => 'Approved',
                 ]);
@@ -171,7 +186,7 @@ class UserController extends Controller
                 $this->transactionService->createNotification(
                     $user->id,
                     'Wallet Credited',
-                    '₦' . number_format($amountToAdd, 2) . ' has been credited to your wallet.'
+                    '₦' . number_format($amount, 2) . ' has been credited to your wallet.'
                 );
             }
         }

@@ -139,9 +139,20 @@
                                             <div class="col-sm-8">
                                                 <input type="number" step="0.01" class="form-control"
                                                     name="wallet_balance"
-                                                    placeholder="Only provide when necessary, value to add" value="">
+                                                    placeholder="Only provide when necessary, select type below" value="">
                                             </div>
 
+                                        </div>
+
+                                          <div class="row mb-2">
+                                            <div class="col-sm-4 text-muted">Top Up Type</div>
+                                            <div class="col-sm-8">
+                                                <select name="topup_type" class="form-control">
+                                                     <option value="" selected> Choose</option>
+                                                    <option value="1"> Increase</option>
+                                                    <option value="2"> Reduce</option>
+                                                </select>
+                                            </div>
                                         </div>
 
                                         <div class="row mb-2">

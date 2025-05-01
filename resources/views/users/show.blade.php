@@ -19,13 +19,21 @@
 
             <div class="row">
                 <div class="col-xxl-12 col-xl-12">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="row ">
-                                <div class="col-xl-12">
-                                    <div class="card custom-card ">
-                                        <div class="card-body">
-                                            <div class="row">
+
+<div class="card custom-card">
+
+                            <div class="card-body">
+                                <ul class="nav nav-tabs mb-3 border-0" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link active" data-bs-toggle="tab" role="tab" href="#profile" aria-selected="false" tabindex="-1">Profile</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link " data-bs-toggle="tab" role="tab" href="#transaction" aria-selected="true">Transactions</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane text-muted active show" id="profile" role="tabpanel">
+                                        <div class="row">
                                                 <div class="col-md-4 border-end text-center">
                                                     <div class="mb-3 mt-3">
                                                         @if ($user->profile_pic)
@@ -169,9 +177,68 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                    </div>
+                                    <div class="tab-pane text-muted " id="transaction" role="tabpanel">
+                                        <div class="row">
+<div class="table-responsive">
+<p>Lastest 20 Records</p>
+    <small class="text-danger">Click on the reference number to generate a transaction receipt or use the download button</small>
+
+    @if ($transactions->count())
+
+        <table class="table text-nowrap" style="background:#fafafc !important">
+            <thead>
+                <tr class="table-primary">
+                    <th>#</th>
+                    <th>Reference No.</th>
+                    <th>Service Type</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($transactions as $data)
+                    <tr>
+                        <td>{{  $loop->iteration }}</td>
+                        <td>
+                            <a target="_blank" href="{{ route('reciept', $data->referenceId) }}">
+                                {{ strtoupper($data->referenceId) }}
+                            </a>
+                        </td>
+                        <td>{{ $data->service_type }}</td>
+                        <td>{{ $data->service_description }}</td>
+                        <td>&#8358;{{ number_format($data->amount, 2) }}</td>
+                        <td class="text-center">
+                            <span class="badge
+                                {{ $data->status == 'Approved' ? 'bg-outline-success' :
+                                    ($data->status == 'Rejected' ? 'bg-outline-danger' : 'bg-outline-warning') }}">
+                                {{ strtoupper($data->status) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a target="_blank" href="{{ route('reciept', $data->referenceId) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+
+    @else
+        <center>
+            <img width="65%" src="{{ asset('assets/images/no-transaction.gif') }}" alt="">
+            <p class="text-center fw-semibold fs-15 mt-2">No Transaction Available!</p>
+        </center>
+    @endif
+</div>
 
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         @endsection
