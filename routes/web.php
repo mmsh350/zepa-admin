@@ -96,6 +96,10 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
 
     Route::group(['prefix' => 'api'], function () {
         Route::get('update-enrollement', [ApiController::class, 'index'])->name('api.enrollment');
+
+        Route::get('withdrawal', [ApiController::class, 'history'])->name('api.withdrawal');
+        Route::get('process', [ApiController::class, 'process'])->name('api.process');
+
     });
 
 
@@ -200,8 +204,6 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     Route::put('/sme-service/smedata/update/{id}', [ServicesController::class, 'updateSMEData'])->name('services.smedata.update');
     Route::get('/sme-service/create', [ServicesController::class, 'createSMEData'])->name('sme-service.create');
     Route::post('/sme-service', [ServicesController::class, 'storeSMEData'])->name('sme-service.store');
-
-
 
 
     Route::post('/verifyPayments', [WalletController::class, 'verify'])->name('verify');

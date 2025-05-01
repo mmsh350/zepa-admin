@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApiWithdrawal;
 use App\Models\Notification;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
@@ -198,5 +199,90 @@ class ApiController extends Controller
         return redirect()
             ->route('api.enrollment')
             ->with('success', 'Request status updated successfully.');
+    }
+
+    public function process(Request $request){
+
+         try {
+                $devID = config('wallet.developer_api_id');
+                $connection = DB::connection('mysql_second');
+                $table = $connection->table('wallets');
+
+                // Begin transaction
+                $connection->beginTransaction();
+
+                // Lock the row to prevent race conditions
+                $wallet = $table->where('user_id', $devID)->lockForUpdate()->first();
+
+                if (!$wallet) {
+                    return redirect()->route('api.withdrawal')->with('error', 'Wallet not found.');
+                }
+
+                $amount = $wallet->naira_balance;
+
+                if ($amount <= 0) {
+                    return redirect()->route('api.withdrawal')->with('error', 'No balance to withdraw.');
+                }
+
+                // Move the funds (your service logic)
+                $this->walletService->moveToDeveloperWallet($amount);
+
+                // Update the wallet balance
+                $table->where('user_id', $devID)->update([
+                    'naira_balance' => $wallet->naira_balance - $amount,
+                ]);
+
+                ApiWithdrawal::create([
+                    'user_id' => auth()->id(),
+                    'amount' => $amount,
+                    'description' => 'Moved balance to main wallet', // your own message
+                ]);
+
+                // Commit the transaction
+                $connection->commit();
+
+                return redirect()->route('api.withdrawal')->with('success', 'Successful withdrawal');
+
+                } catch (\Throwable $e) {
+                    // Rollback on error
+                    if (isset($connection)) {
+                        $connection->rollBack();
+                    }
+
+                    // Optional: log the error
+                    Log::error('Wallet withdrawal failed: ' . $e->getMessage());
+
+                    return redirect()->route('api.withdrawal')->with('error', 'Something went wrong. Please try again.');
+                }
+
+    }
+    public function history(){
+
+        $userId = $this->loginUserId;
+
+        // Notification Data
+        $notifications = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        // Notification Count
+        $notifyCount = Notification::where('user_id', $userId)
+            ->where('status', 'unread')
+            ->count();
+
+        // Check if the user has notifications enabled
+        $notificationsEnabled = Auth::user()->notification;
+
+        $history =ApiWithdrawal::paginate(10);
+
+        return view('api-withdrawal', compact(
+                'notifications',
+                'notifyCount',
+                'notificationsEnabled',
+                'history',
+            ));
+
     }
 }

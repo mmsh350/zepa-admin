@@ -330,7 +330,10 @@
                                 class="side-menu__item {{ request()->is('api.enrollment') ? 'active' : '' }}">BVN
                                 User</a>
                         </li>
-
+                        <li class="slide">
+                            <a href="{{ route('api.withdrawal') }}"
+                                class="side-menu__item {{ request()->is('api.withdrawal') ? 'active' : '' }}">Withdrawal</a>
+                        </li>
                     </ul>
                 </li>
 

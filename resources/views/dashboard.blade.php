@@ -143,30 +143,32 @@
                                      </div>
                                  </div>
                                  <div class="col-xxl-4 col-lg-4 col-md-4">
-                                     <div class="card custom-card overflow-hidden">
-                                         <div class="card-body">
-                                             <div class="d-flex align-items-top justify-content-between">
-                                                 <div>
-                                                     <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
-                                                         <i class="ti ti-gift fs-16"></i>
-                                                     </span>
-                                                 </div>
-                                                 <div class="flex-fill ms-3">
-                                                     <div
-                                                         class="d-flex align-items-center justify-content-between flex-wrap">
-                                                         <div>
+                                    <div class="card custom-card overflow-hidden">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-top justify-content-between">
+                                                <div>
+                                                    <span class="avatar avatar-md avatar-rounded bg-warning-transparent">
+                                                        <i class='bx bx-wallet fs-16'></i>
+                                                    </span>
+                                                </div>
+                                                <div class="flex-fill ms-3">
+                                                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                                        <div>
+                                                            <h4 class="fw-semibold mt-1">&#x20A6;{{ number_format($apiBalance, 2) }}</h4>
+                                                            <p class="text-muted mb-0">Dev API Balance</p>
+                                                        </div>
+                                                        <div class="ms-auto text-end">
+                                                            <button data-bs-toggle="modal" data-bs-target="#moveModal" class="btn btn-sm btn-primary d-flex align-items-center">
+                                                                <i class='bx bx-transfer-alt me-1'></i> Move
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                                             <h4 class="fw-semibold mt-1">
-                                                                 &#x20A6;{{ number_format($apiBalance), 2 }}</h4>
-                                                             <p class="text-muted mb-0">Dev API Balance</p>
-                                                         </div>
-
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div>
                                  <div class="col-xxl-4 col-lg-4 col-md-4">
                                      <div class="card custom-card overflow-hidden">
                                          <div class="card-body">
@@ -349,6 +351,29 @@
              </div>
          </div>
      </div>
+     <!----------------------Modal ------->
+     <div class="modal fade" id="moveModal" tabindex="-1" aria-labelledby="moveModal" data-bs-keyboard="false" aria-hidden="true">
+         <!-- Scrollable modal -->
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="staticBackdropLabel2">Modal title
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>You are about to move the sum of &#x20A6;{{ number_format($apiBalance, 2) }} from Developer Zepa API Wallet to Zepa Main wallet</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <a href="{{route('api.process')}}"  type="button" class="btn btn-primary">Procced
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
  @endsection
  @section('page-js')
 

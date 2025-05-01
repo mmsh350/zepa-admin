@@ -6,6 +6,7 @@ use App\Models\Services;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
+use Illuminate\Support\Str;
 
 class WalletService
 {
@@ -60,6 +61,53 @@ class WalletService
                     'service_type' => ucfirst(str_replace('_', ' ', $serviceType)) . ' Fee',
                     'service_description' => 'Developer wallet credited with ₦' . number_format($serviceFee, 2),
                     'amount' => $serviceFee,
+                    'gateway' => 'Internal Transfer',
+                    'status' => 'Approved',
+                ]);
+            } else {
+                throw new \Exception("Wallet not found for developer.");
+            }
+        }
+    }
+
+    public function moveToDeveloperWallet($amount)
+    {
+
+        $developerId = config('wallet.developer_id');
+
+        // Find the developer user
+        $developer = User::find($developerId);
+
+        if ($developer) {
+            // Step 1: Fetch the developer's current wallet balance
+            $wallet = Wallet::where('user_id', $developerId)->first();
+
+            if ($wallet) {
+                // Increment the wallet balance by the service fee
+                $newBalance = $wallet->balance + $amount;
+
+                $newDeposit = $wallet->deposit + $amount;
+                // Update the wallet balance
+
+                $wallet->update([
+                    'balance' => $newBalance,
+                    'deposit' => $newDeposit,
+                ]);
+
+               $user = auth()->user();
+               $name = $user?->first_name . ' ' . $user?->last_name;
+               $refNo = 'Api' . now()->format('YmdHis');
+
+                // Step 2: Record the transaction in the transactions table
+                Transaction::create([
+                    'user_id' => $developerId,
+                    'payer_name' => $name,
+                    'payer_email' => $user?->email,
+                    'payer_phone' =>  $user?->phone_numner,
+                    'referenceId' => $refNo,
+                    'service_type' => 'API Withdrawal',
+                    'service_description' => 'Developer wallet credited with ₦' . number_format($amount, 2),
+                    'amount' => $amount,
                     'gateway' => 'Internal Transfer',
                     'status' => 'Approved',
                 ]);
