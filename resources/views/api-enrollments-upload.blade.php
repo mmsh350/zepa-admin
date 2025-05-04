@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'User Management')
+@section('title', 'Enrollment Upload List')
 
 @section('content')
     @include('components.app-header')
