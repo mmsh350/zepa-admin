@@ -95,10 +95,16 @@ Route::middleware('auth', 'verified', 'check.admin')->group(function () {
     //APi Services
 
     Route::group(['prefix' => 'api'], function () {
-        Route::get('update-enrollement', [ApiController::class, 'index'])->name('api.enrollment');
+         Route::get('update-enrollement', [ApiController::class, 'index'])->name('api.enrollment');
+         Route::get('upload', [ApiController::class, 'showUpload'])->name('api.enrollments.upload');
+          Route::post('upload', [ApiController::class, 'uploadCsv'])->name('api.enrollments.upload.post');
+
+
 
         Route::get('withdrawal', [ApiController::class, 'history'])->name('api.withdrawal');
         Route::get('process', [ApiController::class, 'process'])->name('api.process');
+        Route::get('users', [ApiController::class, 'showUsers'])->name('api.users');
+        Route::patch('/users/{user}/activate', [ApiController::class, 'activate'])->name('api.users.activate');
 
     });
 

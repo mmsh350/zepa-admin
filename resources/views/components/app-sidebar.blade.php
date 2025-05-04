@@ -327,12 +327,20 @@
                     <ul class="slide-menu child1">
                         <li class="slide">
                             <a href="{{ route('api.enrollment') }}"
-                                class="side-menu__item {{ request()->is('api.enrollment') ? 'active' : '' }}">BVN
+                                class="side-menu__item {{ request()->is('api/update-enrollement') ? 'active' : '' }}">BVN
                                 User</a>
                         </li>
                         <li class="slide">
                             <a href="{{ route('api.withdrawal') }}"
-                                class="side-menu__item {{ request()->is('api.withdrawal') ? 'active' : '' }}">Withdrawal</a>
+                                class="side-menu__item {{ request()->is('api/withdrawal') ? 'active' : '' }}">Withdrawal</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('api.users') }}"
+                                class="side-menu__item {{ request()->is('api/users') ? 'active' : '' }}">Users</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{{ route('api.enrollments.upload') }}"
+                                class="side-menu__item {{ request()->is('api/upload') ? 'active' : '' }}">Enrollments Upload</a>
                         </li>
                     </ul>
                 </li>
