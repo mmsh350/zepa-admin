@@ -309,7 +309,16 @@
                                                     <span class="badge bg-danger">Rejected</span>
                                                 @endif
                                             </p>
+                                             @if ($requests->service_type == 'IPE Instant')
+                                                 <a
+                                                                                    href="{{ route('ipeStatus', $requests->trackingId) }}"
+                                                                                    class="btn btn-sm btn-primary rounded">
+                                                                                    <i class="bx bx-refresh"></i> Check
+                                                                                    IPE Status
+                                                                                </a>
+                                          @endif
                                         </div>
+
                                           <div class="mt-1">
                                         <p class="text-uppercase">Photo Upload</p>
                                         <p>
@@ -319,6 +328,7 @@
                                                 <i class="ti ti-eye me-2"></i> View photo
                                             </a>
                                         </p>
+
                                     </div>
                                     </div>
 

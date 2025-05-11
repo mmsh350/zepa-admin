@@ -264,7 +264,7 @@ class AgencyController extends Controller
                             'Change of Address' => 'nin_modification_address',
                             'Phone Number Update' => 'nin_modification_phone',
                         ];
-                        
+
                 $service_key = $serviceTypeMap[$requestDetails->service_type] ?? 'nin_modification_general';
 
                 $this->walletService->creditDeveloperWallet(
@@ -875,7 +875,7 @@ class AgencyController extends Controller
         // Redirect to the external URL for viewing
         return redirect($externalUrl);
     }
-    
+
      public function viewPhotograph($id, $type)
     {
 
@@ -898,5 +898,64 @@ class AgencyController extends Controller
 
         // Redirect to the external URL for viewing
         return redirect($externalUrl);
+    }
+
+      public function ipeRequestStatus($trackingId)
+    {
+        try {
+
+            $data = ['idNumber' => $trackingId, "consent" => true];
+
+            $url = env('BASE_API_URL') . '/api/ipestatus/index.php';
+            $token = env('VERIFY_BEARER');
+
+            $headers = [
+                'Accept: application/json, text/plain, */*',
+                'Content-Type: application/json',
+                "Authorization: Bearer $token",
+            ];
+
+            // Initialize cURL
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+            // Execute request
+            $response = curl_exec($ch);
+
+            // Check for cURL errors
+            if (curl_errno($ch)) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
+            }
+
+            // Close cURL session
+            curl_close($ch);
+
+            $response = json_decode($response, true);
+
+            if (isset($response['status']) && $response['status'] === true) {
+
+                NIN_SERVICE::where('trackingId', $trackingId)
+                    ->update(['reason' => $response['reply'] ?? '', 'status' => 'resolved']);
+
+                return redirect()->route('nin-services')
+                    ->with('success', 'IPE request is successful, check the query section');
+            } elseif (isset($response['status']) && $response['status'] === false) {
+                return redirect()->route('nin-services')
+                    ->with('error',  $response['message']);
+            } else {
+                return redirect()->route('nin-services')
+                    ->with('error', 'Unexpected error occurred');
+            }
+        } catch (\Exception $e) {
+
+            return redirect()->route('nin-services')
+                ->with('error', 'An error occurred while making the API request');
+        }
     }
 }

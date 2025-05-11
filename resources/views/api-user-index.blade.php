@@ -71,8 +71,11 @@
                                                                         : '<i class="bx bx-info-circle text-muted" title="Phone no missing"> Missing</i>' !!}
                                                                 </td>
                                                                 <td>{{ number_format($user->naira_balance,2) }}</td>
-                                                                <td> <span class="badge bg-primary-transparent" style="font-size:12px">BVN: {{ number_format($user->bvn_balance, 0) }} </span>
-                                                                  <span class="badge bg-secondary-transparent" style="font-size:12px">NIN: {{number_format($user->nin_balance, 0)}} </span></td>
+                                                                <td>
+                                                                  <span class="badge bg-primary-transparent" style="font-size:12px">BVN: {{ number_format($user->bvn_balance, 0) }} </span>
+                                                                  <span class="badge bg-secondary-transparent" style="font-size:12px">NIN: {{number_format($user->nin_balance, 0)}} </span>
+                                                                  <span class="badge bg-warning-transparent" style="font-size:12px">NIN PHONE: {{number_format($user->phone_balance, 0)}} </span>
+                                                                </td>
                                                                 <td>{{ $user->is_active ? 'Yes' : 'No' }}</td>
                                                                 <td><i class="bx bx-user text-muted" title="Role"> </i>
                                                                     {{ ucwords($user->usertype) }}</td>

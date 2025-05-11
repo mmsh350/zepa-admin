@@ -329,7 +329,8 @@ class ApiController extends Controller
                 'users.*',
                 'wallets.naira_balance as naira_balance',
                 'wallets.nin_balance as nin_balance',
-                'wallets.bvn_balance as bvn_balance'
+                'wallets.bvn_balance as bvn_balance',
+                'wallets.nin_phone_balance as phone_balance'
             )->paginate($perPage)->withQueryString();
 
         return view('api-user-index', compact(
